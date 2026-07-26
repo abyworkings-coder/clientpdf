@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://abyworkings-coder.github.io/clientpdf/sitemap.xml
