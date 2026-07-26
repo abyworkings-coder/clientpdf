@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Split a PDF without uploading it — ClientPDF</title>
-<meta name="description" content="Extract pages or split a PDF into separate files entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/split.html" />
+<title>Rotate PDF pages without uploading them — ClientPDF</title>
+<meta name="description" content="Rotate every page or a range of pages in a PDF entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/rotate.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Split a PDF without uploading it — ClientPDF" />
-<meta property="og:description" content="Extract pages or split a PDF into separate files entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/split.html" />
+<meta property="og:title" content="Rotate PDF pages without uploading them — ClientPDF" />
+<meta property="og:description" content="Rotate every page or a range of pages in a PDF entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/rotate.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Split a PDF without uploading it — ClientPDF" />
-<meta name="twitter:description" content="Extract pages or split a PDF into separate files entirely in your browser." />
+<meta name="twitter:title" content="Rotate PDF pages without uploading them — ClientPDF" />
+<meta name="twitter:description" content="Rotate every page or a range of pages in a PDF entirely in your browser." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Split",
-  "url": "https://abyworkings-coder.github.io/clientpdf/split.html",
+  "name": "ClientPDF Rotate",
+  "url": "https://abyworkings-coder.github.io/clientpdf/rotate.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Extract pages or split a PDF into separate files entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Rotate every page or a range of pages in a PDF entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -48,8 +48,8 @@
     </div>
     <nav class="toolnav" aria-label="Tools">
       <a href="./index.html">Merge</a>
-      <a href="./split.html" aria-current="page">Split</a>
-      <a href="./rotate.html">Rotate</a>
+      <a href="./split.html">Split</a>
+      <a href="./rotate.html" aria-current="page">Rotate</a>
       <a href="./guide.html">Guide</a>
     </nav>
     <div class="topbar-status">
@@ -62,11 +62,12 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Split this PDF.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Rotate this PDF.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Pull specific pages into a new file, or blow every page apart into its own
-      PDF — all inside this tab. Zero network requests after the page loads,
-      same rule as the merge tool. Check the Network tab yourself.
+      Fix pages scanned sideways or upside down — rotate the whole document or
+      just a range of pages — all inside this tab. Zero network requests after
+      the page loads, same rule as every other tool here. Check the Network
+      tab yourself.
     </p>
   </section>
 
@@ -80,23 +81,38 @@
       </div>
     </div>
 
-    <div class="split-panel" id="splitPanel" hidden>
-      <div class="split-meta" id="splitMeta"></div>
+    <div class="split-panel" id="rotatePanel" hidden>
+      <div class="split-meta" id="rotateMeta"></div>
 
       <div class="split-mode">
         <label class="split-mode-option">
-          <input type="radio" name="splitMode" value="range" checked />
-          <span>Extract pages into one PDF</span>
+          <input type="radio" name="rotateScope" value="all" checked />
+          <span>Rotate every page</span>
         </label>
         <label class="split-mode-option">
-          <input type="radio" name="splitMode" value="every" />
-          <span>Split every page into its own PDF (.zip)</span>
+          <input type="radio" name="rotateScope" value="range" />
+          <span>Rotate a range of pages</span>
         </label>
       </div>
 
-      <div class="split-range" id="rangeRow">
-        <label for="rangeInput">Pages</label>
-        <input type="text" id="rangeInput" placeholder="e.g. 1-3, 5, 8-10" />
+      <div class="split-range" id="rotateRangeRow" hidden>
+        <label for="rotateRangeInput">Pages</label>
+        <input type="text" id="rotateRangeInput" placeholder="e.g. 1-3, 5, 8-10" />
+      </div>
+
+      <div class="split-mode">
+        <label class="split-mode-option">
+          <input type="radio" name="rotateAngle" value="90" checked />
+          <span>90° clockwise</span>
+        </label>
+        <label class="split-mode-option">
+          <input type="radio" name="rotateAngle" value="180" />
+          <span>180°</span>
+        </label>
+        <label class="split-mode-option">
+          <input type="radio" name="rotateAngle" value="270" />
+          <span>90° counter-clockwise</span>
+        </label>
       </div>
     </div>
 
@@ -104,8 +120,8 @@
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="splitBtn" type="button">
-        <span id="splitBtnLabel">Extract pages</span>
+      <button class="btn btn-primary" id="rotateBtn" type="button">
+        <span id="rotateBtnLabel">Rotate PDF</span>
       </button>
     </div>
 
@@ -124,7 +140,7 @@
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Split as many pages as your device's memory allows. No artificial caps.</p>
+        <p>Rotate as many pages as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -132,8 +148,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Rotating a PDF? That's live too.</h2>
-        <p><a href="./rotate.html">Fix pages scanned sideways or upside down</a> — same rule: everything stays local. Compress is next. Leave your email and we'll let you know when it ships, plus early access to a Pro batch mode.</p>
+        <h2>More tools are coming</h2>
+        <p>Compress and reorder pages are next — same rule: everything stays local. Leave your email and we'll let you know when they ship, plus early access to a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -168,6 +184,6 @@
     }
   })();
 </script>
-<script type="module" src="split.js"></script>
+<script type="module" src="rotate.js"></script>
 </body>
 </html>
