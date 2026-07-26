@@ -33,3 +33,19 @@ is not the growth bet here.
 
 Planned next: split, compress, reorder-pages tools under the same shell once
 usage data justifies further investment.
+
+## Analytics
+
+No-signup visit counter via [counterapi.dev](https://counterapi.dev) — counts
+page loads and a coarse referrer bucket (github / direct / other), no cookies,
+no personal data. Check current counts:
+
+```
+curl -s https://api.counterapi.dev/v1/clientpdf-abyworkings/visits-total
+curl -s https://api.counterapi.dev/v1/clientpdf-abyworkings/visits-github
+curl -s https://api.counterapi.dev/v1/clientpdf-abyworkings/visits-direct
+curl -s https://api.counterapi.dev/v1/clientpdf-abyworkings/visits-other
+```
+
+`visits-github` rising means a directory listing (awesome-list, etc.) is
+sending clicks — that's the signal to watch for.
