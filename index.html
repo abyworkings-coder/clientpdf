@@ -56,11 +56,12 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Merge PDFs.<br />Your files never leave your device.</h1>
+    <h1>Open DevTools.<br />Merge these PDFs.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Every other PDF tool sends your file to a server. This one can't —
-      there isn't one. Drag files in, reorder them, merge, download.
-      All the work happens right here, in this tab, on your machine.
+      Most "free" PDF mergers upload your file to a server you can't see,
+      in a country you didn't pick, under a privacy policy you didn't read.
+      This one has zero network requests after the page loads —
+      check the Network tab yourself, right now, before you trust it with anything.
     </p>
   </section>
 
@@ -87,11 +88,11 @@
   </section>
 
   <section class="proof">
+    <div class="proof-live" id="proofLive">
+      <span class="proof-live-dot" aria-hidden="true"></span>
+      <span id="proofLiveText">0 network requests since page load · verified live, not our word for it</span>
+    </div>
     <div class="proof-grid">
-      <div class="proof-item">
-        <h3>No upload</h3>
-        <p>Open your browser's network tab. Watch nothing go out. The PDF library runs as WebAssembly, locally.</p>
-      </div>
       <div class="proof-item">
         <h3>No accounts</h3>
         <p>No signup, no email, no watermark. Use it and close the tab.</p>

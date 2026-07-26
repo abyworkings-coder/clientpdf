@@ -1,4 +1,4 @@
-import { PDFDocument } from "https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/+esm";
+import { PDFDocument } from "./vendor/pdf-lib.esm.min.js";
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -12,6 +12,26 @@ const resultEl = document.getElementById("result");
 /** @type {{id: string, file: File}[]} */
 let files = [];
 let dragIndex = null;
+
+// Live, honest proof: count real network requests made after page load
+// (excludes the initial page/asset loads, which already happened by the
+// time this script runs). Anything the merge tool itself does shows up here.
+const proofLiveText = document.getElementById("proofLiveText");
+let requestsSinceLoad = 0;
+if ("PerformanceObserver" in window) {
+  try {
+    new PerformanceObserver((list) => {
+      requestsSinceLoad += list.getEntries().length;
+      if (proofLiveText) {
+        proofLiveText.textContent = `${requestsSinceLoad} network request${
+          requestsSinceLoad === 1 ? "" : "s"
+        } since page load · verified live, not our word for it`;
+      }
+    }).observe({ type: "resource", buffered: false });
+  } catch (e) {
+    // observer unsupported — static claim stays as-is
+  }
+}
 
 function formatSize(bytes) {
   if (bytes < 1024) return `${bytes} B`;
@@ -120,6 +140,9 @@ mergeBtn.addEventListener("click", async () => {
   mergeBtnLabel.textContent = "Merging…";
   resultEl.hidden = true;
 
+  const startedAt = performance.now();
+  const requestsBefore = requestsSinceLoad;
+
   try {
     const merged = await PDFDocument.create();
 
@@ -133,11 +156,14 @@ mergeBtn.addEventListener("click", async () => {
     const mergedBytes = await merged.save();
     const blob = new Blob([mergedBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
+    const elapsedMs = Math.round(performance.now() - startedAt);
+    const requestsDuringMerge = requestsSinceLoad - requestsBefore;
 
     resultEl.hidden = false;
     resultEl.className = "result";
     resultEl.innerHTML = `
-      <span><strong>Done.</strong> ${files.length} files merged, ${merged.getPageCount()} pages total.</span>
+      <span><strong>Done.</strong> ${files.length} files merged, ${merged.getPageCount()} pages total —
+      ${elapsedMs}ms, ${requestsDuringMerge} network requests, entirely on this device.</span>
       <a class="btn btn-primary" href="${url}" download="merged.pdf">Download merged.pdf</a>
     `;
   } catch (err) {
