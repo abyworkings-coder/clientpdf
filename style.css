@@ -398,6 +398,23 @@ html, body {
 .pro-note { color: var(--accent-dim); font-size: 0.82rem; margin: 0; }
 
 /* Footer */
+.article { padding: 8px 0 64px; max-width: 680px; }
+.article h1 { font-family: var(--serif); font-weight: 500; font-size: 2rem; line-height: 1.2; margin: 0 0 8px; }
+.article .article-meta { color: var(--ink-faint); font-size: 0.8rem; margin: 0 0 32px; }
+.article h2 { font-family: var(--serif); font-weight: 500; font-size: 1.35rem; margin: 40px 0 12px; color: var(--ink); }
+.article h3 { font-size: 1rem; margin: 24px 0 8px; color: var(--ink); }
+.article p { color: var(--ink-dim); margin: 0 0 16px; }
+.article ul, .article ol { color: var(--ink-dim); margin: 0 0 16px; padding-left: 22px; }
+.article li { margin-bottom: 6px; }
+.article a { color: var(--accent); }
+.article strong { color: var(--ink); }
+.article code { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 1px 5px; font-size: 0.85em; }
+.article table { width: 100%; border-collapse: collapse; margin: 0 0 24px; font-size: 0.85rem; }
+.article th, .article td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); color: var(--ink-dim); }
+.article th { color: var(--ink); font-weight: 600; }
+.article .cta-box { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px; margin: 32px 0; }
+.article .cta-box p { margin: 0 0 12px; }
+
 .footer {
   border-top: 1px solid var(--line);
   padding: 22px 0 40px;
