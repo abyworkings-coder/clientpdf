@@ -200,13 +200,27 @@ numberBtn.addEventListener("click", async () => {
 
 const proForm = document.getElementById("proForm");
 const proNote = document.getElementById("proNote");
-proForm.addEventListener("submit", (e) => {
+proForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("proEmail").value.trim();
   if (!email) return;
+  // Keep a local copy so the signal is not lost if the network request fails.
   const saved = JSON.parse(localStorage.getItem("clientpdf_waitlist") || "[]");
   saved.push({ email, at: new Date().toISOString() });
   localStorage.setItem("clientpdf_waitlist", JSON.stringify(saved));
+  try {
+    await fetch("https://formsubmit.co/ajax/analytics@antikode.com", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({
+        email,
+        _subject: "ClientPDF Pro waitlist signup",
+        source: location.pathname,
+      }),
+    });
+  } catch (err) {
+    // Local copy above already preserves the signup even if this fails.
+  }
   proForm.hidden = true;
   proNote.hidden = false;
 });
