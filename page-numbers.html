@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Split a PDF without uploading it — ClientPDF</title>
-<meta name="description" content="Extract pages or split a PDF into separate files entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/split.html" />
+<title>Add page numbers to a PDF without uploading it — ClientPDF</title>
+<meta name="description" content="Stamp page numbers onto every page of a PDF, in any corner, with any starting number, entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/page-numbers.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Split a PDF without uploading it — ClientPDF" />
-<meta property="og:description" content="Extract pages or split a PDF into separate files entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/split.html" />
+<meta property="og:title" content="Add page numbers to a PDF without uploading it — ClientPDF" />
+<meta property="og:description" content="Stamp page numbers onto every page of a PDF, in any corner, with any starting number, entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/page-numbers.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Split a PDF without uploading it — ClientPDF" />
-<meta name="twitter:description" content="Extract pages or split a PDF into separate files entirely in your browser." />
+<meta name="twitter:title" content="Add page numbers to a PDF without uploading it — ClientPDF" />
+<meta name="twitter:description" content="Stamp page numbers onto every page of a PDF, in any corner, with any starting number." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Split",
-  "url": "https://abyworkings-coder.github.io/clientpdf/split.html",
+  "name": "ClientPDF Page Numbers",
+  "url": "https://abyworkings-coder.github.io/clientpdf/page-numbers.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Extract pages or split a PDF into separate files entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Stamp page numbers onto every page of a PDF, in any corner, with any starting number, entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -48,11 +48,11 @@
     </div>
     <nav class="toolnav" aria-label="Tools">
       <a href="./index.html">Merge</a>
-      <a href="./split.html" aria-current="page">Split</a>
+      <a href="./split.html">Split</a>
       <a href="./rotate.html">Rotate</a>
       <a href="./reorder.html">Reorder</a>
       <a href="./compress.html">Compress</a>
-      <a href="./page-numbers.html">Page Numbers</a>
+      <a href="./page-numbers.html" aria-current="page">Page Numbers</a>
       <a href="./guide.html">Guide</a>
     </nav>
     <div class="topbar-status">
@@ -65,11 +65,12 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Split this PDF.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Number every page.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Pull specific pages into a new file, or blow every page apart into its own
-      PDF — all inside this tab. Zero network requests after the page loads,
-      same rule as the merge tool. Check the Network tab yourself.
+      Stamp page numbers onto a PDF — pick the corner, the starting number, and
+      whether to skip the cover page — all inside this tab. Zero network
+      requests after the page loads, same rule as every other tool here. Check
+      the Network tab yourself.
     </p>
   </section>
 
@@ -83,23 +84,38 @@
       </div>
     </div>
 
-    <div class="split-panel" id="splitPanel" hidden>
-      <div class="split-meta" id="splitMeta"></div>
+    <div class="split-panel" id="numPanel" hidden>
+      <div class="split-meta" id="numMeta"></div>
 
       <div class="split-mode">
         <label class="split-mode-option">
-          <input type="radio" name="splitMode" value="range" checked />
-          <span>Extract pages into one PDF</span>
+          <input type="radio" name="numPosition" value="bottom-center" checked />
+          <span>Bottom center</span>
         </label>
         <label class="split-mode-option">
-          <input type="radio" name="splitMode" value="every" />
-          <span>Split every page into its own PDF (.zip)</span>
+          <input type="radio" name="numPosition" value="bottom-right" />
+          <span>Bottom right</span>
+        </label>
+        <label class="split-mode-option">
+          <input type="radio" name="numPosition" value="bottom-left" />
+          <span>Bottom left</span>
+        </label>
+        <label class="split-mode-option">
+          <input type="radio" name="numPosition" value="top-right" />
+          <span>Top right</span>
         </label>
       </div>
 
-      <div class="split-range" id="rangeRow">
-        <label for="rangeInput">Pages</label>
-        <input type="text" id="rangeInput" placeholder="e.g. 1-3, 5, 8-10" />
+      <div class="split-range">
+        <label for="numStartInput">Start at</label>
+        <input type="text" id="numStartInput" value="1" inputmode="numeric" />
+      </div>
+
+      <div class="split-mode">
+        <label class="split-mode-option">
+          <input type="checkbox" id="numSkipFirst" />
+          <span>Skip the first page (cover page)</span>
+        </label>
       </div>
     </div>
 
@@ -107,8 +123,8 @@
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="splitBtn" type="button">
-        <span id="splitBtnLabel">Extract pages</span>
+      <button class="btn btn-primary" id="numberBtn" type="button">
+        <span id="numberBtnLabel">Add page numbers</span>
       </button>
     </div>
 
@@ -127,7 +143,7 @@
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Split as many pages as your device's memory allows. No artificial caps.</p>
+        <p>Number as many pages as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -135,8 +151,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Rotating, reordering, compressing, or numbering a PDF? All live too.</h2>
-        <p><a href="./rotate.html">Fix pages scanned sideways or upside down</a>, <a href="./reorder.html">drag pages into a new order</a>, <a href="./compress.html">shrink the file size</a>, or <a href="./page-numbers.html">stamp page numbers onto every page</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Rotating or compressing a PDF? Both live too.</h2>
+        <p><a href="./rotate.html">Fix pages scanned sideways</a>, <a href="./reorder.html">drag pages into a new order</a>, or <a href="./compress.html">shrink the file size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -171,6 +187,6 @@
     }
   })();
 </script>
-<script type="module" src="split.js"></script>
+<script type="module" src="page-numbers.js"></script>
 </body>
 </html>
