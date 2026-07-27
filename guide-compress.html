@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Why didn't compressing my PDF make it smaller? — ClientPDF Guide</title>
+<meta name="description" content="If a PDF compressor gives back a file that's the same size (or bigger), it's almost always one of three reasons. Here's how to tell which one, and what actually shrinks a PDF." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/guide-compress.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Why didn't compressing my PDF make it smaller?" />
+<meta property="og:description" content="If a PDF compressor gives back a file that's the same size (or bigger), it's almost always one of three reasons. Here's how to tell which one." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/guide-compress.html" />
+<meta property="og:site_name" content="ClientPDF" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Why didn't compressing my PDF make it smaller?" />
+<meta name="twitter:description" content="If a PDF compressor gives back a file the same size (or bigger), here's why, and what actually works." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Why didn't compressing my PDF make it smaller?",
+  "description": "If a PDF compressor gives back a file that's the same size (or bigger), it's almost always one of three reasons. Here's how to tell which one, and what actually shrinks a PDF.",
+  "author": { "@type": "Organization", "name": "ClientPDF" },
+  "publisher": { "@type": "Organization", "name": "ClientPDF" },
+  "mainEntityOfPage": "https://abyworkings-coder.github.io/clientpdf/guide-compress.html",
+  "datePublished": "2026-07-27"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why is my compressed PDF the same size as before?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Most PDF compressors only shrink embedded JPEG images. If your PDF is mostly text, vector graphics, or already-compressed images (PNG, or a scan saved with Flate/CCITT encoding), there's nothing for a JPEG re-encoder to touch, so the file comes back close to its original size." }
+    },
+    {
+      "@type": "Question",
+      "name": "Why did compressing my PDF make it bigger?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Rebuilding a PDF's internal structure (its cross-reference table and object streams) can add a small amount of overhead even when no images changed. If the original file had no compressible images to begin with, that overhead can make the 'compressed' file marginally larger than the source." }
+    },
+    {
+      "@type": "Question",
+      "name": "What actually reduces a scanned PDF's file size?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A scanned PDF is usually a sequence of full-page images, often saved as PNG or Flate/CCITT-encoded bitmaps rather than JPEG. Shrinking those requires decoding the image, re-encoding it as JPEG (which is lossy but far smaller for photographic content), and rebuilding the PDF around the new image — a different code path than re-compressing an existing JPEG." }
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">Client<em>PDF</em></span>
+    </div>
+    <nav class="toolnav" aria-label="Tools">
+      <a href="./index.html">Merge</a>
+      <a href="./split.html">Split</a>
+      <a href="./rotate.html">Rotate</a>
+      <a href="./reorder.html">Reorder</a>
+      <a href="./compress.html">Compress</a>
+      <a href="./page-numbers.html">Page Numbers</a>
+      <a href="./guide.html">Guide</a>
+    </nav>
+    <div class="topbar-status">
+      <span class="dot" aria-hidden="true"></span>
+      <span>running locally in this tab — nothing uploaded</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <article class="article">
+    <h1>Why didn't compressing my PDF make it smaller?</h1>
+    <p class="article-meta">ClientPDF Guide · a 2-minute read</p>
+
+    <p>
+      You ran a PDF through a compressor, and the file that came back is basically
+      the same size — sometimes even a few kilobytes bigger. That's not a broken
+      tool. It's almost always one of three specific, checkable reasons.
+    </p>
+
+    <h2>1. There were no JPEG images to shrink</h2>
+    <p>
+      Nearly every browser-based PDF compressor — <a href="./compress.html">this one included</a> —
+      works by finding JPEG-encoded images inside the PDF (technically, image streams
+      using the <code>/DCTDecode</code> filter), decoding them, and re-encoding them
+      at a lower quality setting. That's where the size savings come from. If your
+      PDF is mostly text, vector graphics, or form fields, there are no JPEGs to
+      touch, and the file comes back close to its original size — correctly, not
+      as a bug.
+    </p>
+
+    <h2>2. The images are PNG or already losslessly compressed</h2>
+    <p>
+      Scanned documents are often saved as PNG, or as Flate/CCITT-encoded bitmaps
+      rather than JPEG. Those formats compress differently, and a JPEG re-encoder
+      won't touch them at all. This is the single most common reason a "compress"
+      button appears to do nothing on a scanned PDF — the tool is working exactly
+      as designed, it just isn't the right tool for that image format.
+    </p>
+
+    <h2>3. Rebuilding the file added a small amount of overhead</h2>
+    <p>
+      Every PDF compressor has to rebuild the file's cross-reference table and
+      object streams after touching anything inside it. That rebuild costs a
+      few hundred bytes to a few kilobytes. If step 1 and step 2 both found
+      nothing to shrink, that small rebuild overhead is the only thing that
+      changed — which is why an already-optimized PDF can come back very
+      slightly larger than it went in.
+    </p>
+
+    <h2>How to tell which one applies to your file</h2>
+    <ul>
+      <li>If your PDF is a scanned document (a photo of a page, not real text) and didn't shrink, it's almost certainly reason 2 — PNG or lossless-encoded images.</li>
+      <li>If your PDF is a report, invoice, or form with mostly text and maybe a logo, it's reason 1 — there simply isn't much to compress.</li>
+      <li>If the size difference is a rounding error in either direction, it's reason 3 — nothing meaningful changed either way.</li>
+    </ul>
+
+    <h2>What actually shrinks a scanned PDF</h2>
+    <p>
+      Scanned pages need to be decoded from their original format, re-encoded as
+      JPEG (lossy, but dramatically smaller for photographic or scanned content),
+      and rebuilt back into the PDF — a different, heavier code path than
+      re-compressing an existing JPEG. That's on the roadmap here; today,
+      <a href="./compress.html">ClientPDF's compressor</a> targets the common case —
+      PDFs with existing JPEG images — honestly, and tells you when there's nothing
+      compressible found rather than pretending to have done work it didn't do.
+    </p>
+
+    <div class="cta-box">
+      <p><strong>Try it yourself:</strong> <a href="./compress.html">compress a PDF</a> — DevTools open, Network tab watching. If it says nothing was compressible, now you know why.</p>
+    </div>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>ClientPDF — built by <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">Auto Company</a></span>
+    <span>No servers were harmed in the making of this tool.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    try {
+      var ref = document.referrer;
+      var bucket = "direct";
+      if (ref) {
+        bucket = /github\.com/i.test(ref) ? "github" : "other";
+      }
+      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
+      fetch(base + "visits-total/up", { mode: "no-cors" });
+      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
+    } catch (e) {
+      // analytics must never break the tool
+    }
+  })();
+</script>
+</body>
+</html>
