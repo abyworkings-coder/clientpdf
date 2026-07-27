@@ -25,14 +25,15 @@ or any static file server — there's no build step.
 
 ## Status
 
-v1: single-tool PDF merge with drag-to-reorder. No paywall, no artificial
-limits. Distribution plan is directory/community launches (Product Hunt, tool
-directories), not organic search — a brand-new domain has no chance of
-ranking for "merge pdf" against incumbent DR90+ sites in the near term, so SEO
-is not the growth bet here.
+Four tools live: Merge, Split (extract/split-to-zip), Rotate, and Reorder
+(drag pages into a new order or drop the ones you don't need). No paywall, no
+artificial limits. Distribution plan is directory/community launches
+(Product Hunt, tool directories), not organic search — a brand-new domain has
+no chance of ranking for "merge pdf" against incumbent DR90+ sites in the near
+term, so SEO is not the growth bet here.
 
-Planned next: split, compress, reorder-pages tools under the same shell once
-usage data justifies further investment.
+Planned next: compress, once there's a reason to vendor an image
+re-encoding path on top of pdf-lib.
 
 ## Analytics
 
