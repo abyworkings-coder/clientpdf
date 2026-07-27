@@ -1,0 +1,181 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Why did my fillable form fields stop working after I split or reordered a PDF? — ClientPDF Guide</title>
+<meta name="description" content="If text boxes, checkboxes, or signature fields stop being fillable after splitting or reordering a PDF, it's not corruption — most browser-side tools, including this one, rebuild pages without rebuilding the form field registry that makes them interactive. Here's why, and what to do about it." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/guide-split-reorder-form-fields.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Why did my fillable form fields stop working after I split or reordered a PDF?" />
+<meta property="og:description" content="If text boxes, checkboxes, or signature fields stop being fillable after splitting or reordering a PDF, it's not corruption — most browser-side tools, including this one, rebuild pages without rebuilding the form field registry that makes them interactive. Here's why, and what to do about it." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/guide-split-reorder-form-fields.html" />
+<meta property="og:site_name" content="ClientPDF" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Why did my fillable form fields stop working after I split or reordered a PDF?" />
+<meta name="twitter:description" content="Form fields turned into inert boxes after a split or reorder? Here's the real reason, and what to do about it." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Why did my fillable form fields stop working after I split or reordered a PDF?",
+  "description": "If text boxes, checkboxes, or signature fields stop being fillable after splitting or reordering a PDF, it's not corruption — most browser-side tools, including this one, rebuild pages without rebuilding the form field registry that makes them interactive. Here's why, and what to do about it.",
+  "author": { "@type": "Organization", "name": "ClientPDF" },
+  "publisher": { "@type": "Organization", "name": "ClientPDF" },
+  "mainEntityOfPage": "https://abyworkings-coder.github.io/clientpdf/guide-split-reorder-form-fields.html",
+  "datePublished": "2026-07-27"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why did my form fields stop being fillable after I split or reordered my PDF?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A fillable field (text box, checkbox, signature area) is really two things: a widget drawn on the page, and an entry in a separate form registry (the AcroForm) stored in the document catalog that tells viewers it's interactive. Tools that rebuild a PDF by copying pages into a brand-new document, which is how most lightweight split and reorder tools work, carry the visible widget over but don't recreate that registry, so the box is still drawn but no longer registered as fillable." }
+    },
+    {
+      "@type": "Question",
+      "name": "Did splitting or reordering corrupt my PDF?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No — the page content, including the visual appearance of any form field, is intact and correct. What's missing is the interactivity: the new document's form registry was never rebuilt, so a viewer has nothing telling it that box is fillable rather than just an inert rectangle." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I split or reorder a fillable PDF without breaking the form?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Use desktop software that explicitly advertises form-field or AcroForm preservation for split/extract/reorder operations — most full PDF editors handle this correctly because they rebuild the form registry alongside the pages. If you only need one or two fields to stay fillable, it may be faster to just rebuild them from scratch in the output file using a form-editing tool." }
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">Client<em>PDF</em></span>
+    </div>
+    <nav class="toolnav" aria-label="Tools">
+      <a href="./index.html">Merge</a>
+      <a href="./split.html">Split</a>
+      <a href="./rotate.html">Rotate</a>
+      <a href="./reorder.html">Reorder</a>
+      <a href="./compress.html">Compress</a>
+      <a href="./page-numbers.html">Page Numbers</a>
+      <a href="./guide.html">Guide</a>
+    </nav>
+    <div class="topbar-status">
+      <span class="dot" aria-hidden="true"></span>
+      <span>running locally in this tab — nothing uploaded</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <article class="article">
+    <h1>Why did my fillable form fields stop working after I split or reordered a PDF?</h1>
+    <p class="article-meta">ClientPDF Guide · a 2-minute read</p>
+
+    <p>
+      You had a PDF with fillable text boxes, checkboxes, or a signature
+      field — maybe a form or an application — and after splitting out a
+      few pages or dragging them into a new order, the boxes are still
+      visible but you can no longer click into them and type. The pages
+      look right. The layout is right. But the form has gone dead. This is
+      a specific, well-understood gap in how page-rebuilding tools work,
+      not damage to your file.
+    </p>
+
+    <h2>A fillable field is two things, not one</h2>
+    <p>
+      What looks like a single text box on a page is actually two separate
+      pieces in the PDF: a <em>widget annotation</em> drawn at a position
+      on the page (this is what you see), and an entry in a document-wide
+      <em>form field registry</em> — the AcroForm, stored in the document's
+      catalog, not on any individual page — that tells a PDF viewer "this
+      widget is interactive, here's its name, type, and current value."
+      Without an entry in that registry, a widget is just a rectangle with
+      an appearance stream. It renders, but nothing makes it clickable.
+    </p>
+    <p>
+      Tools that split or reorder a PDF by copying page objects into a
+      brand-new document — which is how this tool and most lightweight
+      browser-based PDF tools work — copy the widget along with the page,
+      because it's physically part of the page's contents. But the AcroForm
+      registry lives at the document level, outside any page, so a
+      page-copy operation has no reason to touch it. The new document
+      starts with no form registry at all, and nothing in a plain
+      page-copy step creates one. The widgets ride along; the thing that
+      makes them work does not.
+    </p>
+
+    <h2>Why this tool doesn't handle it (yet)</h2>
+    <p>
+      Split and Reorder here are built on <a href="https://pdf-lib.js.org/" target="_blank" rel="noopener">pdf-lib</a>,
+      the same client-side library the rest of this site uses, and both tools
+      call its page-copying method (<code>copyPages</code>) to build the output file.
+      That method copies exactly what a page needs to display correctly — its
+      content, images, and any annotations physically anchored to it — but it
+      doesn't inspect or rebuild the source document's AcroForm entry, and
+      neither tool creates one afterward. So a form field survives visually
+      but loses its registration as an interactive field in the output.
+    </p>
+
+    <h2>What still works after a split or reorder</h2>
+    <ul>
+      <li>All pages and their visible content, including how a form field looks.</li>
+      <li>Page order and page selection, exactly as you specified.</li>
+      <li>Any values already typed into a field before you ran the split or reorder — those are baked into the field's appearance and stay visible, just no longer editable.</li>
+    </ul>
+    <p>What doesn't carry over: the field's interactivity — you can't click in and type, check a box, or apply a new signature in the resulting file.</p>
+
+    <h2>What to do if you need the form to stay fillable</h2>
+    <ol>
+      <li>If the output needs to stay fillable, use desktop software that explicitly lists form-field or AcroForm preservation for split/extract/reorder — most full PDF editors handle this correctly.</li>
+      <li>If it's just a couple of fields, it's often faster to split or reorder here for the page layout, then re-add those specific fields from scratch in a form-editing tool.</li>
+      <li>If the filled-in values are what matters and no further editing is needed, no action is required — the values are visible and print correctly, they just can't be changed anymore.</li>
+    </ol>
+
+    <div class="cta-box">
+      <p><strong>Try it yourself:</strong> <a href="./split.html">split a PDF</a> or <a href="./reorder.html">reorder its pages</a> and check — the layout and content will be exactly right, and now you know why any form fields go from fillable to fixed.</p>
+    </div>
+
+    <p class="article-meta">Related: <a href="./guide.html">Does merging a PDF online actually upload your file?</a> · <a href="./guide-compress.html">Why didn't compressing my PDF make it smaller?</a> · <a href="./guide-page-numbers-rotated.html">Why are my page numbers sideways or in the wrong corner?</a> · <a href="./guide-merge-bookmarks.html">Why did merging my PDFs lose the bookmarks and table of contents?</a></p>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>ClientPDF — built by <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">Auto Company</a></span>
+    <span>No servers were harmed in the making of this tool.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    try {
+      var ref = document.referrer;
+      var bucket = "direct";
+      if (ref) {
+        bucket = /github\.com/i.test(ref) ? "github" : "other";
+      }
+      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
+      fetch(base + "visits-total/up", { mode: "no-cors" });
+      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
+    } catch (e) {
+      // analytics must never break the tool
+    }
+  })();
+</script>
+</body>
+</html>
