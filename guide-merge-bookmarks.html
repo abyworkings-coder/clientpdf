@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Why did merging my PDFs lose the bookmarks and table of contents? — ClientPDF Guide</title>
+<meta name="description" content="If a PDF's clickable bookmarks or table of contents disappear after merging, it's not a glitch — most browser-side merge tools, including this one, don't carry the outline tree over. Here's why, and what to do about it." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/guide-merge-bookmarks.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Why did merging my PDFs lose the bookmarks and table of contents?" />
+<meta property="og:description" content="If a PDF's clickable bookmarks or table of contents disappear after merging, it's not a glitch — most browser-side merge tools, including this one, don't carry the outline tree over. Here's why, and what to do about it." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/guide-merge-bookmarks.html" />
+<meta property="og:site_name" content="ClientPDF" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Why did merging my PDFs lose the bookmarks and table of contents?" />
+<meta name="twitter:description" content="Merged PDF missing its bookmarks or TOC? Here's the real reason, and what to do about it." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Why did merging my PDFs lose the bookmarks and table of contents?",
+  "description": "If a PDF's clickable bookmarks or table of contents disappear after merging, it's not a glitch — most browser-side merge tools, including this one, don't carry the outline tree over. Here's why, and what to do about it.",
+  "author": { "@type": "Organization", "name": "ClientPDF" },
+  "publisher": { "@type": "Organization", "name": "ClientPDF" },
+  "mainEntityOfPage": "https://abyworkings-coder.github.io/clientpdf/guide-merge-bookmarks.html",
+  "datePublished": "2026-07-27"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why did my PDF's bookmarks disappear after merging?",
+      "acceptedAnswer": { "@type": "Answer", "text": "A PDF's clickable bookmarks (its outline tree) are stored separately from the pages themselves, in the document catalog. Merge tools that work by copying pages from one PDF into a new document — which is how most lightweight and browser-based mergers work — carry the page content over but don't rebuild that separate outline tree, so the bookmarks are silently dropped." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this a bug in the merge tool?",
+      "acceptedAnswer": { "@type": "Answer", "text": "It's a missing feature, not a bug that corrupts your file. The pages, their content, and their internal page-to-page links are intact. Rebuilding a bookmark tree across merged documents is meaningfully more work than copying pages, so many merge tools, including page-copy-based ones, don't implement it." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I keep bookmarks when combining PDFs?",
+      "acceptedAnswer": { "@type": "Answer", "text": "If the bookmarks matter, use desktop software that explicitly advertises bookmark or outline preservation during merge (most full PDF editors do this), or manually rebuild a short bookmark list afterward in a tool that supports adding outline entries. There isn't a way to make a page-copy-based merge carry outlines over without that dedicated support." }
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">Client<em>PDF</em></span>
+    </div>
+    <nav class="toolnav" aria-label="Tools">
+      <a href="./index.html">Merge</a>
+      <a href="./split.html">Split</a>
+      <a href="./rotate.html">Rotate</a>
+      <a href="./reorder.html">Reorder</a>
+      <a href="./compress.html">Compress</a>
+      <a href="./page-numbers.html">Page Numbers</a>
+      <a href="./guide.html">Guide</a>
+    </nav>
+    <div class="topbar-status">
+      <span class="dot" aria-hidden="true"></span>
+      <span>running locally in this tab — nothing uploaded</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <article class="article">
+    <h1>Why did merging my PDFs lose the bookmarks and table of contents?</h1>
+    <p class="article-meta">ClientPDF Guide · a 2-minute read</p>
+
+    <p>
+      You merged a few PDFs — maybe a report with a clickable table of
+      contents, or a book with chapter bookmarks in the sidebar — and the
+      merged file opens fine, all the pages are there, but the bookmark
+      panel is empty. Nothing crashed, no pages are missing. This is a
+      specific, well-understood gap in how most merge tools work, not
+      damage to your file.
+    </p>
+
+    <h2>Bookmarks live outside the pages, not inside them</h2>
+    <p>
+      A PDF's clickable bookmark list (technically its <em>outline
+      tree</em>) isn't stored as part of any individual page. It's a
+      separate structure hanging off the document's catalog — a tree of
+      named entries, each pointing at a page and a position on it. The
+      pages themselves know nothing about it.
+    </p>
+    <p>
+      Most lightweight merge tools, including this one, work by copying
+      page objects from each source file into a brand-new PDF document.
+      That's enough to carry over everything visibly printed on the page —
+      text, images, internal page-to-page links — because those live on
+      the page itself. The outline tree does not live on the page, so nothing
+      about a plain page-copy makes it come along. It has to be read from
+      the old document, rebuilt entry by entry with corrected page
+      references, and written into the new document's catalog — a distinct
+      step that a page-copying merge doesn't perform.
+    </p>
+
+    <h2>Why this tool doesn't do it (yet)</h2>
+    <p>
+      ClientPDF's merge is built on <a href="https://pdf-lib.js.org/" target="_blank" rel="noopener">pdf-lib</a>,
+      the same open-source library nearly all browser-based PDF tools use, because
+      it's the one mature option that runs entirely client-side with no server
+      round-trip. pdf-lib has no API for reading or writing a PDF's outline tree at
+      all — not a partial implementation, a missing one. Any merge tool built on
+      it, this one included, inherits that gap: it can copy pages faithfully, but
+      it has no way to rebuild bookmarks even if it tried.
+    </p>
+
+    <h2>What still works after a merge</h2>
+    <ul>
+      <li>All pages and their visible content, unchanged.</li>
+      <li>Links that point from one part of a page to another part of the <em>same</em> source page.</li>
+      <li>Page order, exactly as you arranged the files.</li>
+    </ul>
+    <p>What doesn't carry over: the bookmark/outline panel, and any named destinations the original PDF used for cross-document links.</p>
+
+    <h2>What to do if you need the bookmarks</h2>
+    <ol>
+      <li>If the source files' bookmarks matter for navigation, merge with desktop software that explicitly lists bookmark or outline preservation as a feature — most full PDF editors do.</li>
+      <li>If you only need a handful of entries, merge here first, then manually add a short bookmark list in a tool that supports creating outline entries.</li>
+      <li>If the bookmarks are cosmetic and the page content is what matters, no action is needed — the merge itself is complete and correct, just without that navigation aid.</li>
+    </ol>
+
+    <div class="cta-box">
+      <p><strong>Try it yourself:</strong> <a href="./index.html">merge a few PDFs</a> and check — the pages and their content will be exactly right, and now you know why the bookmark panel might come up empty.</p>
+    </div>
+
+    <p class="article-meta">Related: <a href="./guide.html">Does merging a PDF online actually upload your file?</a> · <a href="./guide-compress.html">Why didn't compressing my PDF make it smaller?</a> · <a href="./guide-page-numbers-rotated.html">Why are my page numbers sideways or in the wrong corner?</a></p>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>ClientPDF — built by <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">Auto Company</a></span>
+    <span>No servers were harmed in the making of this tool.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    try {
+      var ref = document.referrer;
+      var bucket = "direct";
+      if (ref) {
+        bucket = /github\.com/i.test(ref) ? "github" : "other";
+      }
+      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
+      fetch(base + "visits-total/up", { mode: "no-cors" });
+      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
+    } catch (e) {
+      // analytics must never break the tool
+    }
+  })();
+</script>
+</body>
+</html>
