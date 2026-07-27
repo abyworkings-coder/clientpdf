@@ -25,15 +25,22 @@ or any static file server — there's no build step.
 
 ## Status
 
-Four tools live: Merge, Split (extract/split-to-zip), Rotate, and Reorder
-(drag pages into a new order or drop the ones you don't need). No paywall, no
+Five tools live: Merge, Split (extract/split-to-zip), Rotate, Reorder
+(drag pages into a new order or drop the ones you don't need), and Compress
+(re-encodes embedded JPEG images to shrink file size). No paywall, no
 artificial limits. Distribution plan is directory/community launches
 (Product Hunt, tool directories), not organic search — a brand-new domain has
 no chance of ranking for "merge pdf" against incumbent DR90+ sites in the near
 term, so SEO is not the growth bet here.
 
-Planned next: compress, once there's a reason to vendor an image
-re-encoding path on top of pdf-lib.
+Compress only re-encodes JPEG-filtered images (`/DCTDecode`) — the common
+case for scanned documents and photos — via `<canvas>`, capping the longest
+side at 1600px and re-encoding at quality 0.65. It skips images with
+transparency (SMask) or a CMYK color space (unreliable to decode via
+`<img>`/`<canvas>`), and skips a re-encode if it wouldn't actually be smaller.
+PDFs with no compressible JPEGs still get re-serialized (object streams on),
+which sometimes shaves a little size on its own — the before/after size shown
+is always the real result, never a faked number.
 
 ## Analytics
 

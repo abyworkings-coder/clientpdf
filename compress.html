@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Reorder or delete PDF pages without uploading them — ClientPDF</title>
-<meta name="description" content="Drag pages into a new order or drop the ones you don't need — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/reorder.html" />
+<title>Compress a PDF without uploading it — ClientPDF</title>
+<meta name="description" content="Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/compress.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Reorder or delete PDF pages without uploading them — ClientPDF" />
-<meta property="og:description" content="Drag pages into a new order or drop the ones you don't need — entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/reorder.html" />
+<meta property="og:title" content="Compress a PDF without uploading it — ClientPDF" />
+<meta property="og:description" content="Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/compress.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Reorder or delete PDF pages without uploading them — ClientPDF" />
-<meta name="twitter:description" content="Drag pages into a new order or drop the ones you don't need — entirely in your browser." />
+<meta name="twitter:title" content="Compress a PDF without uploading it — ClientPDF" />
+<meta name="twitter:description" content="Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Reorder",
-  "url": "https://abyworkings-coder.github.io/clientpdf/reorder.html",
+  "name": "ClientPDF Compress",
+  "url": "https://abyworkings-coder.github.io/clientpdf/compress.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Drag pages into a new order or drop the ones you don't need — entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -50,8 +50,8 @@
       <a href="./index.html">Merge</a>
       <a href="./split.html">Split</a>
       <a href="./rotate.html">Rotate</a>
-      <a href="./reorder.html" aria-current="page">Reorder</a>
-      <a href="./compress.html">Compress</a>
+      <a href="./reorder.html">Reorder</a>
+      <a href="./compress.html" aria-current="page">Compress</a>
       <a href="./guide.html">Guide</a>
     </nav>
     <div class="topbar-status">
@@ -64,11 +64,11 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Reorder these pages.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Compress this PDF.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Drag pages into the order you want, or drop the ones you don't need —
-      all inside this tab. Zero network requests after the page loads, same
-      rule as every other tool here. Check the Network tab yourself.
+      Re-encodes the JPEG images embedded in a PDF at a smaller size and rebuilds
+      the file — all inside this tab. Zero network requests after the page loads,
+      same rule as every other tool here. Check the Network tab yourself.
     </p>
   </section>
 
@@ -82,16 +82,16 @@
       </div>
     </div>
 
-    <div class="split-panel" id="reorderPanel" hidden>
-      <div class="split-meta" id="reorderMeta"></div>
+    <div class="split-panel" id="compressPanel" hidden>
+      <div class="split-meta" id="compressMeta"></div>
     </div>
 
-    <ol class="file-list" id="fileList" aria-label="Pages in this file"></ol>
+    <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="reorderBtn" type="button">
-        <span id="reorderBtnLabel">Save reordered PDF</span>
+      <button class="btn btn-primary" id="compressBtn" type="button">
+        <span id="compressBtnLabel">Compress PDF</span>
       </button>
     </div>
 
@@ -109,8 +109,9 @@
         <p>No signup, no email, no watermark. Use it and close the tab.</p>
       </div>
       <div class="proof-item">
-        <h3>No limits (for now)</h3>
-        <p>Reorder as many pages as your device's memory allows. No artificial caps.</p>
+        <h3>Honest results</h3>
+        <p>Only JPEG images embedded in the PDF are re-encoded. If there's nothing
+        to shrink, we'll tell you instead of faking a number.</p>
       </div>
     </div>
   </section>
@@ -118,8 +119,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Compressing a PDF? That's live too.</h2>
-        <p><a href="./compress.html">Shrink a PDF's file size by re-encoding its embedded images</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Splitting, rotating, or reordering a PDF? All live too.</h2>
+        <p><a href="./split.html">Extract pages or split every page into its own file</a>, <a href="./rotate.html">fix pages scanned sideways</a>, or <a href="./reorder.html">drag pages into a new order</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -154,6 +155,6 @@
     }
   })();
 </script>
-<script type="module" src="reorder.js"></script>
+<script type="module" src="compress.js"></script>
 </body>
 </html>
