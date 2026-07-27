@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Why are my page numbers sideways or in the wrong corner? — ClientPDF Guide</title>
+<meta name="description" content="If page numbers show up rotated or in the wrong spot after you add them to a scanned PDF, it's almost always the page's hidden /Rotate flag. Here's why, and how to fix it." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/guide-page-numbers-rotated.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Why are my page numbers sideways or in the wrong corner?" />
+<meta property="og:description" content="If page numbers show up rotated or in the wrong spot after you add them to a scanned PDF, it's almost always the page's hidden /Rotate flag. Here's why, and how to fix it." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/guide-page-numbers-rotated.html" />
+<meta property="og:site_name" content="ClientPDF" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Why are my page numbers sideways or in the wrong corner?" />
+<meta name="twitter:description" content="If page numbers land in the wrong spot after stamping a scanned PDF, here's the hidden reason, and the fix." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Why are my page numbers sideways or in the wrong corner?",
+  "description": "If page numbers show up rotated or in the wrong spot after you add them to a scanned PDF, it's almost always the page's hidden /Rotate flag. Here's why, and how to fix it.",
+  "author": { "@type": "Organization", "name": "ClientPDF" },
+  "publisher": { "@type": "Organization", "name": "ClientPDF" },
+  "mainEntityOfPage": "https://abyworkings-coder.github.io/clientpdf/guide-page-numbers-rotated.html",
+  "datePublished": "2026-07-27"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why did my page numbers come out sideways?",
+      "acceptedAnswer": { "@type": "Answer", "text": "PDF pages can carry a hidden /Rotate flag that tells a viewer to display the page turned 90, 180, or 270 degrees, without changing the page's actual content coordinates. If a number is stamped at the bottom of the page in its unrotated coordinate space, it will appear on a side edge, upside down, or rotated once the viewer applies that flag." }
+    },
+    {
+      "@type": "Question",
+      "name": "Which PDFs are most likely to have this problem?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Scanned documents are the most common case. Many scanning apps and flatbed scanners save pages upright but set a /Rotate flag instead of physically rotating the pixel data, especially for landscape pages scanned through a portrait feed." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I fix page numbers that land in the wrong place?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Rotate the PDF to its correct final orientation first, save that as a new file, then add page numbers to the rotated file. Numbering a page after its rotation is 'baked in' (rather than left as a hidden flag) avoids the coordinate mismatch entirely." }
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">Client<em>PDF</em></span>
+    </div>
+    <nav class="toolnav" aria-label="Tools">
+      <a href="./index.html">Merge</a>
+      <a href="./split.html">Split</a>
+      <a href="./rotate.html">Rotate</a>
+      <a href="./reorder.html">Reorder</a>
+      <a href="./compress.html">Compress</a>
+      <a href="./page-numbers.html">Page Numbers</a>
+      <a href="./guide.html">Guide</a>
+    </nav>
+    <div class="topbar-status">
+      <span class="dot" aria-hidden="true"></span>
+      <span>running locally in this tab — nothing uploaded</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <article class="article">
+    <h1>Why are my page numbers sideways or in the wrong corner?</h1>
+    <p class="article-meta">ClientPDF Guide · a 2-minute read</p>
+
+    <p>
+      You added page numbers, the tool said it worked, and the download opened —
+      but the number is on the left edge instead of the bottom, or it's printed
+      sideways, or upside down. Nothing crashed. The file isn't corrupted. There's
+      one specific, well-understood reason this happens, and it's almost always
+      the same one.
+    </p>
+
+    <h2>PDF pages have a rotation flag that's separate from their content</h2>
+    <p>
+      Every page in a PDF has a fixed content area (its <em>media box</em>) and,
+      separately, an optional <code>/Rotate</code> value — 0, 90, 180, or 270 —
+      that tells a viewer "display this page turned by this many degrees." The
+      underlying content coordinates never move. Only the on-screen (or on-paper)
+      presentation does.
+    </p>
+    <p>
+      That split exists for a good reason: it lets a scanner or phone app fix a
+      sideways scan instantly, just by writing one flag, instead of re-encoding
+      every pixel on the page. But it means two different tools can disagree
+      about "where the bottom of the page is" — one sees the raw coordinate
+      space, the other sees the rotated, as-displayed page.
+    </p>
+
+    <h2>Where the mismatch comes from</h2>
+    <p>
+      Stamping a page number means calculating a position — usually "10 points
+      up from the bottom, centered" — and drawing text at that x/y coordinate.
+      That calculation happens in the page's raw, unrotated coordinate space.
+      If the page also carries a non-zero <code>/Rotate</code> flag, the viewer
+      then rotates <em>everything</em>, including the freshly stamped number,
+      when it displays the page. A number placed at the visual bottom-center of
+      an upright page can end up on the left edge, the right edge, or upside
+      down, depending on the flag's value — because "bottom" in coordinate space
+      and "bottom" as displayed are no longer the same thing.
+    </p>
+    <p>
+      This isn't a bug specific to one tool — it's a consequence of how the PDF
+      spec separates content from display rotation, and it trips up any
+      numbering or stamping tool that doesn't explicitly check each page's
+      rotation before choosing where to draw.
+    </p>
+
+    <h2>Which files are most likely to hit this</h2>
+    <ul>
+      <li>PDFs scanned from a phone camera app, especially landscape pages captured through a portrait-oriented scan flow.</li>
+      <li>Flatbed-scanned documents where the scanner software corrects orientation by flag instead of by re-rendering the page.</li>
+      <li>PDFs that have already been through a "rotate" tool that sets the flag rather than baking the rotation into the content — which is how most rotation tools work, since it's instant and lossless.</li>
+    </ul>
+
+    <h2>How to fix it</h2>
+    <ol>
+      <li>Open the file and check whether any pages display sideways or upside down before you number them — that's the visual sign a <code>/Rotate</code> flag is set.</li>
+      <li>If so, run it through <a href="./rotate.html">the rotate tool</a> first and save the corrected file.</li>
+      <li>Then add page numbers to that corrected file, not the original.</li>
+    </ol>
+    <p>
+      Numbering after a rotation pass sidesteps the mismatch: by the time the
+      number is stamped, "bottom" in the file's coordinate space and "bottom" as
+      displayed are the same place again.
+    </p>
+
+    <div class="cta-box">
+      <p><strong>Try it yourself:</strong> <a href="./rotate.html">rotate a PDF</a> to its correct orientation, then <a href="./page-numbers.html">add page numbers</a> to the result. Both run entirely on this device — no upload, no account.</p>
+    </div>
+
+    <p class="article-meta">Related: <a href="./guide.html">Does merging a PDF online actually upload your file?</a> · <a href="./guide-compress.html">Why didn't compressing my PDF make it smaller?</a></p>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>ClientPDF — built by <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">Auto Company</a></span>
+    <span>No servers were harmed in the making of this tool.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    try {
+      var ref = document.referrer;
+      var bucket = "direct";
+      if (ref) {
+        bucket = /github\.com/i.test(ref) ? "github" : "other";
+      }
+      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
+      fetch(base + "visits-total/up", { mode: "no-cors" });
+      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
+    } catch (e) {
+      // analytics must never break the tool
+    }
+  })();
+</script>
+</body>
+</html>
