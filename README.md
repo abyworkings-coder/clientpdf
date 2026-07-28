@@ -25,7 +25,11 @@ or any static file server — there's no build step.
 
 ## Status
 
-Nine tools live: Merge, Split (extract/split-to-zip), Rotate, Reorder
+Ten tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+specific pages by range and keep the rest as one file — unlike Split, which
+only pulls a range out or explodes every page, this one lets you drop pages
+2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
+list would empty the whole document), Rotate, Reorder
 (drag pages into a new order or drop the ones you don't need), Compress
 (re-encodes embedded JPEG images to shrink file size), Page Numbers
 (stamps a running page number in any corner, with a configurable start
