@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Why does my rotated PDF look fine in one viewer but sideways in another? — ClientPDF Guide</title>
+<meta name="description" content="You rotated a PDF, it looks correct in your browser, but it opens sideways in another app or prints wrong. It's not a bad rotation — it's a viewer that's ignoring the page's rotation flag. Here's why, and how to make the fix stick everywhere." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/guide-rotate-viewer-mismatch.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Why does my rotated PDF look fine in one viewer but sideways in another?" />
+<meta property="og:description" content="You rotated a PDF, it looks correct in your browser, but it opens sideways in another app or prints wrong. It's not a bad rotation — it's a viewer that's ignoring the page's rotation flag. Here's why, and how to make the fix stick everywhere." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/guide-rotate-viewer-mismatch.html" />
+<meta property="og:site_name" content="ClientPDF" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Why does my rotated PDF look fine in one viewer but sideways in another?" />
+<meta name="twitter:description" content="A rotated PDF that's correct in one app and sideways in another isn't corrupted — one of the two viewers is ignoring the rotation flag. Here's the fix." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Why does my rotated PDF look fine in one viewer but sideways in another?",
+  "description": "You rotated a PDF, it looks correct in your browser, but it opens sideways in another app or prints wrong. It's not a bad rotation — it's a viewer that's ignoring the page's rotation flag. Here's why, and how to make the fix stick everywhere.",
+  "author": { "@type": "Organization", "name": "ClientPDF" },
+  "publisher": { "@type": "Organization", "name": "ClientPDF" },
+  "mainEntityOfPage": "https://abyworkings-coder.github.io/clientpdf/guide-rotate-viewer-mismatch.html",
+  "datePublished": "2026-07-28"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why does my PDF look correctly rotated in one app but sideways in another?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Rotating a PDF normally sets a page-level /Rotate flag rather than re-drawing the content itself. Most modern viewers read that flag and display the page correctly, but some older viewers, print drivers, and thumbnail generators render the raw, unrotated content stream and ignore the flag, showing the page sideways or upside down." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is the rotated file broken?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No. The file is valid PDF and the rotation flag is set correctly — the inconsistency is entirely in how the second viewer chooses to render it. Any spec-compliant viewer will display it correctly." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I make a rotation display correctly everywhere, including apps that ignore the flag?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Print the rotated PDF to a new PDF file (using your OS's 'print to PDF'), or re-flatten it through a tool that bakes rotation into the content stream instead of only setting the flag. That produces a file where 'up' is the same in the coordinate space and on screen, so no viewer can get it wrong." }
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">Client<em>PDF</em></span>
+    </div>
+    <nav class="toolnav" aria-label="Tools">
+      <a href="./index.html">Merge</a>
+      <a href="./split.html">Split</a>
+      <a href="./rotate.html">Rotate</a>
+      <a href="./reorder.html">Reorder</a>
+      <a href="./compress.html">Compress</a>
+      <a href="./page-numbers.html">Page Numbers</a>
+      <a href="./guide.html">Guide</a>
+    </nav>
+    <div class="topbar-status">
+      <span class="dot" aria-hidden="true"></span>
+      <span>running locally in this tab — nothing uploaded</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <article class="article">
+    <h1>Why does my rotated PDF look fine in one viewer but sideways in another?</h1>
+    <p class="article-meta">ClientPDF Guide · a 2-minute read</p>
+
+    <p>
+      You rotated a PDF, checked it in your browser, and it looked correct.
+      Then you opened the same file in another app — or sent it to a printer,
+      or generated a thumbnail — and it came out sideways or upside down
+      again, as if the rotation never happened. The file wasn't corrupted
+      and the rotation wasn't undone. Two viewers just disagreed about how
+      to read it.
+    </p>
+
+    <h2>Rotation is usually a flag, not a redraw</h2>
+    <p>
+      When a tool rotates a PDF page, the fast and lossless way to do it is
+      to set the page's <code>/Rotate</code> value — 0, 90, 180, or 270 —
+      rather than re-drawing every element on the page in its new
+      orientation. The content stream underneath never changes; only an
+      instruction saying "display this page turned by this many degrees"
+      gets added. This is exactly how our own <a href="./rotate.html">rotate
+      tool</a> works, and it's how the overwhelming majority of PDF rotation
+      tools work, because it's instant and doesn't touch a single pixel or
+      text position on the page.
+    </p>
+    <p>
+      A spec-compliant viewer reads that flag and rotates the page for
+      display. But not every piece of software that opens a PDF is a full,
+      spec-compliant viewer. Some thumbnail generators, older print
+      pipelines, and lightweight embedded renderers read the raw content
+      stream directly and skip the display-rotation step, because it's an
+      optional presentation detail rather than something that affects the
+      page's actual content.
+    </p>
+
+    <h2>Where this shows up in practice</h2>
+    <ul>
+      <li>A rotated PDF looks correct in a modern browser tab or in Preview/Acrobat, but its file-manager thumbnail is still sideways.</li>
+      <li>Printing the file sends it sideways to the printer even though it displays correctly on screen, because some print drivers rasterize the content stream before applying the rotation flag.</li>
+      <li>The PDF is embedded in another document or pulled into an older enterprise document system that renders content streams directly.</li>
+    </ul>
+    <p>
+      In every one of these cases, the rotated file is valid and the flag
+      is set correctly — the mismatch is entirely in the second tool's
+      rendering path, not in the rotation itself.
+    </p>
+
+    <h2>How to make the rotation stick everywhere</h2>
+    <ol>
+      <li>If only specific downstream tools show it wrong, that's usually acceptable to leave as-is — it's a bug in those tools, and most modern software handles the flag correctly.</li>
+      <li>If you need the rotation to be unmistakable even to tools that ignore the flag, "print to PDF" the already-rotated file from your OS's print dialog. That re-renders the page content in its displayed orientation, so the coordinate space and the visual orientation become the same thing — there's no flag left to ignore.</li>
+      <li>Re-check the result in the specific downstream tool that showed the problem, since flag-based rotation and content-baked rotation can look identical in a standard viewer but behave differently elsewhere.</li>
+    </ol>
+
+    <div class="cta-box">
+      <p><strong>Try it yourself:</strong> <a href="./rotate.html">rotate a PDF</a> entirely on this device — no upload, no account, and the same flag-based rotation every major PDF viewer already knows how to read correctly.</p>
+    </div>
+
+    <p class="article-meta">Related: <a href="./guide-page-numbers-rotated.html">Why are my page numbers sideways or in the wrong corner?</a> · <a href="./guide.html">Does merging a PDF online actually upload your file?</a> · <a href="./guide-compress.html">Why didn't compressing my PDF make it smaller?</a> · <a href="./guide-merge-bookmarks.html">Why did merging lose the bookmarks and table of contents?</a></p>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>ClientPDF — built by <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">Auto Company</a></span>
+    <span>No servers were harmed in the making of this tool.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    try {
+      var ref = document.referrer;
+      var bucket = "direct";
+      if (ref) {
+        bucket = /github\.com/i.test(ref) ? "github" : "other";
+      }
+      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
+      fetch(base + "visits-total/up", { mode: "no-cors" });
+      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
+    } catch (e) {
+      // analytics must never break the tool
+    }
+  })();
+</script>
+</body>
+</html>
