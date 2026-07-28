@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Why does my browser tab freeze or crash on a large PDF? — ClientPDF Guide</title>
+<meta name="description" content="ClientPDF processes files entirely in your browser tab, with no upload — which is exactly why a very large or very high-page-count PDF can make the tab freeze, slow down, or crash. Here's why that happens and how to work around it." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/guide-large-file-freeze.html" />
+<meta property="og:type" content="article" />
+<meta property="og:title" content="Why does my browser tab freeze or crash on a large PDF?" />
+<meta property="og:description" content="ClientPDF processes files entirely in your browser tab, with no upload — which is exactly why a very large or very high-page-count PDF can make the tab freeze, slow down, or crash. Here's why that happens and how to work around it." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/guide-large-file-freeze.html" />
+<meta property="og:site_name" content="ClientPDF" />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="Why does my browser tab freeze or crash on a large PDF?" />
+<meta name="twitter:description" content="A frozen tab on a big PDF isn't a bug — it's the tradeoff of processing entirely on-device instead of uploading to a server. Here's why, and how to work around it." />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Why does my browser tab freeze or crash on a large PDF?",
+  "description": "ClientPDF processes files entirely in your browser tab, with no upload — which is exactly why a very large or very high-page-count PDF can make the tab freeze, slow down, or crash. Here's why that happens and how to work around it.",
+  "author": { "@type": "Organization", "name": "ClientPDF" },
+  "publisher": { "@type": "Organization", "name": "ClientPDF" },
+  "mainEntityOfPage": "https://abyworkings-coder.github.io/clientpdf/guide-large-file-freeze.html",
+  "datePublished": "2026-07-28"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "Why does my browser tab freeze when I process a large PDF?",
+      "acceptedAnswer": { "@type": "Answer", "text": "ClientPDF does all merging, splitting, rotating, reordering, compressing, and page-numbering inside your browser tab, using your device's own memory and CPU, because it never uploads the file to a server. A large file or a PDF with thousands of pages means the whole document has to be decoded and held in the tab's memory at once, which can slow the page down or, in extreme cases, exhaust the tab's memory and crash it." }
+    },
+    {
+      "@type": "Question",
+      "name": "Is this a bug in ClientPDF?",
+      "acceptedAnswer": { "@type": "Answer", "text": "No — it's the direct tradeoff of the no-upload design. A server-side tool avoids this by doing the heavy lifting on a machine with more memory than your device, but that requires sending your file to that server first. ClientPDF has no server-side processing step at all, by design, so the ceiling on file size is set by your device rather than by a server." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I process a very large PDF without the tab freezing?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Split the file into smaller chunks first if you have another tool that can do that without loading the whole thing into memory at once, close other tabs and extensions to free up RAM, use a desktop machine rather than a phone or tablet, and give the tab a minute to finish rather than assuming it has crashed — large operations can take noticeably longer without any visible progress in between." }
+    }
+  ]
+}
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,500;0,9..144,600;1,9..144,500&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">Client<em>PDF</em></span>
+    </div>
+    <nav class="toolnav" aria-label="Tools">
+      <a href="./index.html">Merge</a>
+      <a href="./split.html">Split</a>
+      <a href="./rotate.html">Rotate</a>
+      <a href="./reorder.html">Reorder</a>
+      <a href="./compress.html">Compress</a>
+      <a href="./page-numbers.html">Page Numbers</a>
+      <a href="./guide.html">Guide</a>
+    </nav>
+    <div class="topbar-status">
+      <span class="dot" aria-hidden="true"></span>
+      <span>running locally in this tab — nothing uploaded</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <article class="article">
+    <h1>Why does my browser tab freeze or crash on a large PDF?</h1>
+    <p class="article-meta">ClientPDF Guide · a 2-minute read</p>
+
+    <p>
+      You dropped in a large PDF — maybe a few hundred megabytes, or a
+      scanned document running into the thousands of pages — and the tab
+      stopped responding, the fan spun up, or the page crashed outright.
+      That's not a broken tool. It's the direct cost of a tool that never
+      uploads your file anywhere.
+    </p>
+
+    <h2>No upload means no server doing the heavy lifting</h2>
+    <p>
+      Every tool on this site — merge, split, rotate, reorder, compress,
+      page numbers — runs entirely inside your browser tab using
+      <a href="https://github.com/Hopding/pdf-lib" target="_blank" rel="noopener">pdf-lib</a>,
+      a JavaScript PDF library loaded from this page. There's no step
+      where your file leaves the device, and there's no server picking up
+      the actual work of decoding and rewriting the PDF. That's the whole
+      privacy promise: nothing is uploaded, so there's nothing to worry
+      about being stored, logged, or breached on someone else's server.
+    </p>
+    <p>
+      The tradeoff is that your device's memory and CPU are the only
+      resources available for the job. A server-side PDF tool can throw a
+      machine with tens of gigabytes of RAM at a huge file. A tab in your
+      browser has to decode the whole document into memory using whatever
+      the browser process has been allotted — usually a slice of your
+      device's total RAM — and large or page-heavy PDFs can push past
+      that limit.
+    </p>
+
+    <h2>Where this shows up in practice</h2>
+    <ul>
+      <li>A single PDF in the hundreds-of-megabytes range, often a scanned book or a design file exported with high-resolution images on every page.</li>
+      <li>A PDF with several thousand pages, where the page count itself — not just file size — makes the in-memory document structure large.</li>
+      <li>Merging many files at once in the <a href="./index.html">merge tool</a>, where every file gets loaded into memory at the same time before the combined document is produced.</li>
+      <li>Doing this on a phone or tablet, where the browser is typically allotted far less memory than on a desktop.</li>
+    </ul>
+    <p>
+      In each case the file itself is usually fine — it's the amount of
+      work needed to hold the whole thing in memory at once that's the
+      limiting factor, not anything specific to ClientPDF's processing
+      logic.
+    </p>
+
+    <h2>How to work around it</h2>
+    <ol>
+      <li>Give it more time before assuming it crashed. A large file can take noticeably longer to process with no visible progress in between — the tab freezing briefly during the heaviest part of the work is expected, not necessarily a crash.</li>
+      <li>Close other tabs and extensions first. Browser memory is shared across everything open, and freeing it up before you start gives the PDF work more room.</li>
+      <li>Use a desktop or laptop rather than a phone or tablet if the file is large — desktop browsers are typically allotted significantly more memory per tab.</li>
+      <li>If you're merging many files, try merging them in two smaller batches and then merging the two results, rather than all of them in a single pass.</li>
+      <li>If a file is consistently too large to handle in a browser tab no matter what you try, that's the real ceiling of any purely client-side, no-upload tool — at that point a desktop PDF application, which isn't bound by browser memory limits, is the more appropriate tool for the job.</li>
+    </ol>
+
+    <div class="cta-box">
+      <p><strong>Try it yourself:</strong> most everyday PDFs — reports, scanned forms, exported documents under a hundred pages or so — process instantly with <a href="./index.html">ClientPDF's tools</a>, entirely on this device, with nothing ever uploaded.</p>
+    </div>
+
+    <p class="article-meta">Related: <a href="./guide-compress.html">Why didn't compressing my PDF make it smaller?</a> · <a href="./guide.html">Does merging a PDF online actually upload your file?</a> · <a href="./guide-rotate-viewer-mismatch.html">Why does my rotated PDF look fine in one viewer but sideways in another?</a> · <a href="./guide-merge-bookmarks.html">Why did merging lose the bookmarks and table of contents?</a> · <a href="./guide-page-numbers-rotated.html">Why are my page numbers sideways or in the wrong corner?</a> · <a href="./guide-split-reorder-form-fields.html">Why did my form fields stop working after a split or reorder?</a></p>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>ClientPDF — built by <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">Auto Company</a></span>
+    <span>No servers were harmed in the making of this tool.</span>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    try {
+      var ref = document.referrer;
+      var bucket = "direct";
+      if (ref) {
+        bucket = /github\.com/i.test(ref) ? "github" : "other";
+      }
+      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
+      fetch(base + "visits-total/up", { mode: "no-cors" });
+      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
+    } catch (e) {
+      // analytics must never break the tool
+    }
+  })();
+</script>
+</body>
+</html>
