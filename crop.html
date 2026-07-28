@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Convert JPG/PNG images to PDF without uploading them — ClientPDF</title>
-<meta name="description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html" />
+<title>Crop margins from a PDF without uploading it — ClientPDF</title>
+<meta name="description" content="Trim the visible margins on every page of a PDF — set top, bottom, left, and right in points — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/crop.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Convert JPG/PNG images to PDF without uploading them — ClientPDF" />
-<meta property="og:description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html" />
+<meta property="og:title" content="Crop margins from a PDF without uploading it — ClientPDF" />
+<meta property="og:description" content="Trim the visible margins on every page of a PDF — set top, bottom, left, and right in points — entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/crop.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Convert JPG/PNG images to PDF without uploading them — ClientPDF" />
-<meta name="twitter:description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image." />
+<meta name="twitter:title" content="Crop margins from a PDF without uploading it — ClientPDF" />
+<meta name="twitter:description" content="Trim the visible margins on every page of a PDF — set top, bottom, left, and right in points." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Images to PDF",
-  "url": "https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html",
+  "name": "ClientPDF Crop Pages",
+  "url": "https://abyworkings-coder.github.io/clientpdf/crop.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Turn JPG or PNG images into a single PDF entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Trim the visible margins on every page of a PDF by setting a custom crop box, entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -54,10 +54,10 @@
       <a href="./reorder.html">Reorder</a>
       <a href="./compress.html">Compress</a>
       <a href="./page-numbers.html">Page Numbers</a>
-      <a href="./images-to-pdf.html" aria-current="page">Images to PDF</a>
+      <a href="./images-to-pdf.html">Images to PDF</a>
       <a href="./watermark.html">Watermark</a>
       <a href="./metadata.html">Metadata</a>
-      <a href="./crop.html">Crop Pages</a>
+      <a href="./crop.html" aria-current="page">Crop Pages</a>
       <a href="./guide.html">Guide</a>
     </nav>
     <div class="topbar-status">
@@ -70,31 +70,63 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Turn these images into a PDF.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Crop the margins on every page.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Drop in a batch of JPG or PNG images, drag them into the order you want,
-      and get back one PDF — one page per image — all inside this tab. Zero
-      network requests after the page loads, same rule as every other tool
-      here. Check the Network tab yourself.
+      Set top, bottom, left, and right margins in points and trim the visible
+      area of every page — all inside this tab. Zero network requests after
+      the page loads, same rule as every other tool here. Check the Network
+      tab yourself.
     </p>
   </section>
 
   <section class="tool" id="tool">
-    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add JPG or PNG images">
-      <input type="file" id="fileInput" accept="image/jpeg,image/png" multiple hidden />
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add a PDF file">
+      <input type="file" id="fileInput" accept="application/pdf" hidden />
       <div class="dropzone-inner">
         <span class="dropzone-icon">⇣</span>
-        <p><strong>Drop JPG or PNG images here</strong> or click to browse</p>
-        <p class="dropzone-hint">Add as many as you want · drag to reorder · stays on this device</p>
+        <p><strong>Drop one PDF here</strong> or click to browse</p>
+        <p class="dropzone-hint">One file at a time · stays on this device</p>
       </div>
     </div>
 
-    <ol class="file-list" id="fileList" aria-label="Images to convert"></ol>
+    <div class="split-panel" id="cropPanel" hidden>
+      <div class="split-meta" id="cropMeta"></div>
+
+      <div class="split-range">
+        <label for="cropTopInput">Top margin (pt)</label>
+        <input type="text" id="cropTopInput" value="36" inputmode="numeric" />
+      </div>
+
+      <div class="split-range">
+        <label for="cropBottomInput">Bottom margin (pt)</label>
+        <input type="text" id="cropBottomInput" value="36" inputmode="numeric" />
+      </div>
+
+      <div class="split-range">
+        <label for="cropLeftInput">Left margin (pt)</label>
+        <input type="text" id="cropLeftInput" value="36" inputmode="numeric" />
+      </div>
+
+      <div class="split-range">
+        <label for="cropRightInput">Right margin (pt)</label>
+        <input type="text" id="cropRightInput" value="36" inputmode="numeric" />
+      </div>
+
+      <p class="dropzone-hint">
+        Honest note: cropping sets the visible CropBox area for every page.
+        The trimmed-away content still exists in the file's underlying
+        content stream — it's just not rendered by compliant viewers outside
+        the crop box. This does not delete content; use Delete Pages if you
+        need to remove whole pages instead.
+      </p>
+    </div>
+
+    <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="convertBtn" type="button" disabled>
-        <span id="convertBtnLabel">Add at least 1 image</span>
+      <button class="btn btn-primary" id="cropBtn" type="button">
+        <span id="cropBtnLabel">Crop pages</span>
       </button>
     </div>
 
@@ -113,7 +145,7 @@
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Convert as many images as your device's memory allows. No artificial caps.</p>
+        <p>Crop as many pages as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -121,8 +153,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Need to merge, split, or compress a PDF too? All live.</h2>
-        <p><a href="./index.html">Merge multiple PDFs</a>, <a href="./split.html">split one apart</a>, or <a href="./compress.html">shrink its file size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Deleting pages or splitting a PDF too? Both live too.</h2>
+        <p><a href="./delete-pages.html">Remove specific pages entirely</a>, <a href="./split.html">extract a range or split every page into its own file</a>, or <a href="./rotate.html">fix pages scanned sideways</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -157,6 +189,6 @@
     }
   })();
 </script>
-<script type="module" src="images-to-pdf.js"></script>
+<script type="module" src="crop.js"></script>
 </body>
 </html>

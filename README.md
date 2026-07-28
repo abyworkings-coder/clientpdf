@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Ten tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Eleven tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -41,7 +41,12 @@ page, with configurable opacity and angle, via pdf-lib's native
 Keywords, Creation Date, and Modification Date via pdf-lib's
 `getTitle`/`setTitle`-style accessors; the Producer field is intentionally
 not editable in the UI since pdf-lib always overwrites it to its own
-signature on save regardless of what's set). No paywall, no artificial
+signature on save regardless of what's set), and Crop Pages (trims the
+visible margins on every page by setting a custom CropBox — unlike Delete
+Pages, which removes whole pages, or Split, which pulls pages out into
+separate files, Crop keeps every page but shrinks the visible area; the
+trimmed-away content still exists in the underlying content stream, it's
+just outside the CropBox that compliant viewers render). No paywall, no artificial
 limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"
