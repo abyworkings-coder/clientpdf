@@ -25,15 +25,17 @@ or any static file server — there's no build step.
 
 ## Status
 
-Six tools live: Merge, Split (extract/split-to-zip), Rotate, Reorder
+Seven tools live: Merge, Split (extract/split-to-zip), Rotate, Reorder
 (drag pages into a new order or drop the ones you don't need), Compress
-(re-encodes embedded JPEG images to shrink file size), and Page Numbers
+(re-encodes embedded JPEG images to shrink file size), Page Numbers
 (stamps a running page number in any corner, with a configurable start
-number and an option to skip the cover page). No paywall, no artificial
-limits. Distribution plan is directory/community launches (Product Hunt,
-tool directories), not organic search — a brand-new domain has no chance of
-ranking for "merge pdf" against incumbent DR90+ sites in the near term, so
-SEO is not the growth bet here.
+number and an option to skip the cover page), and Images to PDF (turns a
+batch of JPG/PNG images into a single PDF, one page per image, reorderable
+before conversion). No paywall, no artificial limits. Distribution plan is
+directory/community launches (Product Hunt, tool directories), not organic
+search — a brand-new domain has no chance of ranking for "merge pdf"
+against incumbent DR90+ sites in the near term, so SEO is not the growth
+bet here.
 
 Compress only re-encodes JPEG-filtered images (`/DCTDecode`) — the common
 case for scanned documents and photos — via `<canvas>`, capping the longest

@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>ClientPDF — Merge PDFs without uploading them anywhere</title>
-<meta name="description" content="Merge PDF files entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/" />
+<title>Convert JPG/PNG images to PDF without uploading them — ClientPDF</title>
+<meta name="description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="ClientPDF — Merge PDFs without uploading them anywhere" />
-<meta property="og:description" content="Merge PDF files entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/" />
+<meta property="og:title" content="Convert JPG/PNG images to PDF without uploading them — ClientPDF" />
+<meta property="og:description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="ClientPDF — Merge PDFs without uploading them anywhere" />
-<meta name="twitter:description" content="Merge PDF files entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<meta name="twitter:title" content="Convert JPG/PNG images to PDF without uploading them — ClientPDF" />
+<meta name="twitter:description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF",
-  "url": "https://abyworkings-coder.github.io/clientpdf/",
+  "name": "ClientPDF Images to PDF",
+  "url": "https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Merge PDF files entirely in your browser. Nothing is uploaded, ever. Free, fast, private.",
+  "description": "Turn JPG or PNG images into a single PDF entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -47,13 +47,13 @@
       <span class="brand-name">Client<em>PDF</em></span>
     </div>
     <nav class="toolnav" aria-label="Tools">
-      <a href="./index.html" aria-current="page">Merge</a>
+      <a href="./index.html">Merge</a>
       <a href="./split.html">Split</a>
       <a href="./rotate.html">Rotate</a>
       <a href="./reorder.html">Reorder</a>
       <a href="./compress.html">Compress</a>
       <a href="./page-numbers.html">Page Numbers</a>
-      <a href="./images-to-pdf.html">Images to PDF</a>
+      <a href="./images-to-pdf.html" aria-current="page">Images to PDF</a>
       <a href="./guide.html">Guide</a>
     </nav>
     <div class="topbar-status">
@@ -66,32 +66,31 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Merge these PDFs.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Turn these images into a PDF.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Most "free" PDF mergers upload your file to a server you can't see,
-      in a country you didn't pick, under a privacy policy you didn't read.
-      This one has zero network requests after the page loads —
-      check the Network tab yourself, right now, before you trust it with anything.
+      Drop in a batch of JPG or PNG images, drag them into the order you want,
+      and get back one PDF — one page per image — all inside this tab. Zero
+      network requests after the page loads, same rule as every other tool
+      here. Check the Network tab yourself.
     </p>
-    <p class="article-meta">Don't take our word for it — <a href="./guide.html">here's how to verify it in 10 seconds</a>. Merging a file with bookmarks? <a href="./guide-merge-bookmarks.html">Here's what does and doesn't carry over</a>.</p>
   </section>
 
   <section class="tool" id="tool">
-    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add PDF files">
-      <input type="file" id="fileInput" accept="application/pdf" multiple hidden />
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add JPG or PNG images">
+      <input type="file" id="fileInput" accept="image/jpeg,image/png" multiple hidden />
       <div class="dropzone-inner">
         <span class="dropzone-icon">⇣</span>
-        <p><strong>Drop PDF files here</strong> or click to browse</p>
-        <p class="dropzone-hint">Merge 2 or more PDFs · files stay on this device</p>
+        <p><strong>Drop JPG or PNG images here</strong> or click to browse</p>
+        <p class="dropzone-hint">Add as many as you want · drag to reorder · stays on this device</p>
       </div>
     </div>
 
-    <ol class="file-list" id="fileList" aria-label="Files to merge"></ol>
+    <ol class="file-list" id="fileList" aria-label="Images to convert"></ol>
 
     <div class="actions" id="actions" hidden>
-      <button class="btn btn-ghost" id="clearBtn" type="button">Clear all</button>
-      <button class="btn btn-primary" id="mergeBtn" type="button">
-        <span id="mergeBtnLabel">Merge PDFs</span>
+      <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
+      <button class="btn btn-primary" id="convertBtn" type="button" disabled>
+        <span id="convertBtnLabel">Add at least 1 image</span>
       </button>
     </div>
 
@@ -110,7 +109,7 @@
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Merge as many files as your device's memory allows. No artificial 3-file caps.</p>
+        <p>Convert as many images as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -118,8 +117,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Splitting, rotating, reordering, compressing, and numbering PDFs? All live too.</h2>
-        <p><a href="./split.html">Extract pages or split every page into its own file</a>, <a href="./rotate.html">fix pages scanned sideways</a>, <a href="./reorder.html">drag pages into a new order</a>, <a href="./compress.html">shrink the file size</a>, or <a href="./page-numbers.html">stamp page numbers onto every page</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Need to merge, split, or compress a PDF too? All live.</h2>
+        <p><a href="./index.html">Merge multiple PDFs</a>, <a href="./split.html">split one apart</a>, or <a href="./compress.html">shrink its file size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -139,8 +138,6 @@
 </footer>
 
 <script>
-  // Minimal, cookie-free visit counter — counts page loads and coarse referrer
-  // source only, no personal data. See README for what this does and why.
   (function () {
     try {
       var ref = document.referrer;
@@ -156,6 +153,6 @@
     }
   })();
 </script>
-<script type="module" src="app.js"></script>
+<script type="module" src="images-to-pdf.js"></script>
 </body>
 </html>
