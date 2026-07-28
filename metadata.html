@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Convert JPG/PNG images to PDF without uploading them — ClientPDF</title>
-<meta name="description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html" />
+<title>Edit a PDF's metadata without uploading it — ClientPDF</title>
+<meta name="description" content="View and edit a PDF's Title, Author, Subject, Keywords, and dates — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/metadata.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Convert JPG/PNG images to PDF without uploading them — ClientPDF" />
-<meta property="og:description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html" />
+<meta property="og:title" content="Edit a PDF's metadata without uploading it — ClientPDF" />
+<meta property="og:description" content="View and edit a PDF's Title, Author, Subject, Keywords, and dates — entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/metadata.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Convert JPG/PNG images to PDF without uploading them — ClientPDF" />
-<meta name="twitter:description" content="Turn JPG or PNG images into a single PDF entirely in your browser. Reorder them first, one page per image." />
+<meta name="twitter:title" content="Edit a PDF's metadata without uploading it — ClientPDF" />
+<meta name="twitter:description" content="View and edit a PDF's Title, Author, Subject, Keywords, and dates." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Images to PDF",
-  "url": "https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html",
+  "name": "ClientPDF Edit Metadata",
+  "url": "https://abyworkings-coder.github.io/clientpdf/metadata.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Turn JPG or PNG images into a single PDF entirely in your browser. Nothing is uploaded, ever.",
+  "description": "View and edit a PDF's Title, Author, Subject, Keywords, and dates entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -53,9 +53,9 @@
       <a href="./reorder.html">Reorder</a>
       <a href="./compress.html">Compress</a>
       <a href="./page-numbers.html">Page Numbers</a>
-      <a href="./images-to-pdf.html" aria-current="page">Images to PDF</a>
+      <a href="./images-to-pdf.html">Images to PDF</a>
       <a href="./watermark.html">Watermark</a>
-      <a href="./metadata.html">Metadata</a>
+      <a href="./metadata.html" aria-current="page">Metadata</a>
       <a href="./guide.html">Guide</a>
     </nav>
     <div class="topbar-status">
@@ -68,31 +68,65 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Turn these images into a PDF.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Edit this PDF's metadata.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Drop in a batch of JPG or PNG images, drag them into the order you want,
-      and get back one PDF — one page per image — all inside this tab. Zero
-      network requests after the page loads, same rule as every other tool
-      here. Check the Network tab yourself.
+      See the Title, Author, Subject, Keywords, and dates already baked into
+      a PDF, change what you want, and download a copy with the new values —
+      all inside this tab. Zero network requests after the page loads, same
+      rule as every other tool here. Check the Network tab yourself.
     </p>
   </section>
 
   <section class="tool" id="tool">
-    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add JPG or PNG images">
-      <input type="file" id="fileInput" accept="image/jpeg,image/png" multiple hidden />
+    <div class="dropzone" id="dropzone" tabindex="0" role="button" aria-label="Add a PDF file">
+      <input type="file" id="fileInput" accept="application/pdf" hidden />
       <div class="dropzone-inner">
         <span class="dropzone-icon">⇣</span>
-        <p><strong>Drop JPG or PNG images here</strong> or click to browse</p>
-        <p class="dropzone-hint">Add as many as you want · drag to reorder · stays on this device</p>
+        <p><strong>Drop one PDF here</strong> or click to browse</p>
+        <p class="dropzone-hint">One file at a time · stays on this device</p>
       </div>
     </div>
 
-    <ol class="file-list" id="fileList" aria-label="Images to convert"></ol>
+    <div class="split-panel" id="metaPanel" hidden>
+      <div class="split-meta" id="metaMeta"></div>
+
+      <div class="split-range">
+        <label for="metaTitleInput">Title</label>
+        <input type="text" id="metaTitleInput" maxlength="300" placeholder="(none)" />
+      </div>
+
+      <div class="split-range">
+        <label for="metaAuthorInput">Author</label>
+        <input type="text" id="metaAuthorInput" maxlength="300" placeholder="(none)" />
+      </div>
+
+      <div class="split-range">
+        <label for="metaSubjectInput">Subject</label>
+        <input type="text" id="metaSubjectInput" maxlength="300" placeholder="(none)" />
+      </div>
+
+      <div class="split-range">
+        <label for="metaKeywordsInput">Keywords (comma-separated)</label>
+        <input type="text" id="metaKeywordsInput" maxlength="500" placeholder="(none)" />
+      </div>
+
+      <div class="split-range">
+        <label for="metaCreatedInput">Creation date</label>
+        <input type="datetime-local" id="metaCreatedInput" />
+      </div>
+
+      <div class="split-range">
+        <label for="metaModifiedInput">Modification date</label>
+        <input type="datetime-local" id="metaModifiedInput" />
+      </div>
+    </div>
+
+    <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="convertBtn" type="button" disabled>
-        <span id="convertBtnLabel">Add at least 1 image</span>
+      <button class="btn btn-primary" id="metaBtn" type="button">
+        <span id="metaBtnLabel">Save metadata</span>
       </button>
     </div>
 
@@ -107,11 +141,11 @@
     <div class="proof-grid">
       <div class="proof-item">
         <h3>No accounts</h3>
-        <p>No signup, no email, no watermark. Use it and close the tab.</p>
+        <p>No signup, no email, no watermark on the metadata tool. Use it and close the tab.</p>
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Convert as many images as your device's memory allows. No artificial caps.</p>
+        <p>Edit metadata on any PDF your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -119,8 +153,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Need to merge, split, or compress a PDF too? All live.</h2>
-        <p><a href="./index.html">Merge multiple PDFs</a>, <a href="./split.html">split one apart</a>, or <a href="./compress.html">shrink its file size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Watermarking, numbering, or compressing a PDF too? All live.</h2>
+        <p><a href="./watermark.html">Stamp a text watermark on every page</a>, <a href="./page-numbers.html">add page numbers</a>, or <a href="./compress.html">shrink the file size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -155,6 +189,6 @@
     }
   })();
 </script>
-<script type="module" src="images-to-pdf.js"></script>
+<script type="module" src="metadata.js"></script>
 </body>
 </html>
