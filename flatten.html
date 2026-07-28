@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Add page numbers to a PDF without uploading it — ClientPDF</title>
-<meta name="description" content="Stamp page numbers onto every page of a PDF, in any corner, with any starting number, entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/page-numbers.html" />
+<title>Flatten PDF form fields without uploading them anywhere — ClientPDF</title>
+<meta name="description" content="Convert a filled-in PDF form into permanent, non-editable static content — text fields, checkboxes, radio buttons, and dropdowns all get flattened, entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/flatten.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Add page numbers to a PDF without uploading it — ClientPDF" />
-<meta property="og:description" content="Stamp page numbers onto every page of a PDF, in any corner, with any starting number, entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/page-numbers.html" />
+<meta property="og:title" content="Flatten PDF form fields without uploading them anywhere — ClientPDF" />
+<meta property="og:description" content="Convert a filled-in PDF form into permanent, non-editable static content, entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/flatten.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Add page numbers to a PDF without uploading it — ClientPDF" />
-<meta name="twitter:description" content="Stamp page numbers onto every page of a PDF, in any corner, with any starting number." />
+<meta name="twitter:title" content="Flatten PDF form fields without uploading them anywhere — ClientPDF" />
+<meta name="twitter:description" content="Convert a filled-in PDF form into permanent, non-editable static content." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Page Numbers",
-  "url": "https://abyworkings-coder.github.io/clientpdf/page-numbers.html",
+  "name": "ClientPDF Flatten Form Fields",
+  "url": "https://abyworkings-coder.github.io/clientpdf/flatten.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Stamp page numbers onto every page of a PDF, in any corner, with any starting number, entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Convert a PDF's fillable AcroForm fields (text fields, checkboxes, radio buttons, dropdowns) into permanent, non-editable static content, entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -53,12 +53,12 @@
       <a href="./rotate.html">Rotate</a>
       <a href="./reorder.html">Reorder</a>
       <a href="./compress.html">Compress</a>
-      <a href="./page-numbers.html" aria-current="page">Page Numbers</a>
+      <a href="./page-numbers.html">Page Numbers</a>
       <a href="./images-to-pdf.html">Images to PDF</a>
       <a href="./watermark.html">Watermark</a>
       <a href="./metadata.html">Metadata</a>
       <a href="./crop.html">Crop Pages</a>
-      <a href="./flatten.html">Flatten Form Fields</a>
+      <a href="./flatten.html" aria-current="page">Flatten Form Fields</a>
       <a href="./guide.html">Guide</a>
     </nav>
     <div class="topbar-status">
@@ -71,12 +71,13 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Number every page.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Flatten the form fields.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Stamp page numbers onto a PDF — pick the corner, the starting number, and
-      whether to skip the cover page — all inside this tab. Zero network
-      requests after the page loads, same rule as every other tool here. Check
-      the Network tab yourself.
+      Turn a filled-out PDF form into permanent, non-editable content —
+      text fields, checkboxes, radio buttons, and dropdowns all get baked
+      into the page — all inside this tab. Zero network requests after the
+      page loads, same rule as every other tool here. Check the Network tab
+      yourself.
     </p>
   </section>
 
@@ -90,47 +91,25 @@
       </div>
     </div>
 
-    <div class="split-panel" id="numPanel" hidden>
-      <div class="split-meta" id="numMeta"></div>
+    <div class="split-panel" id="flattenPanel" hidden>
+      <div class="split-meta" id="flattenMeta"></div>
 
-      <div class="split-mode">
-        <label class="split-mode-option">
-          <input type="radio" name="numPosition" value="bottom-center" checked />
-          <span>Bottom center</span>
-        </label>
-        <label class="split-mode-option">
-          <input type="radio" name="numPosition" value="bottom-right" />
-          <span>Bottom right</span>
-        </label>
-        <label class="split-mode-option">
-          <input type="radio" name="numPosition" value="bottom-left" />
-          <span>Bottom left</span>
-        </label>
-        <label class="split-mode-option">
-          <input type="radio" name="numPosition" value="top-right" />
-          <span>Top right</span>
-        </label>
-      </div>
-
-      <div class="split-range">
-        <label for="numStartInput">Start at</label>
-        <input type="text" id="numStartInput" value="1" inputmode="numeric" />
-      </div>
-
-      <div class="split-mode">
-        <label class="split-mode-option">
-          <input type="checkbox" id="numSkipFirst" />
-          <span>Skip the first page (cover page)</span>
-        </label>
-      </div>
+      <p class="dropzone-hint">
+        Honest note: flattening converts each form field's current value
+        into static page content and removes the underlying AcroForm field —
+        the result is permanently non-editable, there's no "undo" once you
+        save the output. If this PDF has no fillable form fields, flattening
+        is a no-op and we'll tell you that below instead of generating a
+        useless download.
+      </p>
     </div>
 
     <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="numberBtn" type="button">
-        <span id="numberBtnLabel">Add page numbers</span>
+      <button class="btn btn-primary" id="flattenBtn" type="button">
+        <span id="flattenBtnLabel">Flatten form fields</span>
       </button>
     </div>
 
@@ -149,7 +128,7 @@
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Number as many pages as your device's memory allows. No artificial caps.</p>
+        <p>Flatten forms as big as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -157,8 +136,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Rotating or compressing a PDF? Both live too.</h2>
-        <p><a href="./rotate.html">Fix pages scanned sideways</a>, <a href="./reorder.html">drag pages into a new order</a>, or <a href="./compress.html">shrink the file size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Editing metadata or cropping pages too? Both live too.</h2>
+        <p><a href="./metadata.html">Read and edit a PDF's Title, Author, and Keywords</a>, or <a href="./crop.html">trim the visible margins on every page</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -167,8 +146,6 @@
       <p class="pro-note" id="proNote" hidden>Thanks — saved locally for now, we'll be in touch once signups are live.</p>
     </div>
   </section>
-
-  <p class="article-meta">Numbers landing sideways or in the wrong corner? <a href="./guide-page-numbers-rotated.html">Here's why, and the fix.</a></p>
 
 </main>
 
@@ -195,6 +172,6 @@
     }
   })();
 </script>
-<script type="module" src="page-numbers.js"></script>
+<script type="module" src="flatten.js"></script>
 </body>
 </html>
