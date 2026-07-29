@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Eighteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Nineteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -86,7 +86,15 @@ via either a direct `/Dest` array or an `/A` GoTo action's `/D` array to
 cover PDFs from Word/LibreOffice as well as pdf-lib, then extracts each
 bookmarked section as its own PDF via `copyPages`; sections are computed
 from bookmark page order, each running until the next bookmark or the end
-of the document). No
+of the document), and Extract Images (pulls the JPEG images embedded in a
+PDF's pages back out as standalone `.jpg` files, one at a time or all
+zipped together — walks each page's `/Resources`/`XObject` dict for
+`/Image`-subtype entries filtered with `/DCTDecode`, whose raw stream
+bytes are already a byte-identical JPEG file, no re-encoding needed;
+images using other filters — raw `FlateDecode` pixel data, `JPXDecode`,
+`CCITTFax` — are reported as skipped rather than silently dropped or
+falsely claimed as extracted; zipping uses a hand-rolled store-mode
+`.zip` writer with zero dependencies rather than N sequential downloads). No
 paywall, no artificial limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"
