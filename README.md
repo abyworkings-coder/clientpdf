@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Twenty tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Twenty-one tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -101,7 +101,22 @@ MediaBox/CropBox and its content transformation matrix together —
 distinct from Crop, which only changes the visible clip area without
 touching dimensions or content scale; "fit to size" mode scales
 uniformly, using the smaller of the two axis ratios, so content never
-distorts even when the source and target aspect ratios differ). No
+distorts even when the source and target aspect ratios differ), and
+Grayscale PDF (rewrites the RGB/CMYK color-setting operators — `rg`/`RG`/
+`k`/`K` — inside each page's content stream to their grayscale equivalents
+via the standard luminosity formula (`0.3R + 0.59G + 0.11B`, with CMYK
+converted to RGB first); a new operation category, since every other tool
+here edits page/document structure or embedded assets rather than the
+color values inside a page's own drawing instructions — decodes each
+content stream with pdf-lib's own `decodePDFRawStream` (handling
+FlateDecode transparently), regex-rewrites color operators on token
+boundaries, then writes the modified stream back *uncompressed* rather
+than re-deflating it, trading a slightly larger file for zero new
+dependencies; intentionally leaves `sc`/`SC`/`scn`/`SCN` (pattern/
+Separation/ICC colorspaces) and embedded raster images untouched rather
+than guessing at colorspaces it can't safely interpret — the UI says so
+directly rather than overselling itself as a universal grayscale
+converter). No
 paywall, no artificial limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"
