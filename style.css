@@ -255,6 +255,18 @@ html, body {
   padding: 2px 4px;
 }
 .file-row .remove:hover { color: var(--danger); }
+.file-row .row-btn {
+  background: none;
+  border: 1px solid var(--line);
+  color: var(--ink-dim);
+  cursor: pointer;
+  font-family: var(--mono);
+  font-size: 0.76rem;
+  border-radius: var(--radius);
+  padding: 6px 12px;
+  flex-shrink: 0;
+}
+.file-row .row-btn:hover { border-color: var(--accent-dim); color: var(--ink); }
 
 .actions {
   display: flex;

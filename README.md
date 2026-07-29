@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Seventeen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Eighteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -79,7 +79,14 @@ built via pdf-lib's low-level `context.nextRef`/`context.assign` API since
 pdf-lib has no high-level outline helper — the `/Outlines` dict and each
 item dict are linked by hand per the PDF spec with `Parent`/`First`/`Last`/
 `Next`/`Prev`/`Count`; entries are sorted by page number before linking so
-the resulting sidebar reads top-to-bottom regardless of add order). No
+the resulting sidebar reads top-to-bottom regardless of add order), and
+Split by Bookmarks (reads a PDF's *existing* outline instead of writing
+one — walks the `/Outlines` linked list, resolving each item's target page
+via either a direct `/Dest` array or an `/A` GoTo action's `/D` array to
+cover PDFs from Word/LibreOffice as well as pdf-lib, then extracts each
+bookmarked section as its own PDF via `copyPages`; sections are computed
+from bookmark page order, each running until the next bookmark or the end
+of the document). No
 paywall, no artificial limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"
