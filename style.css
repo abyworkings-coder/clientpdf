@@ -214,6 +214,14 @@ html, body {
   font-size: 0.88rem;
 }
 .split-range input:focus { outline: none; border-color: var(--accent-dim); }
+.split-range input[type="color"] {
+  flex: none;
+  min-width: 0;
+  width: 56px;
+  height: 40px;
+  padding: 4px;
+  cursor: pointer;
+}
 
 .file-list {
   list-style: none;

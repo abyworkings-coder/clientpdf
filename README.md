@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Twenty-one tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Twenty-two tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -116,7 +116,17 @@ dependencies; intentionally leaves `sc`/`SC`/`scn`/`SCN` (pattern/
 Separation/ICC colorspaces) and embedded raster images untouched rather
 than guessing at colorspaces it can't safely interpret — the UI says so
 directly rather than overselling itself as a universal grayscale
-converter). No
+converter), and Add Page Borders (draws an unfilled rectangular outline on
+every page via pdf-lib's `drawRectangle` with `borderColor`/`borderWidth`
+set and `color` left `undefined` — the same primitive Resize Pages'
+`page.scale()` and Watermark's `drawText`/`drawImage` build on, but used
+here for a stroke-only shape instead of a fill or overlay; margin, color,
+and stroke width are all user-configurable, and the margin is validated
+client-side against half of each page's own smallest dimension so an
+oversized value fails cleanly instead of drawing a nonsensical or inverted
+rectangle — distinct from Resize Pages, which rescales the page itself, and
+from Watermark, which overlays text/image content, since this only adds an
+outline and leaves page dimensions and existing content untouched). No
 paywall, no artificial limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"

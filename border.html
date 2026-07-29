@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Extract images from a PDF without uploading it — ClientPDF</title>
-<meta name="description" content="Pulls the JPEG images embedded in a PDF back out as standalone .jpg files, or one .zip — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/extract-images.html" />
+<title>Add page borders to a PDF without uploading it — ClientPDF</title>
+<meta name="description" content="Draw a border frame on every page of a PDF — pick the margin, color, and stroke width — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/border.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Extract images from a PDF without uploading it — ClientPDF" />
-<meta property="og:description" content="Pulls the JPEG images embedded in a PDF back out as standalone .jpg files or one .zip, entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/extract-images.html" />
+<meta property="og:title" content="Add page borders to a PDF without uploading it — ClientPDF" />
+<meta property="og:description" content="Draw a border frame on every page of a PDF — pick the margin, color, and stroke width — entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/border.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Extract images from a PDF without uploading it — ClientPDF" />
-<meta name="twitter:description" content="Pulls the JPEG images embedded in a PDF back out as standalone .jpg files or one .zip." />
+<meta name="twitter:title" content="Add page borders to a PDF without uploading it — ClientPDF" />
+<meta name="twitter:description" content="Draw a border frame on every page of a PDF — pick the margin, color, and stroke width." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Extract Images",
-  "url": "https://abyworkings-coder.github.io/clientpdf/extract-images.html",
+  "name": "ClientPDF Page Borders",
+  "url": "https://abyworkings-coder.github.io/clientpdf/border.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Pulls the JPEG images embedded in a PDF back out as standalone .jpg files, or one .zip — entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Draw a border frame on every page of a PDF — pick the margin, color, and stroke width — entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -57,13 +57,13 @@
       <a href="./compress.html">Compress</a>
       <a href="./page-numbers.html">Page Numbers</a>
       <a href="./images-to-pdf.html">Images to PDF</a>
-      <a href="./extract-images.html" aria-current="page">Extract Images</a>
+      <a href="./extract-images.html">Extract Images</a>
       <a href="./watermark.html">Watermark</a>
       <a href="./metadata.html">Metadata</a>
       <a href="./crop.html">Crop Pages</a>
       <a href="./resize.html">Resize Pages</a>
       <a href="./grayscale.html">Grayscale PDF</a>
-      <a href="./border.html">Page Borders</a>
+      <a href="./border.html" aria-current="page">Page Borders</a>
       <a href="./flatten.html">Flatten Form Fields</a>
       <a href="./fill-form.html">Fill Form Fields</a>
       <a href="./bookmarks.html">Add Bookmarks</a>
@@ -81,13 +81,12 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Pull the images out.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Draw a border.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Drop a PDF that has photos or scanned pages embedded in it — this
-      reads each page's embedded JPEG images and hands them back as
-      standalone .jpg files, one at a time or all zipped together.
-      Entirely inside this tab. Zero network requests after the page
-      loads, same rule as every other tool here. Check the Network tab
+      Add a rectangular border frame to every page of a PDF — pick the margin,
+      the color, and the stroke width — all inside this tab. Page dimensions
+      and content stay exactly as they were. Zero network requests after the
+      page loads, same rule as every other tool here. Check the Network tab
       yourself.
     </p>
   </section>
@@ -102,17 +101,40 @@
       </div>
     </div>
 
-    <div class="split-panel" id="imagePanel">
-      <div class="split-meta" id="imageMeta"></div>
-    </div>
+    <div class="split-panel" id="borderPanel" hidden>
+      <div class="split-meta" id="borderMeta"></div>
 
-    <ol class="file-list" id="imageList" aria-label="Images found"></ol>
+      <div class="split-range">
+        <label for="marginInput">Margin (pt)</label>
+        <input type="text" id="marginInput" value="24" inputmode="numeric" />
+      </div>
+
+      <div class="split-range">
+        <label for="colorInput">Border color</label>
+        <input type="color" id="colorInput" value="#000000" />
+      </div>
+
+      <div class="split-range">
+        <label for="widthInput">Stroke width (pt)</label>
+        <input type="text" id="widthInput" value="1" inputmode="numeric" />
+      </div>
+
+      <p class="dropzone-hint">
+        Honest note: this only draws an outline — it doesn't resize the page
+        or touch existing content. The margin is measured from each page's
+        own edges, so it must be less than half of the page's smallest
+        dimension. Use Resize Pages instead if you want to rescale a page, or
+        Watermark if you want a text/image overlay instead of an outline.
+      </p>
+    </div>
 
     <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="downloadAllBtn" type="button">Download all as .zip</button>
+      <button class="btn btn-primary" id="borderBtn" type="button">
+        <span id="borderBtnLabel">Add borders</span>
+      </button>
     </div>
 
     <div class="result" id="result" hidden></div>
@@ -129,8 +151,8 @@
         <p>No signup, no email, no watermark. Use it and close the tab.</p>
       </div>
       <div class="proof-item">
-        <h3>Byte-identical extraction</h3>
-        <p>JPEG images are pulled out of the PDF's raw stream data as-is — no re-encoding, no quality loss.</p>
+        <h3>No limits (for now)</h3>
+        <p>Border as many pages as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -138,8 +160,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Need to put images back into a PDF? Also live.</h2>
-        <p><a href="./images-to-pdf.html">Images to PDF</a> does the reverse. Leave your email and we'll let you know about a Pro batch mode, including support for non-JPEG embedded images.</p>
+        <h2>Numbering or watermarking a PDF? Both live too.</h2>
+        <p><a href="./page-numbers.html">Stamp page numbers into any corner</a>, <a href="./watermark.html">overlay a text or image watermark</a>, or <a href="./resize.html">rescale pages to a standard size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -174,6 +196,6 @@
     }
   })();
 </script>
-<script type="module" src="extract-images.js"></script>
+<script type="module" src="border.js"></script>
 </body>
 </html>
