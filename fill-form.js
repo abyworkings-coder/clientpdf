@@ -82,12 +82,22 @@ function renderFile() {
 function renderFields() {
   fieldsContainer.innerHTML = "";
   if (!loaded) return;
+
+  const fillableFields = loaded.fields.filter((f) => f.kind !== "unsupported");
+  if (fillableFields.length === 0) {
+    const empty = document.createElement("p");
+    empty.className = "field-empty";
+    empty.textContent = "No fillable form fields detected in this PDF.";
+    fieldsContainer.appendChild(empty);
+    return;
+  }
+
   loaded.fields.forEach((f, index) => {
-    const row = document.createElement("div");
-    row.className = "split-range";
     const id = fieldInputId(index);
 
     if (f.kind === "text") {
+      const row = document.createElement("div");
+      row.className = "field-row";
       row.innerHTML = `
         <label for="${id}">${escapeHtml(f.name)}</label>
         ${
@@ -96,14 +106,35 @@ function renderFields() {
             : `<input type="text" id="${id}" placeholder="(empty)" />`
         }
       `;
+      fieldsContainer.appendChild(row);
     } else if (f.kind === "checkbox") {
+      const label = document.createElement("label");
+      label.className = "field-check";
+      label.setAttribute("for", id);
+      label.innerHTML = `<input type="checkbox" id="${id}" /> ${escapeHtml(f.name)}`;
+      fieldsContainer.appendChild(label);
+    } else if (f.kind === "radio") {
+      const row = document.createElement("div");
+      row.className = "field-row";
+      const options = (f.options || [])
+        .map((opt, optIndex) => {
+          const optId = `${id}-${optIndex}`;
+          return `
+            <label>
+              <input type="radio" name="${id}" id="${optId}" value="${escapeHtml(opt)}" />
+              ${escapeHtml(opt)}
+            </label>
+          `;
+        })
+        .join("");
       row.innerHTML = `
-        <label class="split-mode-option" for="${id}">
-          <input type="checkbox" id="${id}" />
-          ${escapeHtml(f.name)}
-        </label>
+        <label>${escapeHtml(f.name)}</label>
+        <div class="field-radio-group">${options}</div>
       `;
-    } else if (f.kind === "radio" || f.kind === "dropdown") {
+      fieldsContainer.appendChild(row);
+    } else if (f.kind === "dropdown") {
+      const row = document.createElement("div");
+      row.className = "field-row";
       const options = (f.options || [])
         .map((opt) => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`)
         .join("");
@@ -111,7 +142,10 @@ function renderFields() {
         <label for="${id}">${escapeHtml(f.name)}</label>
         <select id="${id}"><option value="">(unset)</option>${options}</select>
       `;
+      fieldsContainer.appendChild(row);
     } else if (f.kind === "optionlist") {
+      const row = document.createElement("div");
+      row.className = "field-row";
       const options = (f.options || [])
         .map((opt) => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`)
         .join("");
@@ -119,13 +153,16 @@ function renderFields() {
         <label for="${id}">${escapeHtml(f.name)} (multi-select)</label>
         <select id="${id}" multiple size="${Math.min(4, Math.max(2, (f.options || []).length))}">${options}</select>
       `;
+      fieldsContainer.appendChild(row);
     } else {
+      const row = document.createElement("div");
+      row.className = "field-row";
       row.innerHTML = `
         <label>${escapeHtml(f.name)}</label>
-        <span class="dropzone-hint">Button/signature field — not fillable as a value, skipped.</span>
+        <span class="field-empty">Button/signature field — not fillable as a value, skipped.</span>
       `;
+      fieldsContainer.appendChild(row);
     }
-    fieldsContainer.appendChild(row);
   });
 }
 
@@ -205,24 +242,34 @@ async function fillForm() {
 
   loaded.fields.forEach((f, index) => {
     const id = fieldInputId(index);
-    const el = document.getElementById(id);
-    if (!el) return;
     const field = form.getField(f.name);
 
     if (f.kind === "text") {
+      const el = document.getElementById(id);
+      if (!el) return;
       const value = el.value;
       if (value.trim() === "") return;
       field.setText(value);
       filledCount++;
     } else if (f.kind === "checkbox") {
+      const el = document.getElementById(id);
+      if (!el) return;
       if (el.checked) field.check();
       else field.uncheck();
       filledCount++;
-    } else if (f.kind === "radio" || f.kind === "dropdown") {
-      if (!el.value) return;
+    } else if (f.kind === "radio") {
+      const checked = document.querySelector(`input[name="${id}"]:checked`);
+      if (!checked) return;
+      field.select(checked.value);
+      filledCount++;
+    } else if (f.kind === "dropdown") {
+      const el = document.getElementById(id);
+      if (!el || !el.value) return;
       field.select(el.value);
       filledCount++;
     } else if (f.kind === "optionlist") {
+      const el = document.getElementById(id);
+      if (!el) return;
       const selected = Array.from(el.selectedOptions).map((o) => o.value);
       if (selected.length === 0) return;
       field.select(selected);
