@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Thirteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Fourteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -57,7 +57,11 @@ original pages onto each printed sheet via pdf-lib's `embedPages`/`drawPage`
 — genuinely new operation category, not a variant of Split/Reorder/Crop,
 since it composites multiple source pages into a new page rather than
 moving or trimming existing ones; landscape or portrait sheet, scaled and
-centered per cell). No paywall, no artificial
+centered per cell), and Duplicate Pages (copies specific pages via
+`copyPages`, inserting each duplicate immediately after its original —
+unlike Delete Pages, which removes pages, or Reorder, which rearranges
+them, this one adds content by growing the page count; range/list input
+identical to Delete Pages' page picker for consistency). No paywall, no artificial
 limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"
