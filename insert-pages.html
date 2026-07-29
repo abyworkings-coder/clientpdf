@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Reorder or delete PDF pages without uploading them — ClientPDF</title>
-<meta name="description" content="Drag pages into a new order or drop the ones you don't need — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/reorder.html" />
+<title>Insert blank pages into a PDF without uploading it — ClientPDF</title>
+<meta name="description" content="Insert blank pages anywhere in a PDF — before the cover, between chapters, at the end for notes — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/insert-pages.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Reorder or delete PDF pages without uploading them — ClientPDF" />
-<meta property="og:description" content="Drag pages into a new order or drop the ones you don't need — entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/reorder.html" />
+<meta property="og:title" content="Insert blank pages into a PDF without uploading it — ClientPDF" />
+<meta property="og:description" content="Insert blank pages anywhere in a PDF, entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/insert-pages.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Reorder or delete PDF pages without uploading them — ClientPDF" />
-<meta name="twitter:description" content="Drag pages into a new order or drop the ones you don't need — entirely in your browser." />
+<meta name="twitter:title" content="Insert blank pages into a PDF without uploading it — ClientPDF" />
+<meta name="twitter:description" content="Insert blank pages anywhere in a PDF and keep everything else in place." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Reorder",
-  "url": "https://abyworkings-coder.github.io/clientpdf/reorder.html",
+  "name": "ClientPDF Insert Blank Pages",
+  "url": "https://abyworkings-coder.github.io/clientpdf/insert-pages.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Drag pages into a new order or drop the ones you don't need — entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Insert blank pages anywhere in a PDF — before the first page, between any two pages, or at the end — entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -51,9 +51,9 @@
       <a href="./split.html">Split</a>
       <a href="./delete-pages.html">Delete Pages</a>
       <a href="./duplicate-pages.html">Duplicate Pages</a>
-      <a href="./insert-pages.html">Insert Blank Pages</a>
+      <a href="./insert-pages.html" aria-current="page">Insert Blank Pages</a>
       <a href="./rotate.html">Rotate</a>
-      <a href="./reorder.html" aria-current="page">Reorder</a>
+      <a href="./reorder.html">Reorder</a>
       <a href="./compress.html">Compress</a>
       <a href="./page-numbers.html">Page Numbers</a>
       <a href="./images-to-pdf.html">Images to PDF</a>
@@ -74,11 +74,12 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Reorder these pages.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Insert blank pages.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Drag pages into the order you want, or drop the ones you don't need —
-      all inside this tab. Zero network requests after the page loads, same
-      rule as every other tool here. Check the Network tab yourself.
+      Tell it where to add blank pages — before the first page, between any
+      two pages, or at the very end — sized to match their neighbors,
+      entirely inside this tab. Zero network requests after the page loads,
+      same rule as every other tool here. Check the Network tab yourself.
     </p>
   </section>
 
@@ -92,16 +93,21 @@
       </div>
     </div>
 
-    <div class="split-panel" id="reorderPanel" hidden>
-      <div class="split-meta" id="reorderMeta"></div>
+    <div class="split-panel" id="insertPanel" hidden>
+      <div class="split-meta" id="insertMeta"></div>
+
+      <div class="split-range" id="rangeRow">
+        <label for="rangeInput">Insert a blank page after page(s)</label>
+        <input type="text" id="rangeInput" placeholder="e.g. 0, 3, 5 — use 0 to insert before page 1" />
+      </div>
     </div>
 
-    <ol class="file-list" id="fileList" aria-label="Pages in this file"></ol>
+    <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="reorderBtn" type="button">
-        <span id="reorderBtnLabel">Save reordered PDF</span>
+      <button class="btn btn-primary" id="insertBtn" type="button">
+        <span id="insertBtnLabel">Insert blank pages</span>
       </button>
     </div>
 
@@ -120,7 +126,7 @@
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Reorder as many pages as your device's memory allows. No artificial caps.</p>
+        <p>Insert as many blank pages as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -128,8 +134,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Compressing or numbering a PDF? Both live too.</h2>
-        <p><a href="./compress.html">Shrink a PDF's file size by re-encoding its embedded images</a>, or <a href="./page-numbers.html">stamp page numbers onto every page</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Duplicating or deleting pages too? Both live.</h2>
+        <p><a href="./duplicate-pages.html">Duplicate specific pages</a>, or <a href="./delete-pages.html">remove them</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -138,8 +144,6 @@
       <p class="pro-note" id="proNote" hidden>Thanks — saved locally for now, we'll be in touch once signups are live.</p>
     </div>
   </section>
-
-  <p class="article-meta">Reordering a PDF that has a fillable form? <a href="./guide-split-reorder-form-fields.html">Here's why the fields may stop being fillable, and what to do about it.</a></p>
 
 </main>
 
@@ -166,6 +170,6 @@
     }
   })();
 </script>
-<script type="module" src="reorder.js"></script>
+<script type="module" src="insert-pages.js"></script>
 </body>
 </html>
