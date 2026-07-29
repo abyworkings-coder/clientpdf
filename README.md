@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Twenty-two tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Twenty-three tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -126,7 +126,16 @@ client-side against half of each page's own smallest dimension so an
 oversized value fails cleanly instead of drawing a nonsensical or inverted
 rectangle — distinct from Resize Pages, which rescales the page itself, and
 from Watermark, which overlays text/image content, since this only adds an
-outline and leaves page dimensions and existing content untouched). No
+outline and leaves page dimensions and existing content untouched), and Image
+Watermark (stamps a user-supplied PNG or JPG logo onto every page via
+`embedPng`/`embedJpg` and `drawImage`, with configurable opacity, scale as a
+percentage of page width, and one of nine anchor positions — the image kind
+is detected from its file signature, not just its extension or MIME type, so
+a mislabeled file fails cleanly instead of throwing a raw pdf-lib exception;
+distinct from the original Watermark tool, which only stamps text with an
+angle control — this one needs a real embedded image asset instead of a
+font glyph run, aspect ratio is preserved automatically so a logo never
+looks stretched). No
 paywall, no artificial limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"

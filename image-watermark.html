@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Edit a PDF's metadata without uploading it — ClientPDF</title>
-<meta name="description" content="View and edit a PDF's Title, Author, Subject, Keywords, and dates — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/metadata.html" />
+<title>Stamp an image watermark onto a PDF without uploading it — ClientPDF</title>
+<meta name="description" content="Stamp a logo or image onto every page of a PDF — pick the opacity, scale, and position — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/image-watermark.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Edit a PDF's metadata without uploading it — ClientPDF" />
-<meta property="og:description" content="View and edit a PDF's Title, Author, Subject, Keywords, and dates — entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/metadata.html" />
+<meta property="og:title" content="Stamp an image watermark onto a PDF without uploading it — ClientPDF" />
+<meta property="og:description" content="Stamp a logo or image onto every page of a PDF — pick the opacity, scale, and position — entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/image-watermark.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Edit a PDF's metadata without uploading it — ClientPDF" />
-<meta name="twitter:description" content="View and edit a PDF's Title, Author, Subject, Keywords, and dates." />
+<meta name="twitter:title" content="Stamp an image watermark onto a PDF without uploading it — ClientPDF" />
+<meta name="twitter:description" content="Stamp a logo or image onto every page of a PDF — pick the opacity, scale, and position." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Edit Metadata",
-  "url": "https://abyworkings-coder.github.io/clientpdf/metadata.html",
+  "name": "ClientPDF Image Watermark",
+  "url": "https://abyworkings-coder.github.io/clientpdf/image-watermark.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "View and edit a PDF's Title, Author, Subject, Keywords, and dates entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Stamp a logo or image onto every page of a PDF — pick the opacity, scale, and position — entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -59,17 +59,17 @@
       <a href="./images-to-pdf.html">Images to PDF</a>
       <a href="./extract-images.html">Extract Images</a>
       <a href="./watermark.html">Watermark</a>
-      <a href="./metadata.html" aria-current="page">Metadata</a>
+      <a href="./metadata.html">Metadata</a>
       <a href="./crop.html">Crop Pages</a>
       <a href="./resize.html">Resize Pages</a>
       <a href="./grayscale.html">Grayscale PDF</a>
       <a href="./border.html">Page Borders</a>
-      <a href="./image-watermark.html">Image Watermark</a>
       <a href="./flatten.html">Flatten Form Fields</a>
       <a href="./fill-form.html">Fill Form Fields</a>
       <a href="./bookmarks.html">Add Bookmarks</a>
       <a href="./split-by-bookmarks.html">Split by Bookmarks</a>
       <a href="./pages-per-sheet.html">Pages per Sheet</a>
+      <a href="./image-watermark.html" aria-current="page">Image Watermark</a>
       <a href="./guide.html">Guide</a>
     </nav>
     <div class="topbar-status">
@@ -82,12 +82,12 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Edit this PDF's metadata.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Stamp your logo.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      See the Title, Author, Subject, Keywords, and dates already baked into
-      a PDF, change what you want, and download a copy with the new values —
-      all inside this tab. Zero network requests after the page loads, same
-      rule as every other tool here. Check the Network tab yourself.
+      Stamp a PNG or JPG logo onto every page of a PDF — pick the opacity,
+      scale, and position — all inside this tab. Zero network requests after
+      the page loads, same rule as every other tool here. Check the Network
+      tab yourself.
     </p>
   </section>
 
@@ -101,46 +101,60 @@
       </div>
     </div>
 
-    <div class="split-panel" id="metaPanel" hidden>
-      <div class="split-meta" id="metaMeta"></div>
+    <div class="split-panel" id="wmPanel" hidden>
+      <div class="split-meta" id="wmMeta"></div>
+
+      <div class="dropzone" id="imgDropzone" tabindex="0" role="button" aria-label="Add a PNG or JPG logo image">
+        <input type="file" id="imgInput" accept="image/png,image/jpeg" hidden />
+        <div class="dropzone-inner">
+          <span class="dropzone-icon">🖼</span>
+          <p><strong>Drop a PNG or JPG logo here</strong> or click to browse</p>
+          <p class="dropzone-hint">One image · stamped onto every page</p>
+        </div>
+      </div>
+
+      <ol class="file-list" id="imgFileList" aria-label="Loaded logo image"></ol>
 
       <div class="split-range">
-        <label for="metaTitleInput">Title</label>
-        <input type="text" id="metaTitleInput" maxlength="300" placeholder="(none)" />
+        <label for="positionSelect">Position</label>
+        <select id="positionSelect">
+          <option value="top-left">Top left</option>
+          <option value="top-center">Top center</option>
+          <option value="top-right">Top right</option>
+          <option value="center-left">Center left</option>
+          <option value="center" selected>Center</option>
+          <option value="center-right">Center right</option>
+          <option value="bottom-left">Bottom left</option>
+          <option value="bottom-center">Bottom center</option>
+          <option value="bottom-right">Bottom right</option>
+        </select>
       </div>
 
       <div class="split-range">
-        <label for="metaAuthorInput">Author</label>
-        <input type="text" id="metaAuthorInput" maxlength="300" placeholder="(none)" />
+        <label for="scaleInput">Scale (% of page width)</label>
+        <input type="text" id="scaleInput" value="25" inputmode="numeric" />
       </div>
 
       <div class="split-range">
-        <label for="metaSubjectInput">Subject</label>
-        <input type="text" id="metaSubjectInput" maxlength="300" placeholder="(none)" />
+        <label for="opacityInput">Opacity (%)</label>
+        <input type="text" id="opacityInput" value="60" inputmode="numeric" />
       </div>
 
-      <div class="split-range">
-        <label for="metaKeywordsInput">Keywords (comma-separated)</label>
-        <input type="text" id="metaKeywordsInput" maxlength="500" placeholder="(none)" />
-      </div>
-
-      <div class="split-range">
-        <label for="metaCreatedInput">Creation date</label>
-        <input type="datetime-local" id="metaCreatedInput" />
-      </div>
-
-      <div class="split-range">
-        <label for="metaModifiedInput">Modification date</label>
-        <input type="datetime-local" id="metaModifiedInput" />
-      </div>
+      <p class="dropzone-hint">
+        Honest note: the logo keeps its original aspect ratio — scale sets
+        its width as a percentage of each page's width, height follows
+        automatically. Position anchors it to one of nine spots with a
+        consistent margin. Use text Watermark instead if you don't have a
+        logo file handy.
+      </p>
     </div>
 
     <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="metaBtn" type="button">
-        <span id="metaBtnLabel">Save metadata</span>
+      <button class="btn btn-primary" id="watermarkBtn" type="button">
+        <span id="watermarkBtnLabel">Stamp image watermark</span>
       </button>
     </div>
 
@@ -155,11 +169,11 @@
     <div class="proof-grid">
       <div class="proof-item">
         <h3>No accounts</h3>
-        <p>No signup, no email, no watermark on the metadata tool. Use it and close the tab.</p>
+        <p>No signup, no email, no watermark on the watermark tool. Use it and close the tab.</p>
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Edit metadata on any PDF your device's memory allows. No artificial caps.</p>
+        <p>Stamp as many pages as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -167,8 +181,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Watermarking, numbering, or compressing a PDF too? All live.</h2>
-        <p><a href="./watermark.html">Stamp a text watermark on every page</a>, <a href="./page-numbers.html">add page numbers</a>, or <a href="./compress.html">shrink the file size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Text watermarks or page borders too? Both live.</h2>
+        <p><a href="./watermark.html">Stamp a text watermark instead</a>, or <a href="./border.html">draw a border frame</a> on every page — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -203,6 +217,6 @@
     }
   })();
 </script>
-<script type="module" src="metadata.js"></script>
+<script type="module" src="image-watermark.js"></script>
 </body>
 </html>
