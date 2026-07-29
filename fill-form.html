@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Add a text watermark to a PDF without uploading it — ClientPDF</title>
-<meta name="description" content="Stamp a text watermark across every page of a PDF — your own text, opacity, and angle — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/watermark.html" />
+<title>Fill a PDF form's fields without uploading it anywhere — ClientPDF</title>
+<meta name="description" content="Type values straight into a PDF's existing text fields, checkboxes, radio buttons, and dropdowns, then download the filled file — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/fill-form.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Add a text watermark to a PDF without uploading it — ClientPDF" />
-<meta property="og:description" content="Stamp a text watermark across every page of a PDF — your own text, opacity, and angle — entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/watermark.html" />
+<meta property="og:title" content="Fill a PDF form's fields without uploading it anywhere — ClientPDF" />
+<meta property="og:description" content="Type values into a PDF's existing form fields and download the filled file, entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/fill-form.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Add a text watermark to a PDF without uploading it — ClientPDF" />
-<meta name="twitter:description" content="Stamp a text watermark across every page of a PDF — your own text, opacity, and angle." />
+<meta name="twitter:title" content="Fill a PDF form's fields without uploading it anywhere — ClientPDF" />
+<meta name="twitter:description" content="Type values into a PDF's existing form fields and download the filled file." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Add Watermark",
-  "url": "https://abyworkings-coder.github.io/clientpdf/watermark.html",
+  "name": "ClientPDF Fill Form Fields",
+  "url": "https://abyworkings-coder.github.io/clientpdf/fill-form.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Stamp a text watermark across every page of a PDF entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Type values into a PDF's existing AcroForm fields (text fields, checkboxes, radio buttons, dropdowns, option lists) and download the filled file, entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -57,11 +57,11 @@
       <a href="./compress.html">Compress</a>
       <a href="./page-numbers.html">Page Numbers</a>
       <a href="./images-to-pdf.html">Images to PDF</a>
-      <a href="./watermark.html" aria-current="page">Watermark</a>
+      <a href="./watermark.html">Watermark</a>
       <a href="./metadata.html">Metadata</a>
       <a href="./crop.html">Crop Pages</a>
       <a href="./flatten.html">Flatten Form Fields</a>
-      <a href="./fill-form.html">Fill Form Fields</a>
+      <a href="./fill-form.html" aria-current="page">Fill Form Fields</a>
       <a href="./pages-per-sheet.html">Pages per Sheet</a>
       <a href="./guide.html">Guide</a>
     </nav>
@@ -75,12 +75,15 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Watermark this PDF.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Type into the form fields.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Stamp your own text across every page — pick the wording, the opacity,
-      and the angle — all inside this tab. Zero network requests after the
-      page loads, same rule as every other tool here. Check the Network tab
-      yourself.
+      Drop in a PDF that already has fillable form fields, type values into
+      the ones we detect — text, checkboxes, radio buttons, dropdowns, and
+      option lists — and download the filled file. The fields stay
+      interactive in the output; use
+      <a href="./flatten.html">Flatten Form Fields</a> afterward if you want
+      them permanently baked in. Zero network requests after the page loads,
+      same rule as every other tool here. Check the Network tab yourself.
     </p>
   </section>
 
@@ -94,41 +97,17 @@
       </div>
     </div>
 
-    <div class="split-panel" id="wmPanel" hidden>
-      <div class="split-meta" id="wmMeta"></div>
-
-      <div class="split-range">
-        <label for="wmTextInput">Watermark text</label>
-        <input type="text" id="wmTextInput" value="CONFIDENTIAL" maxlength="80" />
-      </div>
-
-      <div class="split-mode">
-        <label class="split-mode-option">
-          <input type="radio" name="wmAngle" value="-45" checked />
-          <span>Diagonal (-45°)</span>
-        </label>
-        <label class="split-mode-option">
-          <input type="radio" name="wmAngle" value="45" />
-          <span>Diagonal (45°)</span>
-        </label>
-        <label class="split-mode-option">
-          <input type="radio" name="wmAngle" value="0" />
-          <span>Horizontal (0°)</span>
-        </label>
-      </div>
-
-      <div class="split-range">
-        <label for="wmOpacityInput">Opacity (%)</label>
-        <input type="text" id="wmOpacityInput" value="30" inputmode="numeric" />
-      </div>
+    <div class="split-panel" id="fillPanel" hidden>
+      <div class="split-meta" id="fillMeta"></div>
+      <div id="fieldsContainer"></div>
     </div>
 
     <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="watermarkBtn" type="button">
-        <span id="watermarkBtnLabel">Add watermark</span>
+      <button class="btn btn-primary" id="fillBtn" type="button">
+        <span id="fillBtnLabel">Fill and download</span>
       </button>
     </div>
 
@@ -143,11 +122,11 @@
     <div class="proof-grid">
       <div class="proof-item">
         <h3>No accounts</h3>
-        <p>No signup, no email, no watermark on the watermark tool. Use it and close the tab.</p>
+        <p>No signup, no email, no watermark. Use it and close the tab.</p>
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Watermark as many pages as your device's memory allows. No artificial caps.</p>
+        <p>Fill forms as big as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -155,8 +134,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Numbering, rotating, or compressing a PDF too? All live.</h2>
-        <p><a href="./page-numbers.html">Stamp page numbers onto every page</a>, <a href="./rotate.html">fix pages scanned sideways</a>, or <a href="./compress.html">shrink the file size</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Need it permanently locked afterward?</h2>
+        <p><a href="./flatten.html">Flatten the filled form</a> to bake every value into static page content, or <a href="./metadata.html">edit the file's Title, Author, and Keywords</a> too — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -191,6 +170,6 @@
     }
   })();
 </script>
-<script type="module" src="watermark.js"></script>
+<script type="module" src="fill-form.js"></script>
 </body>
 </html>

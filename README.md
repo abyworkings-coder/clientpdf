@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Fifteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Sixteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -65,7 +65,15 @@ identical to Delete Pages' page picker for consistency), and Insert Blank
 Pages (adds blank pages at any position — before the first page, between
 any two pages, or at the end — via pdf-lib's `insertPage`, sized to match
 the neighboring page; positions are applied in descending order so each
-insert doesn't shift the indices of positions still queued). No paywall, no artificial
+insert doesn't shift the indices of positions still queued), and Fill Form
+Fields (types values into an existing AcroForm's text fields, checkboxes,
+radio buttons, dropdowns, and multi-select option lists via pdf-lib's
+`setText`/`check`/`select` accessors, then downloads the filled file with
+fields still interactive — unlike Flatten Form Fields, which bakes in
+whatever values a field already holds and removes interactivity, this one
+is the step that puts values into an empty or partially filled form in the
+first place; button and signature fields are detected and shown as
+unsupported rather than silently ignored). No paywall, no artificial
 limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"
