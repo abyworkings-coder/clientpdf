@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Nineteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Twenty tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -94,7 +94,14 @@ bytes are already a byte-identical JPEG file, no re-encoding needed;
 images using other filters — raw `FlateDecode` pixel data, `JPXDecode`,
 `CCITTFax` — are reported as skipped rather than silently dropped or
 falsely claimed as extracted; zipping uses a hand-rolled store-mode
-`.zip` writer with zero dependencies rather than N sequential downloads). No
+`.zip` writer with zero dependencies rather than N sequential downloads),
+and Resize Pages (rescales every page to a standard paper size or a
+percentage via pdf-lib's `page.scale()`, which resizes the page's
+MediaBox/CropBox and its content transformation matrix together —
+distinct from Crop, which only changes the visible clip area without
+touching dimensions or content scale; "fit to size" mode scales
+uniformly, using the smaller of the two axis ratios, so content never
+distorts even when the source and target aspect ratios differ). No
 paywall, no artificial limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"

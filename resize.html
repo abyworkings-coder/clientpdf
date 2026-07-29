@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Rotate PDF pages without uploading them — ClientPDF</title>
-<meta name="description" content="Rotate every page or a range of pages in a PDF entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/rotate.html" />
+<title>Resize or rescale PDF pages without uploading — ClientPDF</title>
+<meta name="description" content="Rescale every page in a PDF to a standard size (A4, Letter, Legal, A3, A5) or a percentage — content scales with the page, entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/resize.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Rotate PDF pages without uploading them — ClientPDF" />
-<meta property="og:description" content="Rotate every page or a range of pages in a PDF entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/rotate.html" />
+<meta property="og:title" content="Resize or rescale PDF pages without uploading — ClientPDF" />
+<meta property="og:description" content="Rescale every page in a PDF to a standard size or a percentage — content scales with the page, entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/resize.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Rotate PDF pages without uploading them — ClientPDF" />
-<meta name="twitter:description" content="Rotate every page or a range of pages in a PDF entirely in your browser." />
+<meta name="twitter:title" content="Resize or rescale PDF pages without uploading — ClientPDF" />
+<meta name="twitter:description" content="Rescale every page in a PDF to a standard size or a percentage, entirely in your browser." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Rotate",
-  "url": "https://abyworkings-coder.github.io/clientpdf/rotate.html",
+  "name": "ClientPDF Resize Pages",
+  "url": "https://abyworkings-coder.github.io/clientpdf/resize.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Rotate every page or a range of pages in a PDF entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Rescale every page in a PDF to a standard paper size or a percentage — content scales proportionally with the page, entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -52,7 +52,7 @@
       <a href="./delete-pages.html">Delete Pages</a>
       <a href="./duplicate-pages.html">Duplicate Pages</a>
       <a href="./insert-pages.html">Insert Blank Pages</a>
-      <a href="./rotate.html" aria-current="page">Rotate</a>
+      <a href="./rotate.html">Rotate</a>
       <a href="./reorder.html">Reorder</a>
       <a href="./compress.html">Compress</a>
       <a href="./page-numbers.html">Page Numbers</a>
@@ -61,7 +61,7 @@
       <a href="./watermark.html">Watermark</a>
       <a href="./metadata.html">Metadata</a>
       <a href="./crop.html">Crop Pages</a>
-      <a href="./resize.html">Resize Pages</a>
+      <a href="./resize.html" aria-current="page">Resize Pages</a>
       <a href="./flatten.html">Flatten Form Fields</a>
       <a href="./fill-form.html">Fill Form Fields</a>
       <a href="./bookmarks.html">Add Bookmarks</a>
@@ -79,12 +79,12 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Rotate this PDF.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Rescale every page to A4, Letter, or a percentage.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Fix pages scanned sideways or upside down — rotate the whole document or
-      just a range of pages — all inside this tab. Zero network requests after
-      the page loads, same rule as every other tool here. Check the Network
-      tab yourself.
+      Pick a target paper size or a percentage and every page — plus everything
+      drawn on it — scales proportionally to fit. All inside this tab. Zero
+      network requests after the page loads, same rule as every other tool
+      here. Check the Network tab yourself.
     </p>
   </section>
 
@@ -98,47 +98,49 @@
       </div>
     </div>
 
-    <div class="split-panel" id="rotatePanel" hidden>
-      <div class="split-meta" id="rotateMeta"></div>
+    <div class="split-panel" id="resizePanel" hidden>
+      <div class="split-meta" id="resizeMeta"></div>
 
-      <div class="split-mode">
-        <label class="split-mode-option">
-          <input type="radio" name="rotateScope" value="all" checked />
-          <span>Rotate every page</span>
-        </label>
-        <label class="split-mode-option">
-          <input type="radio" name="rotateScope" value="range" />
-          <span>Rotate a range of pages</span>
-        </label>
+      <div class="split-range">
+        <label for="resizeModeSelect">Mode</label>
+        <select id="resizeModeSelect">
+          <option value="preset">Fit to a standard paper size</option>
+          <option value="percent">Scale by percentage</option>
+        </select>
       </div>
 
-      <div class="split-range" id="rotateRangeRow" hidden>
-        <label for="rotateRangeInput">Pages</label>
-        <input type="text" id="rotateRangeInput" placeholder="e.g. 1-3, 5, 8-10" />
+      <div class="split-range" id="presetRow">
+        <label for="presetSelect">Target size</label>
+        <select id="presetSelect">
+          <option value="a4">A4 — 595 × 842 pt</option>
+          <option value="letter">US Letter — 612 × 792 pt</option>
+          <option value="legal">US Legal — 612 × 1008 pt</option>
+          <option value="a3">A3 — 842 × 1191 pt</option>
+          <option value="a5">A5 — 420 × 595 pt</option>
+        </select>
       </div>
 
-      <div class="split-mode">
-        <label class="split-mode-option">
-          <input type="radio" name="rotateAngle" value="90" checked />
-          <span>90° clockwise</span>
-        </label>
-        <label class="split-mode-option">
-          <input type="radio" name="rotateAngle" value="180" />
-          <span>180°</span>
-        </label>
-        <label class="split-mode-option">
-          <input type="radio" name="rotateAngle" value="270" />
-          <span>90° counter-clockwise</span>
-        </label>
+      <div class="split-range" id="percentRow" hidden>
+        <label for="percentInput">Scale (%)</label>
+        <input type="text" id="percentInput" value="50" inputmode="numeric" />
       </div>
+
+      <p class="dropzone-hint">
+        Honest note: "Fit to size" scales each page uniformly (same factor on
+        both axes, no stretching) so its content keeps its proportions inside
+        the target dimensions — the result page won't always exactly match
+        the target's aspect ratio if the source page's proportions differ.
+        This changes page and content dimensions together; use Crop instead
+        if you want to trim margins without rescaling anything.
+      </p>
     </div>
 
     <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="rotateBtn" type="button">
-        <span id="rotateBtnLabel">Rotate PDF</span>
+      <button class="btn btn-primary" id="resizeBtn" type="button">
+        <span id="resizeBtnLabel">Resize pages</span>
       </button>
     </div>
 
@@ -157,7 +159,7 @@
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Rotate as many pages as your device's memory allows. No artificial caps.</p>
+        <p>Resize as many pages as your device's memory allows. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -165,8 +167,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Reordering, compressing, or numbering a PDF? All live too.</h2>
-        <p><a href="./reorder.html">Drag pages into a new order or drop the ones you don't need</a>, <a href="./compress.html">shrink the file size</a>, or <a href="./page-numbers.html">stamp page numbers onto every page</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Cropping margins or splitting a PDF too? Both live too.</h2>
+        <p><a href="./crop.html">Trim margins without rescaling content</a>, <a href="./split.html">extract a range or split every page into its own file</a>, or <a href="./rotate.html">fix pages scanned sideways</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -175,8 +177,6 @@
       <p class="pro-note" id="proNote" hidden>Thanks — saved locally for now, we'll be in touch once signups are live.</p>
     </div>
   </section>
-
-  <p class="article-meta">Rotated file looks right here but sideways somewhere else? <a href="./guide-rotate-viewer-mismatch.html">Here's why, and how to make it stick everywhere.</a></p>
 
 </main>
 
@@ -203,6 +203,6 @@
     }
   })();
 </script>
-<script type="module" src="rotate.js"></script>
+<script type="module" src="resize.js"></script>
 </body>
 </html>
