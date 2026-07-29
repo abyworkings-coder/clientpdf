@@ -25,7 +25,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Sixteen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Seventeen tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -73,8 +73,14 @@ fields still interactive — unlike Flatten Form Fields, which bakes in
 whatever values a field already holds and removes interactivity, this one
 is the step that puts values into an empty or partially filled form in the
 first place; button and signature fields are detected and shown as
-unsupported rather than silently ignored). No paywall, no artificial
-limits. Distribution plan is
+unsupported rather than silently ignored), and Add Bookmarks (adds named
+outline entries that jump straight to a page in any PDF reader's sidebar,
+built via pdf-lib's low-level `context.nextRef`/`context.assign` API since
+pdf-lib has no high-level outline helper — the `/Outlines` dict and each
+item dict are linked by hand per the PDF spec with `Parent`/`First`/`Last`/
+`Next`/`Prev`/`Count`; entries are sorted by page number before linking so
+the resulting sidebar reads top-to-bottom regardless of add order). No
+paywall, no artificial limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"
 against incumbent DR90+ sites in the near term, so SEO is not the growth

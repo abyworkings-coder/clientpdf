@@ -3,27 +3,27 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Insert blank pages into a PDF without uploading it — ClientPDF</title>
-<meta name="description" content="Insert blank pages anywhere in a PDF — before the cover, between chapters, at the end for notes — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
-<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/insert-pages.html" />
+<title>Add bookmarks to a PDF without uploading it — ClientPDF</title>
+<meta name="description" content="Add named bookmarks (outline entries) to a PDF that jump straight to a page in any PDF reader's sidebar — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/bookmarks.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Insert blank pages into a PDF without uploading it — ClientPDF" />
-<meta property="og:description" content="Insert blank pages anywhere in a PDF, entirely in your browser. Nothing is uploaded, ever." />
-<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/insert-pages.html" />
+<meta property="og:title" content="Add bookmarks to a PDF without uploading it — ClientPDF" />
+<meta property="og:description" content="Add named bookmarks to a PDF's outline, entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/bookmarks.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta name="twitter:card" content="summary" />
-<meta name="twitter:title" content="Insert blank pages into a PDF without uploading it — ClientPDF" />
-<meta name="twitter:description" content="Insert blank pages anywhere in a PDF and keep everything else in place." />
+<meta name="twitter:title" content="Add bookmarks to a PDF without uploading it — ClientPDF" />
+<meta name="twitter:description" content="Add named bookmarks that jump straight to a page, in any PDF reader's sidebar." />
 <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  "name": "ClientPDF Insert Blank Pages",
-  "url": "https://abyworkings-coder.github.io/clientpdf/insert-pages.html",
+  "name": "ClientPDF Add Bookmarks",
+  "url": "https://abyworkings-coder.github.io/clientpdf/bookmarks.html",
   "applicationCategory": "UtilitiesApplication",
   "operatingSystem": "Any (runs in browser)",
-  "description": "Insert blank pages anywhere in a PDF — before the first page, between any two pages, or at the end — entirely in your browser. Nothing is uploaded, ever.",
+  "description": "Add named bookmarks (outline entries) to a PDF that jump straight to a page in any PDF reader's sidebar — entirely in your browser. Nothing is uploaded, ever.",
   "offers": {
     "@type": "Offer",
     "price": "0",
@@ -51,7 +51,7 @@
       <a href="./split.html">Split</a>
       <a href="./delete-pages.html">Delete Pages</a>
       <a href="./duplicate-pages.html">Duplicate Pages</a>
-      <a href="./insert-pages.html" aria-current="page">Insert Blank Pages</a>
+      <a href="./insert-pages.html">Insert Blank Pages</a>
       <a href="./rotate.html">Rotate</a>
       <a href="./reorder.html">Reorder</a>
       <a href="./compress.html">Compress</a>
@@ -62,7 +62,7 @@
       <a href="./crop.html">Crop Pages</a>
       <a href="./flatten.html">Flatten Form Fields</a>
       <a href="./fill-form.html">Fill Form Fields</a>
-      <a href="./bookmarks.html">Add Bookmarks</a>
+      <a href="./bookmarks.html" aria-current="page">Add Bookmarks</a>
       <a href="./pages-per-sheet.html">Pages per Sheet</a>
       <a href="./guide.html">Guide</a>
     </nav>
@@ -76,12 +76,12 @@
 <main class="wrap">
 
   <section class="hero">
-    <h1>Open DevTools.<br />Insert blank pages.<br />Watch nothing get sent anywhere.</h1>
+    <h1>Open DevTools.<br />Add bookmarks.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
-      Tell it where to add blank pages — before the first page, between any
-      two pages, or at the very end — sized to match their neighbors,
-      entirely inside this tab. Zero network requests after the page loads,
-      same rule as every other tool here. Check the Network tab yourself.
+      Name a page and it shows up in the outline sidebar of any PDF reader —
+      chapters, sections, appendices, whatever you need to jump to — entirely
+      inside this tab. Zero network requests after the page loads, same rule
+      as every other tool here. Check the Network tab yourself.
     </p>
   </section>
 
@@ -95,21 +95,26 @@
       </div>
     </div>
 
-    <div class="split-panel" id="insertPanel" hidden>
-      <div class="split-meta" id="insertMeta"></div>
+    <div class="split-panel" id="bookmarkPanel" hidden>
+      <div class="split-meta" id="bookmarkMeta"></div>
 
-      <div class="split-range" id="rangeRow">
-        <label for="rangeInput">Insert a blank page after page(s)</label>
-        <input type="text" id="rangeInput" placeholder="e.g. 0, 3, 5 — use 0 to insert before page 1" />
+      <div class="split-range" id="addRow">
+        <label for="titleInput">Title</label>
+        <input type="text" id="titleInput" placeholder="e.g. Chapter 3" style="flex: 2;" />
+        <label for="pageInput">Page</label>
+        <input type="text" id="pageInput" placeholder="e.g. 12" style="flex: 0 0 90px; min-width: 90px;" />
+        <button class="btn btn-ghost" id="addBookmarkBtn" type="button">Add bookmark</button>
       </div>
     </div>
+
+    <ol class="file-list" id="bookmarkList" aria-label="Bookmarks to add"></ol>
 
     <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
 
     <div class="actions" id="actions" hidden>
       <button class="btn btn-ghost" id="clearBtn" type="button">Clear</button>
-      <button class="btn btn-primary" id="insertBtn" type="button">
-        <span id="insertBtnLabel">Insert blank pages</span>
+      <button class="btn btn-primary" id="saveBtn" type="button">
+        <span id="saveBtnLabel">Add bookmarks to PDF</span>
       </button>
     </div>
 
@@ -128,7 +133,7 @@
       </div>
       <div class="proof-item">
         <h3>No limits (for now)</h3>
-        <p>Insert as many blank pages as your device's memory allows. No artificial caps.</p>
+        <p>Add as many bookmarks as you need. No artificial caps.</p>
       </div>
     </div>
   </section>
@@ -136,8 +141,8 @@
   <section class="pro" id="pro">
     <div class="pro-card">
       <div class="pro-copy">
-        <h2>Duplicating or deleting pages too? Both live.</h2>
-        <p><a href="./duplicate-pages.html">Duplicate specific pages</a>, or <a href="./delete-pages.html">remove them</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
+        <h2>Filling out form fields too? Both live.</h2>
+        <p><a href="./fill-form.html">Fill form fields</a>, or <a href="./insert-pages.html">insert blank pages</a> — same rule: everything stays local. Leave your email and we'll let you know about a Pro batch mode.</p>
       </div>
       <form class="pro-form" id="proForm">
         <input type="email" id="proEmail" placeholder="you@company.com" required aria-label="Email address" />
@@ -172,6 +177,6 @@
     }
   })();
 </script>
-<script type="module" src="insert-pages.js"></script>
+<script type="module" src="bookmarks.js"></script>
 </body>
 </html>
