@@ -520,9 +520,101 @@ html, body {
   font-size: 0.88rem;
 }
 
+/* Tools hub */
+.crumbs {
+  padding: 22px 0 0;
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+}
+.crumbs a { color: var(--ink-dim); text-decoration: none; }
+.crumbs a:hover { color: var(--accent); }
+
+.tools-hero { padding: 28px 0 44px; }
+.tools-hero h1 {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(2rem, 4.6vw, 3rem);
+  line-height: 1.1;
+  letter-spacing: -0.015em;
+  margin: 0 0 20px;
+  max-width: 16ch;
+}
+.tools-hero .lede {
+  color: var(--ink-dim);
+  max-width: 62ch;
+  font-size: 0.96rem;
+}
+.tools-hero .lede a { color: var(--accent); }
+
+.tool-group { padding: 8px 0 40px; border-top: 1px solid var(--line); }
+.tool-group h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin: 28px 0 6px;
+  color: var(--ink);
+}
+.tool-group-intro {
+  color: var(--ink-faint);
+  font-size: 0.86rem;
+  max-width: 60ch;
+  margin: 0 0 22px;
+}
+.tool-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.tool-card {
+  display: block;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--bg-card);
+  padding: 18px 20px;
+  text-decoration: none;
+  transition: border-color 0.15s ease, transform 0.12s ease, background 0.15s ease;
+}
+.tool-card:hover {
+  border-color: var(--accent-dim);
+  background: #181d10;
+  transform: translateY(-2px);
+}
+.tool-card h3 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.02rem;
+  margin: 0 0 6px;
+  color: var(--accent);
+}
+.tool-card p {
+  color: var(--ink-dim);
+  font-size: 0.82rem;
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tools-faq { padding: 12px 0 8px; border-top: 1px solid var(--line); }
+.tools-faq h2 {
+  font-family: var(--serif);
+  font-weight: 600;
+  font-size: 1.4rem;
+  margin: 28px 0 20px;
+}
+.tools-faq-item { max-width: 68ch; margin-bottom: 22px; }
+.tools-faq-item h3 { font-size: 0.98rem; margin: 0 0 6px; color: var(--ink); }
+.tools-faq-item p { color: var(--ink-dim); font-size: 0.88rem; margin: 0; }
+.tools-faq-item a { color: var(--accent); }
+
+.tools-cta { margin: 8px 0 56px; }
+.tools-cta a { color: var(--accent); }
+
+@media (max-width: 720px) {
+  .tool-grid { grid-template-columns: repeat(2, 1fr); }
+}
 @media (max-width: 640px) {
   .proof-grid { grid-template-columns: 1fr; }
   .hero { padding: 48px 0 32px; }
+  .tool-grid { grid-template-columns: 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
