@@ -61,7 +61,7 @@ function renderPages() {
 
     li.innerHTML = `
       <span class="handle">⠿</span>
-      <span class="name">${position + 1}. Page ${pageIndex + 1} of ${loaded.file.name}</span>
+      <span class="name">${position + 1}. Page ${pageIndex + 1} of ${escapeHtml(loaded.file.name)}</span>
       <button class="remove" type="button" aria-label="Remove page ${pageIndex + 1}">✕</button>
     `;
 
