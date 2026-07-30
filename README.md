@@ -7,13 +7,14 @@ Merge PDF files entirely in the browser — no upload, no server, no account.
 Every mainstream PDF merge tool (Smallpdf, iLovePDF, etc.) uploads your file to
 their servers to process it. ClientPDF doesn't have a server: merging happens
 client-side via [pdf-lib](https://github.com/Hopding/pdf-lib) compiled to
-WebAssembly/JS, loaded from a CDN. Open the browser network tab while using it —
-nothing goes out.
+WebAssembly/JS, vendored locally in the app. Open the browser network tab
+while using it — nothing goes out.
 
 ## Stack
 
-Static HTML/CSS/JS, zero build step, zero backend. `pdf-lib` loaded from
-`cdn.jsdelivr.net` as an ES module. Deployed on GitHub Pages.
+Static HTML/CSS/JS, zero build step, zero backend. `pdf-lib` vendored locally
+at `vendor/pdf-lib.esm.min.js` and imported as an ES module — not loaded from
+a CDN. Deployed on GitHub Pages.
 
 ## Local dev
 
