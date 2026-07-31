@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Privacy Policy — ClientPDF</title>
+<meta name="description" content="ClientPDF's privacy policy: PDF processing happens entirely in your browser, files are never uploaded, and the only data collected is an anonymous visit counter and an optional waitlist email." />
+<link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/privacy.html" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Privacy Policy — ClientPDF" />
+<meta property="og:description" content="PDF processing happens entirely in your browser. Files are never uploaded. Here's exactly what data ClientPDF does and doesn't collect." />
+<meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/privacy.html" />
+<meta property="og:site_name" content="ClientPDF" />
+<meta property="og:image" content="https://abyworkings-coder.github.io/clientpdf/og-image.jpg" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Privacy Policy — ClientPDF" />
+<meta name="twitter:description" content="PDF processing happens entirely in your browser. Files are never uploaded." />
+<meta name="twitter:image" content="https://abyworkings-coder.github.io/clientpdf/og-image.jpg" />
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🔒</text></svg>" />
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+    {
+      "@type": "ListItem",
+      "position": 1,
+      "name": "Home",
+      "item": "https://abyworkings-coder.github.io/clientpdf/"
+    },
+    {
+      "@type": "ListItem",
+      "position": 2,
+      "name": "Privacy Policy",
+      "item": "https://abyworkings-coder.github.io/clientpdf/privacy.html"
+    }
+  ]
+}
+</script>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+<div class="grain"></div>
+
+<header class="topbar">
+  <div class="wrap topbar-inner">
+    <div class="brand">
+      <span class="brand-mark">◆</span>
+      <span class="brand-name">Client<em>PDF</em></span>
+    </div>
+    <nav class="toolnav" aria-label="Tools">
+      <a href="./index.html">Merge</a>
+      <a href="./split.html">Split</a>
+      <a href="./delete-pages.html">Delete Pages</a>
+      <a href="./duplicate-pages.html">Duplicate Pages</a>
+      <a href="./insert-pages.html">Insert Blank Pages</a>
+      <a href="./rotate.html">Rotate</a>
+      <a href="./reorder.html">Reorder</a>
+      <a href="./compress.html">Compress</a>
+      <a href="./page-numbers.html">Page Numbers</a>
+      <a href="./images-to-pdf.html">Images to PDF</a>
+      <a href="./extract-images.html">Extract Images</a>
+      <a href="./watermark.html">Watermark</a>
+      <a href="./metadata.html">Metadata</a>
+      <a href="./crop.html">Crop Pages</a>
+      <a href="./resize.html">Resize Pages</a>
+      <a href="./grayscale.html">Grayscale PDF</a>
+      <a href="./border.html">Page Borders</a>
+      <a href="./image-watermark.html">Image Watermark</a>
+      <a href="./flatten.html">Flatten Form Fields</a>
+      <a href="./fill-form.html">Fill Form Fields</a>
+      <a href="./bookmarks.html">Add Bookmarks</a>
+      <a href="./split-by-bookmarks.html">Split by Bookmarks</a>
+      <a href="./pages-per-sheet.html">Pages per Sheet</a>
+      <a href="./tools.html">All Tools</a>
+      <a href="./guide.html">Guide</a>
+    </nav>
+    <div class="topbar-status">
+      <span class="dot" aria-hidden="true"></span>
+      <span>running locally in this tab — nothing uploaded</span>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <article class="article">
+    <h1>Privacy Policy</h1>
+    <p class="article-meta">Last updated 2026-07-31 · plain-language version, no legalese</p>
+
+    <p>
+      ClientPDF is a static, client-side tool. There is no backend server that your files
+      pass through. This page explains exactly what happens to your data — because most
+      "free PDF tool" privacy policies are long enough that nobody reads them, and this one
+      isn't going to be.
+    </p>
+
+    <h2>Your PDF files never leave your device</h2>
+    <p>
+      Every tool on this site — merge, split, compress, rotate, watermark, and the rest —
+      runs entirely in your browser using <a href="https://github.com/Hopding/pdf-lib" target="_blank" rel="noopener">pdf-lib</a>,
+      a JavaScript library. When you drop a file into any tool, it's read and processed in
+      your browser's memory and never transmitted anywhere. You can verify this yourself:
+      open DevTools, watch the Network tab, and use any tool — see <a href="./guide.html">this guide</a>
+      for the exact 10-second test. We don't store your files, we don't see your files, and
+      we have no way to access your files, because they never reach us.
+    </p>
+
+    <h2>What we do collect</h2>
+    <p>We collect two things, and nothing else:</p>
+    <ol>
+      <li>
+        <strong>An anonymous page-view counter.</strong> Each page load pings a counter
+        service with a coarse bucket for where the visit came from (<code>github</code>,
+        <code>direct</code>, or <code>other</code>) — no cookies, no IP logging on our end,
+        no per-visitor identifier. It's a total-count tool, not a tracking tool. You can see
+        the exact code for this in the inline script at the bottom of any page.
+      </li>
+      <li>
+        <strong>An email address, only if you submit it.</strong> The homepage has an
+        optional "Notify me" form for a future Pro batch-mode tier. If you type your email
+        into that form and submit it, it's forwarded via <a href="https://formsubmit.co" target="_blank" rel="noopener">formsubmit.co</a>
+        to the site operator, for the sole purpose of letting you know when Pro is available.
+        We don't sell it, share it with third parties, or use it for anything else. If you
+        don't submit that form, we don't have your email.
+      </li>
+    </ol>
+
+    <h2>What we don't do</h2>
+    <ul>
+      <li>No third-party analytics (no Google Analytics, no Meta Pixel, no anything like that).</li>
+      <li>No advertising trackers.</li>
+      <li>No cookies.</li>
+      <li>No accounts, no login, no user profiles.</li>
+      <li>No selling or sharing of any data with anyone.</li>
+    </ul>
+
+    <h2>Who operates this site</h2>
+    <p>
+      ClientPDF is built and run by <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">Auto Company</a>
+      (GitHub: <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">abyworkings-coder</a>).
+      This is a solo-operator static tool, not a company with a dedicated legal or support team.
+      There's no formal support email yet — the best way to reach us is by opening an issue on
+      the <a href="https://github.com/abyworkings-coder/clientpdf" target="_blank" rel="noopener">GitHub repository</a>.
+    </p>
+
+    <h2>Changes to this policy</h2>
+    <p>
+      If what this site collects ever changes, this page will be updated to reflect it —
+      the "Last updated" date above will move. Given the site's design (no server, no
+      accounts), we don't expect that to happen often.
+    </p>
+
+    <p class="article-meta">See also: <a href="./terms.html">Terms of Service</a>.</p>
+  </article>
+</main>
+
+<footer class="footer">
+  <div class="wrap footer-inner">
+    <span>ClientPDF — built by <a href="https://github.com/abyworkings-coder" target="_blank" rel="noopener">Auto Company</a></span>
+    <span>No servers were harmed in the making of this tool.</span>
+    <span class="footer-legal"><a href="./privacy.html">Privacy</a> · <a href="./terms.html">Terms</a></span>
+  </div>
+</footer>
+
+<script>
+  // Minimal, cookie-free visit counter — counts page loads and coarse referrer
+  // source only, no personal data. See README for what this does and why.
+  (function () {
+    try {
+      var ref = document.referrer;
+      var bucket = "direct";
+      if (ref) {
+        bucket = /github\.com/i.test(ref) ? "github" : "other";
+      }
+      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
+      fetch(base + "visits-total/up", { mode: "no-cors" });
+      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
+    } catch (e) {
+      // analytics must never break the tool
+    }
+  })();
+</script>
+</body>
+</html>
