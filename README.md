@@ -14,7 +14,12 @@ while using it — nothing goes out.
 
 Static HTML/CSS/JS, zero build step, zero backend. `pdf-lib` vendored locally
 at `vendor/pdf-lib.esm.min.js` and imported as an ES module — not loaded from
-a CDN. Deployed on GitHub Pages.
+a CDN. PDF to JPG additionally vendors [pdf.js](https://github.com/mozilla/pdf.js)
+(Mozilla's PDF renderer, Apache-2.0) at `vendor/pdf.min.mjs` plus its worker
+script at `vendor/pdf.worker.min.mjs` — pdf-lib can read/write PDF structure
+but has no page-rendering capability, so rasterizing a page to an image needs
+a real renderer; `GlobalWorkerOptions.workerSrc` points at the local worker
+file so pdf.js never reaches out to a CDN for it. Deployed on GitHub Pages.
 
 ## Local dev
 
@@ -26,7 +31,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Twenty-three tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Twenty-four tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -136,7 +141,16 @@ a mislabeled file fails cleanly instead of throwing a raw pdf-lib exception;
 distinct from the original Watermark tool, which only stamps text with an
 angle control — this one needs a real embedded image asset instead of a
 font glyph run, aspect ratio is preserved automatically so a logo never
-looks stretched). No
+looks stretched), and PDF to JPG (renders every page to an offscreen canvas
+via pdf.js — vendored locally, workerSrc pointed at the local worker file, no
+CDN — then exports each page as a JPG or PNG through the same `canvas.toBlob`
+path Compress already uses; unlike Extract Images, which pulls a PDF's
+embedded photos back out byte-for-byte, this renders the full page as it
+looks, including text and vector content, so it works on any PDF, not just
+ones with embedded JPEGs; a single-page PDF downloads its one image
+directly, a multi-page PDF zips every page with the same hand-rolled zip
+writer Extract Images and Split use; JPG/PNG format and Standard/High
+(1.5x/3x) resolution are both user-selectable). No
 paywall, no artificial limits. Distribution plan is
 directory/community launches (Product Hunt, tool directories), not organic
 search — a brand-new domain has no chance of ranking for "merge pdf"
