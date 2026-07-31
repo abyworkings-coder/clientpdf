@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Fill a PDF form's fields without uploading it anywhere — ClientPDF</title>
-<meta name="description" content="Type values straight into a PDF's existing text fields, checkboxes, radio buttons, and dropdowns, then download the filled file — entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<title>Fill a PDF's form fields without uploading it — ClientPDF</title>
+<meta name="description" content="Type values into a PDF's text fields, checkboxes, radio buttons, and dropdowns, then download the filled file — entirely in your browser. Free, fast, private." />
 <link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/fill-form.html" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Fill a PDF form's fields without uploading it anywhere — ClientPDF" />
@@ -33,6 +33,40 @@
     "price": "0",
     "priceCurrency": "USD"
   }
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "name": "How to fill a PDF form's fields online without uploading it",
+  "description": "Type values into a PDF's existing form fields, entirely in your browser.",
+  "step": [
+    {
+      "@type": "HowToStep",
+      "position": 1,
+      "name": "Drop one PDF",
+      "text": "Drag and drop a PDF that already has a fillable AcroForm, or click to browse."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 2,
+      "name": "Type or select values into each field",
+      "text": "Fill in text fields, checkboxes, radio buttons, dropdowns, and multi-select lists directly on the page."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 3,
+      "name": "Click Fill and download",
+      "text": "ClientPDF writes your values into the form using pdf-lib's setText/check/select accessors."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 4,
+      "name": "Download the filled PDF",
+      "text": "The downloaded file keeps its fields interactive and editable later — use Flatten Form Fields if you want to lock them in."
+    }
+  ]
 }
 </script>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
