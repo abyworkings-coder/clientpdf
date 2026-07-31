@@ -1,0 +1,54 @@
+# ClientPDF
+
+> Free, browser-based PDF tools. Every operation — merge, split, compress, rotate, watermark, and more — runs entirely client-side using pdf-lib in JavaScript. No file is ever uploaded to a server; nothing to sign up for.
+
+ClientPDF is a static site (GitHub Pages) offering 23 single-purpose PDF tools plus troubleshooting guides and comparison pages against upload-based competitors (Smallpdf, iLovePDF, PDF2Go). All processing happens in the user's browser; files never leave the device.
+
+## Tools
+
+- [Merge PDFs](https://abyworkings-coder.github.io/clientpdf/): combine multiple PDFs into one file
+- [Split PDF](https://abyworkings-coder.github.io/clientpdf/split.html): split a PDF into separate files by page range
+- [Split by Bookmarks](https://abyworkings-coder.github.io/clientpdf/split-by-bookmarks.html): split a PDF using its existing bookmark/outline structure
+- [Delete Pages](https://abyworkings-coder.github.io/clientpdf/delete-pages.html): remove specific pages from a PDF
+- [Duplicate Pages](https://abyworkings-coder.github.io/clientpdf/duplicate-pages.html): duplicate one or more pages within a PDF
+- [Insert Blank Pages](https://abyworkings-coder.github.io/clientpdf/insert-pages.html): insert blank pages at chosen positions
+- [Rotate PDF](https://abyworkings-coder.github.io/clientpdf/rotate.html): rotate all or selected pages
+- [Reorder Pages](https://abyworkings-coder.github.io/clientpdf/reorder.html): drag-and-drop page reordering
+- [Compress PDF](https://abyworkings-coder.github.io/clientpdf/compress.html): reduce PDF file size
+- [Page Numbers](https://abyworkings-coder.github.io/clientpdf/page-numbers.html): add page numbers to a PDF
+- [Images to PDF](https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html): convert JPG/PNG images into a PDF
+- [Extract Images](https://abyworkings-coder.github.io/clientpdf/extract-images.html): pull embedded images out of a PDF
+- [Watermark PDF](https://abyworkings-coder.github.io/clientpdf/watermark.html): add a text watermark
+- [Image Watermark](https://abyworkings-coder.github.io/clientpdf/image-watermark.html): add an image/logo watermark
+- [Edit Metadata](https://abyworkings-coder.github.io/clientpdf/metadata.html): view and edit PDF metadata (title, author, etc.)
+- [Crop Pages](https://abyworkings-coder.github.io/clientpdf/crop.html): crop the visible page area
+- [Resize Pages](https://abyworkings-coder.github.io/clientpdf/resize.html): change page dimensions (e.g. A4 to Letter)
+- [Grayscale PDF](https://abyworkings-coder.github.io/clientpdf/grayscale.html): convert a PDF to grayscale
+- [Page Borders](https://abyworkings-coder.github.io/clientpdf/border.html): add borders around pages
+- [Flatten Form Fields](https://abyworkings-coder.github.io/clientpdf/flatten.html): flatten fillable form fields into static content
+- [Fill Form Fields](https://abyworkings-coder.github.io/clientpdf/fill-form.html): fill out PDF form fields
+- [Add Bookmarks](https://abyworkings-coder.github.io/clientpdf/bookmarks.html): add a bookmark/outline structure to a PDF
+- [Pages per Sheet](https://abyworkings-coder.github.io/clientpdf/pages-per-sheet.html): print multiple pages onto a single sheet (N-up)
+- [All Tools](https://abyworkings-coder.github.io/clientpdf/tools.html): full listing of every tool above
+
+## Guides
+
+- [Does an online PDF merge upload your file?](https://abyworkings-coder.github.io/clientpdf/guide.html)
+- [Why didn't compressing my PDF shrink it?](https://abyworkings-coder.github.io/clientpdf/guide-compress.html)
+- [Why does my tab freeze on a large PDF?](https://abyworkings-coder.github.io/clientpdf/guide-large-file-freeze.html)
+- [Why are my PDF page numbers sideways?](https://abyworkings-coder.github.io/clientpdf/guide-page-numbers-rotated.html)
+- [Why did merging lose my PDF's bookmarks?](https://abyworkings-coder.github.io/clientpdf/guide-merge-bookmarks.html)
+- [Why do PDF form fields break after splitting?](https://abyworkings-coder.github.io/clientpdf/guide-split-reorder-form-fields.html)
+- [Why can't I open a password-protected PDF?](https://abyworkings-coder.github.io/clientpdf/guide-password-protected.html)
+- [My rotated PDF looks sideways elsewhere](https://abyworkings-coder.github.io/clientpdf/guide-rotate-viewer-mismatch.html)
+
+## Alternatives
+
+- [Smallpdf Alternative](https://abyworkings-coder.github.io/clientpdf/smallpdf-alternative.html)
+- [iLovePDF Alternative](https://abyworkings-coder.github.io/clientpdf/ilovepdf-alternative.html)
+- [PDF2Go Alternative](https://abyworkings-coder.github.io/clientpdf/pdf2go-alternative.html)
+
+## Optional
+
+- [Privacy Policy](https://abyworkings-coder.github.io/clientpdf/privacy.html)
+- [Terms of Service](https://abyworkings-coder.github.io/clientpdf/terms.html)
