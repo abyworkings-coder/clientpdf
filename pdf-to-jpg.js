@@ -1,9 +1,20 @@
-import * as pdfjsLib from "./vendor/pdf.min.mjs";
 import { createZip } from "./zip.js";
 
-// Point at the local worker file, never a CDN — matches the site's
-// zero-network-call rule that every other tool here already follows.
-pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("./vendor/pdf.worker.min.mjs", import.meta.url).href;
+// pdf.js core (~454KB) is only needed once a user actually drops/selects a
+// file, so it's dynamically imported on first use instead of eagerly on page
+// load — the worker was already lazy, this closes the gap for the core lib.
+let pdfjsLibPromise = null;
+function getPdfjsLib() {
+  if (!pdfjsLibPromise) {
+    pdfjsLibPromise = import("./vendor/pdf.min.mjs").then((pdfjsLib) => {
+      // Point at the local worker file, never a CDN — matches the site's
+      // zero-network-call rule that every other tool here already follows.
+      pdfjsLib.GlobalWorkerOptions.workerSrc = new URL("./vendor/pdf.worker.min.mjs", import.meta.url).href;
+      return pdfjsLib;
+    });
+  }
+  return pdfjsLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -78,6 +89,7 @@ async function loadFile(file) {
   const bytes = await file.arrayBuffer();
   // A separate pdf.js parse just to read the page count; the actual render
   // pass re-parses from the original bytes so nothing here is mutated.
+  const pdfjsLib = await getPdfjsLib();
   const pdf = await pdfjsLib.getDocument({ data: bytes.slice(0) }).promise;
   const pageCount = pdf.numPages;
   pdf.loadingTask.destroy();
@@ -176,6 +188,7 @@ function canvasToBytes(canvas, format) {
  */
 async function convertAllPages(format, scale, onProgress) {
   const bytes = await loaded.file.arrayBuffer();
+  const pdfjsLib = await getPdfjsLib();
   const pdf = await pdfjsLib.getDocument({ data: bytes }).promise;
   const ext = format === "png" ? "png" : "jpg";
   const name = baseName(loaded.file.name);
