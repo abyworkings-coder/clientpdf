@@ -1,11 +1,8 @@
-import {
-  PDFDocument,
-  PDFTextField,
-  PDFCheckBox,
-  PDFRadioGroup,
-  PDFDropdown,
-  PDFOptionList,
-} from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -57,7 +54,7 @@ function fieldInputId(index) {
   return `fillField-${index}`;
 }
 
-function classifyField(field) {
+function classifyField(field, { PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown, PDFOptionList }) {
   if (field instanceof PDFTextField) return { kind: "text", multiline: field.isMultiline() };
   if (field instanceof PDFCheckBox) return { kind: "checkbox" };
   if (field instanceof PDFRadioGroup) return { kind: "radio", options: field.getOptions() };
@@ -181,12 +178,14 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const pdfLib = await getPdfLib();
+  const { PDFDocument } = pdfLib;
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   const form = doc.getForm();
   const fields = form.getFields().map((field) => ({
     name: field.getName(),
-    ...classifyField(field),
+    ...classifyField(field, pdfLib),
   }));
   loaded = { file, pageCount: doc.getPageCount(), fields };
   renderFile();
@@ -236,6 +235,7 @@ function baseName(fileName) {
 }
 
 async function fillForm() {
+  const { PDFDocument } = await getPdfLib();
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
   const form = doc.getForm();
   let filledCount = 0;

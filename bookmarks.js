@@ -1,4 +1,8 @@
-import { PDFDocument, PDFName, PDFString, PDFNumber } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -95,6 +99,7 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   loaded = { file, pageCount: doc.getPageCount() };
@@ -191,7 +196,8 @@ function baseName(fileName) {
  * outline API, so the /Outlines dict and each item dict are constructed and
  * linked (Parent/First/Last/Next/Prev/Count) by hand per the PDF spec.
  */
-function addOutline(doc, entries) {
+async function addOutline(doc, entries) {
+  const { PDFName, PDFString, PDFNumber } = await getPdfLib();
   const context = doc.context;
   const sorted = [...entries].sort((a, b) => a.page - b.page);
 
@@ -224,8 +230,9 @@ function addOutline(doc, entries) {
 }
 
 async function saveWithBookmarks() {
+  const { PDFDocument } = await getPdfLib();
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
-  addOutline(doc, bookmarks);
+  await addOutline(doc, bookmarks);
   const bytes = await doc.save();
 
   return {

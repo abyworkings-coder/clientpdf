@@ -1,4 +1,8 @@
-import { PDFDocument, degrees } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -85,6 +89,7 @@ document.querySelectorAll('input[name="rotateScope"]').forEach((el) =>
 );
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   loaded = { file, pageCount: doc.getPageCount() };
@@ -157,6 +162,7 @@ function baseName(fileName) {
 }
 
 async function rotatePdf() {
+  const { PDFDocument, degrees } = await getPdfLib();
   const scope = currentScope();
   const angle = currentAngle();
   const indices =

@@ -1,4 +1,8 @@
-import { PDFDocument, PDFName } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -65,7 +69,8 @@ function slugify(title) {
  * an /A (GoTo action) dict with its own /D array — both are common depending
  * on which tool authored the PDF, so both are handled.
  */
-function readTopLevelOutline(doc) {
+async function readTopLevelOutline(doc) {
+  const { PDFName } = await getPdfLib();
   const context = doc.context;
   const catalog = doc.catalog;
   const outlinesRef = catalog.get(PDFName.of("Outlines"));
@@ -173,10 +178,11 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   const pageCount = doc.getPageCount();
-  const items = readTopLevelOutline(doc);
+  const items = await readTopLevelOutline(doc);
   sections = buildSections(items, pageCount);
   loaded = { file, doc, pageCount };
   renderFile();
@@ -223,6 +229,7 @@ clearBtn.addEventListener("click", () => {
 });
 
 async function extractSection(section) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await loaded.file.arrayBuffer();
   const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
   const indices = [];

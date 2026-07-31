@@ -1,4 +1,8 @@
-import { PDFDocument } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -67,6 +71,7 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   loaded = { file, pageCount: doc.getPageCount() };
@@ -140,6 +145,7 @@ function baseName(fileName) {
 }
 
 async function deletePages() {
+  const { PDFDocument } = await getPdfLib();
   const deleteSet = parseDeleteSet(rangeInput.value, loaded.pageCount);
 
   const survivors = [];

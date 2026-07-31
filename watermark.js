@@ -1,4 +1,8 @@
-import { PDFDocument, StandardFonts, rgb, degrees } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -72,6 +76,7 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   loaded = { file, pageCount: doc.getPageCount() };
@@ -120,6 +125,7 @@ function baseName(fileName) {
 }
 
 async function watermarkPdf() {
+  const { PDFDocument, StandardFonts, rgb, degrees } = await getPdfLib();
   const text = wmTextInput.value.trim();
   if (!text) throw new Error("Enter some watermark text.");
 

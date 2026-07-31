@@ -1,4 +1,8 @@
-import { PDFDocument } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -103,6 +107,7 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   const pageCount = doc.getPageCount();
@@ -163,6 +168,7 @@ reorderBtn.addEventListener("click", async () => {
   try {
     if (loaded.order.length === 0) throw new Error("Keep at least one page.");
 
+    const { PDFDocument } = await getPdfLib();
     const src = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
     const out = await PDFDocument.create();
     const pages = await out.copyPages(src, loaded.order);

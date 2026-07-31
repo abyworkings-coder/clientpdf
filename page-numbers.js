@@ -1,4 +1,8 @@
-import { PDFDocument, StandardFonts, rgb } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -72,6 +76,7 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   loaded = { file, pageCount: doc.getPageCount() };
@@ -130,6 +135,7 @@ function marginFor(position, textWidth, pageWidth, pageHeight) {
 }
 
 async function numberPdf() {
+  const { PDFDocument, StandardFonts, rgb } = await getPdfLib();
   const position = currentPosition();
   const start = parseInt(numStartInput.value, 10);
   if (!Number.isFinite(start) || start < 0) {

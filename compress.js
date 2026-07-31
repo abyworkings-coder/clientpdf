@@ -1,4 +1,8 @@
-import { PDFDocument, PDFName, PDFDict, PDFRawStream, PDFRef } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -86,6 +90,7 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   loaded = { file, pageCount: doc.getPageCount() };
@@ -133,7 +138,8 @@ clearBtn.addEventListener("click", () => {
  * Reads a Filter entry (a PDFName, a PDFArray of PDFNames, or absent) and
  * returns the filter names as plain strings, e.g. ["/DCTDecode"].
  */
-function filterNames(dict) {
+async function filterNames(dict) {
+  const { PDFName } = await getPdfLib();
   const filter = dict.get(PDFName.of("Filter"));
   if (!filter) return [];
   if (typeof filter.asArray === "function") {
@@ -218,6 +224,7 @@ function recompressJpeg(bytes, quality, maxDimension) {
  * reference in the document is ever left dangling.
  */
 async function compressImages(doc, quality, maxDimension) {
+  const { PDFName, PDFDict, PDFRawStream, PDFRef } = await getPdfLib();
   const processedRefs = new Set();
   let compressedCount = 0;
   let skippedCount = 0;
@@ -244,7 +251,7 @@ async function compressImages(doc, quality, maxDimension) {
 
         const dict = stream.dict;
         if (String(dict.get(PDFName.of("Subtype"))) !== "/Image") continue;
-        if (!filterNames(dict).includes("/DCTDecode")) {
+        if (!(await filterNames(dict)).includes("/DCTDecode")) {
           skippedCount++;
           continue;
         }
@@ -303,6 +310,7 @@ function getTargetSizeBytes() {
  * -mutated doc would double-compress already-compressed images.
  */
 async function compressPass(quality, maxDimension) {
+  const { PDFDocument } = await getPdfLib();
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
   const { compressedCount, skippedCount } = await compressImages(doc, quality, maxDimension);
   // Even with zero compressible images, re-serializing through pdf-lib

@@ -1,4 +1,8 @@
-import { PDFDocument, rgb } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -69,6 +73,7 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   loaded = { file, pageCount: doc.getPageCount() };
@@ -116,7 +121,8 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
-function hexToRgb01(hex) {
+async function hexToRgb01(hex) {
+  const { rgb } = await getPdfLib();
   const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec((hex || "").trim());
   if (!m) throw new Error("Enter a valid border color.");
   return rgb(parseInt(m[1], 16) / 255, parseInt(m[2], 16) / 255, parseInt(m[3], 16) / 255);
@@ -148,9 +154,10 @@ function validateMarginForPage(margin, width, height) {
 }
 
 async function addBordersToPdf() {
+  const { PDFDocument } = await getPdfLib();
   const margin = readMargin();
   const strokeWidth = readStrokeWidth();
-  const borderColor = hexToRgb01(colorInput.value);
+  const borderColor = await hexToRgb01(colorInput.value);
 
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
   const pages = doc.getPages();

@@ -1,11 +1,8 @@
-import {
-  PDFDocument,
-  PDFArray,
-  PDFRawStream,
-  PDFStream,
-  PDFName,
-  decodePDFRawStream,
-} from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -73,6 +70,7 @@ function updateActions() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   loaded = { file, pageCount: doc.getPageCount() };
@@ -219,7 +217,8 @@ function latin1ToBytes(str) {
   return bytes;
 }
 
-function collectContentStreams(page) {
+async function collectContentStreams(page) {
+  const { PDFArray, PDFStream } = await getPdfLib();
   const contentsObj = page.node.Contents();
   if (!contentsObj) return [];
   if (contentsObj instanceof PDFArray) {
@@ -234,6 +233,7 @@ function collectContentStreams(page) {
 }
 
 async function grayscalePdf() {
+  const { PDFDocument, PDFRawStream, PDFName, decodePDFRawStream } = await getPdfLib();
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
   const pages = doc.getPages();
 
@@ -241,7 +241,7 @@ async function grayscalePdf() {
   let streamsTouched = 0;
 
   for (const page of pages) {
-    const streams = collectContentStreams(page);
+    const streams = await collectContentStreams(page);
     for (const stream of streams) {
       if (!(stream instanceof PDFRawStream)) continue;
 

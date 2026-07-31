@@ -1,4 +1,8 @@
-import { PDFDocument } from "./vendor/pdf-lib.esm.min.js";
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -144,6 +148,7 @@ mergeBtn.addEventListener("click", async () => {
   const requestsBefore = requestsSinceLoad;
 
   try {
+    const { PDFDocument } = await getPdfLib();
     const merged = await PDFDocument.create();
 
     for (const entry of files) {

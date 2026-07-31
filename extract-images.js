@@ -1,5 +1,10 @@
-import { PDFDocument, PDFName } from "./vendor/pdf-lib.esm.min.js";
 import { createZip } from "./zip.js";
+
+let _pdfLibPromise = null;
+function getPdfLib() {
+  if (!_pdfLibPromise) _pdfLibPromise = import("./vendor/pdf-lib.esm.min.js");
+  return _pdfLibPromise;
+}
 
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
@@ -61,7 +66,8 @@ function baseName(fileName) {
  * Images inside nested Form XObjects aren't walked — only images that are
  * direct page resources.
  */
-function extractImages(doc) {
+async function extractImages(doc) {
+  const { PDFName } = await getPdfLib();
   const found = [];
   let skipped = 0;
   const pages = doc.getPages();
@@ -158,11 +164,12 @@ function revokeAll() {
 }
 
 async function loadFile(file) {
+  const { PDFDocument } = await getPdfLib();
   revokeAll();
   const bytes = await file.arrayBuffer();
   const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
   const pageCount = doc.getPageCount();
-  const { found, skipped } = extractImages(doc);
+  const { found, skipped } = await extractImages(doc);
   images = found.map((img) => ({
     ...img,
     url: URL.createObjectURL(new Blob([img.bytes], { type: "image/jpeg" })),
