@@ -339,6 +339,11 @@ html, body {
   background: #201211;
 }
 .result-error strong { color: var(--danger); }
+.result-warning {
+  border-color: var(--ink-faint);
+  background: var(--bg-raised);
+}
+.result-warning strong { color: var(--ink); }
 
 @keyframes resultIn {
   from { opacity: 0; transform: translateY(6px); }

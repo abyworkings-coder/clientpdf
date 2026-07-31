@@ -3,19 +3,19 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Compress a PDF without uploading it — ClientPDF</title>
-<meta name="description" content="Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser. Nothing is uploaded, ever. Free, fast, private." />
+<title>Compress a PDF to 100KB, 1MB, or a target size — ClientPDF</title>
+<meta name="description" content="Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser. Pick a target — under 100KB, 500KB, or 1MB — and ClientPDF steps quality down until it fits. Nothing is uploaded, ever." />
 <link rel="canonical" href="https://abyworkings-coder.github.io/clientpdf/compress.html" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Compress a PDF without uploading it — ClientPDF" />
-<meta property="og:description" content="Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser. Nothing is uploaded, ever." />
+<meta property="og:title" content="Compress a PDF to 100KB, 1MB, or a target size — ClientPDF" />
+<meta property="og:description" content="Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser. Pick a target size and ClientPDF steps quality down until it fits." />
 <meta property="og:url" content="https://abyworkings-coder.github.io/clientpdf/compress.html" />
 <meta property="og:site_name" content="ClientPDF" />
 <meta property="og:image" content="https://abyworkings-coder.github.io/clientpdf/og-image.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta name="twitter:card" content="summary_large_image" />
-<meta name="twitter:title" content="Compress a PDF without uploading it — ClientPDF" />
+<meta name="twitter:title" content="Compress a PDF to 100KB, 1MB, or a target size — ClientPDF" />
 <meta name="twitter:description" content="Shrink a PDF's file size by re-encoding its embedded images, entirely in your browser." />
 <meta name="twitter:image" content="https://abyworkings-coder.github.io/clientpdf/og-image.jpg" />
 <link rel="icon" href="/logo.svg" type="image/svg+xml" />
@@ -80,20 +80,44 @@
     {
       "@type": "HowToStep",
       "position": 2,
-      "name": "Click Compress PDF",
-      "text": "ClientPDF re-encodes JPEG-filtered images embedded in the PDF at a smaller size — capping the longest edge at 1600px and re-encoding at quality 0.65 via a canvas round-trip — then rebuilds the file around the smaller images."
+      "name": "Optionally pick a target size",
+      "text": "Choose 'Under 100 KB', 'Under 500 KB', 'Under 1 MB', 'Under 5 MB', or 'No target — best quality'. ClientPDF re-encodes JPEG-filtered images embedded in the PDF and, if a target is set, automatically steps quality and max dimension down and retries until the file fits or hits a quality floor."
     },
     {
       "@type": "HowToStep",
       "position": 3,
-      "name": "Review the before/after size",
-      "text": "The tool shows the real result of the compression pass, and reports when there was nothing photographic to shrink."
+      "name": "Click Compress PDF",
+      "text": "ClientPDF re-encodes JPEG-filtered images embedded in the PDF at a smaller size — starting at quality 0.65 with the longest edge capped at 1600px via a canvas round-trip — then rebuilds the file around the smaller images."
     },
     {
       "@type": "HowToStep",
       "position": 4,
+      "name": "Review the before/after size",
+      "text": "The tool shows the real result of the compression pass, tells you if a target size was hit, and reports when there was nothing photographic to shrink."
+    },
+    {
+      "@type": "HowToStep",
+      "position": 5,
       "name": "Download the compressed PDF",
       "text": "Save the smaller file to your device."
+    }
+  ]
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do I compress a PDF to a specific size, like 100KB or 1MB?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Pick a target from the size options after you drop your file — Under 100 KB, Under 500 KB, Under 1 MB, or Under 5 MB. ClientPDF re-encodes the PDF's images at the default quality first, then automatically steps quality and max image dimension down in stages and re-runs until the result fits the target or hits a quality floor, so you don't have to guess and re-download repeatedly." }
+    },
+    {
+      "@type": "Question",
+      "name": "What happens if my PDF can't reach the target size I picked?",
+      "acceptedAnswer": { "@type": "Answer", "text": "If the smallest version ClientPDF can produce without severe quality loss is still over your target, it says so plainly and hands you that smallest version instead of silently failing or faking a number. This is usually because the PDF has little or no compressible JPEG content — see 'Why didn't my PDF shrink?' below." }
     }
   ]
 }
@@ -156,6 +180,12 @@
       the file — all inside this tab. Zero network requests after the page loads,
       same rule as every other tool here. Check the Network tab yourself.
     </p>
+    <p class="lede">
+      Need to hit a specific number — under 100KB for a form upload, under 1MB for
+      an email attachment limit? Pick a target size below and ClientPDF will
+      automatically step image quality down in stages and retry until your file
+      fits, instead of leaving you to guess and re-run manually.
+    </p>
   </section>
 
   <section class="tool" id="tool">
@@ -170,6 +200,16 @@
 
     <div class="split-panel" id="compressPanel" hidden>
       <div class="split-meta" id="compressMeta"></div>
+      <div class="field-row" id="targetSizeRow">
+        <label for="targetSizeSelect">Target size</label>
+        <div class="field-radio-group" id="targetSizeGroup" role="radiogroup" aria-label="Target size">
+          <label><input type="radio" name="targetSize" value="0" checked /> No target — best quality</label>
+          <label><input type="radio" name="targetSize" value="100" /> Under 100 KB</label>
+          <label><input type="radio" name="targetSize" value="500" /> Under 500 KB</label>
+          <label><input type="radio" name="targetSize" value="1024" /> Under 1 MB</label>
+          <label><input type="radio" name="targetSize" value="5120" /> Under 5 MB</label>
+        </div>
+      </div>
     </div>
 
     <ol class="file-list" id="fileList" aria-label="Loaded file"></ol>
@@ -219,7 +259,8 @@
 
 <section class="about">
   <h2>What "compress" means here, specifically</h2>
-  <p>This tool re-encodes JPEG-filtered images (the <code>/DCTDecode</code> streams) embedded in a PDF at a smaller size — capping the longest edge at 1600px and re-encoding at quality 0.65 via a canvas round-trip — then rebuilds the file around the smaller images. Images with transparency or a CMYK color space are skipped rather than guessed at, and if a re-encode wouldn't actually come out smaller, it's skipped too. The before/after size shown is always the real result of that pass, never a display trick.</p>
+  <p>This tool re-encodes JPEG-filtered images (the <code>/DCTDecode</code> streams) embedded in a PDF at a smaller size — starting at quality 0.65 with the longest edge capped at 1600px, via a canvas round-trip — then rebuilds the file around the smaller images. Images with transparency or a CMYK color space are skipped rather than guessed at, and if a re-encode wouldn't actually come out smaller, it's skipped too. The before/after size shown is always the real result of that pass, never a display trick.</p>
+  <p>Pick a target size (100 KB, 500 KB, 1 MB, 5 MB) instead of "no target" and the tool re-runs the same re-encode with quality and the max dimension stepped down in stages — 0.65 → 0.5 → 0.35, 1600px → 1200px → 900px — checking the real output size after every pass, until the file fits your target or hits a quality floor around 0.3. If it still can't reach your target without visibly damaging the images, it tells you that plainly and gives you the smallest version it could produce, rather than pretending it hit the number.</p>
   <p>If your file comes back close to its original size, that almost always means one of two things: it's mostly text or vector content with nothing photographic to shrink, or its images are already PNG/lossless-encoded rather than JPEG. <a href="./guide-compress.html">This walks through exactly which of those applies to your file, and what to try instead.</a> And if the PDF was already so large it struggled to load before you even clicked Compress, <a href="./guide-large-file-freeze.html">here's why, since that's a browser-memory limit compress itself can't get around.</a></p>
 </section>
 

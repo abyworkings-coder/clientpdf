@@ -11,10 +11,21 @@ const resultEl = document.getElementById("result");
 const compressPanel = document.getElementById("compressPanel");
 const compressMeta = document.getElementById("compressMeta");
 
-// Tunable knobs for the v1 default — no UI for these, on purpose (ship one
-// good default rather than a quality slider nobody asked for yet).
+// Default knobs used when no target size is picked — ship one good default
+// rather than a quality slider nobody asked for.
 const JPEG_QUALITY = 0.65;
 const MAX_DIMENSION = 1600; // longest side, in px, after downscale
+
+// When a target size IS picked, we retry with these quality/dimension pairs
+// in order (best quality first) until the output fits or we run out of
+// steps. The last entry is the quality floor — past this point further
+// shrinking would visibly damage the image, so we stop and report honestly.
+const TARGET_SIZE_STEPS = [
+  { quality: 0.65, maxDimension: 1600 },
+  { quality: 0.5, maxDimension: 1200 },
+  { quality: 0.35, maxDimension: 900 },
+  { quality: 0.3, maxDimension: 900 },
+];
 
 /** @type {{file: File, pageCount: number} | null} */
 let loaded = null;
@@ -133,11 +144,12 @@ function filterNames(dict) {
 
 /**
  * Decodes raw JPEG bytes in an <img>, draws them to an offscreen canvas
- * (downscaling if the longest side exceeds MAX_DIMENSION), and re-encodes
- * as JPEG at JPEG_QUALITY. Resolves to null if decoding fails or the result
- * isn't actually smaller — callers should keep the original bytes in that case.
+ * (downscaling if the longest side exceeds maxDimension), and re-encodes
+ * as JPEG at the given quality. Resolves to null if decoding fails or the
+ * result isn't actually smaller — callers should keep the original bytes in
+ * that case.
  */
-function recompressJpeg(bytes) {
+function recompressJpeg(bytes, quality, maxDimension) {
   return new Promise((resolve) => {
     let url;
     try {
@@ -157,7 +169,7 @@ function recompressJpeg(bytes) {
           resolve(null);
           return;
         }
-        const scale = Math.min(1, MAX_DIMENSION / Math.max(w, h));
+        const scale = Math.min(1, maxDimension / Math.max(w, h));
         const outW = Math.max(1, Math.round(w * scale));
         const outH = Math.max(1, Math.round(h * scale));
 
@@ -183,7 +195,7 @@ function recompressJpeg(bytes) {
               .catch(() => resolve(null));
           },
           "image/jpeg",
-          JPEG_QUALITY
+          quality
         );
       } catch (e) {
         resolve(null);
@@ -205,7 +217,7 @@ function recompressJpeg(bytes) {
  * sharing that image gets the compressed version automatically, and no
  * reference in the document is ever left dangling.
  */
-async function compressImages(doc) {
+async function compressImages(doc, quality, maxDimension) {
   const processedRefs = new Set();
   let compressedCount = 0;
   let skippedCount = 0;
@@ -251,7 +263,7 @@ async function compressImages(doc) {
         }
 
         const originalBytes = stream.getContents();
-        const newBytes = await recompressJpeg(originalBytes);
+        const newBytes = await recompressJpeg(originalBytes, quality, maxDimension);
         if (!newBytes || newBytes.length >= originalBytes.length) {
           skippedCount++;
           continue;
@@ -276,21 +288,78 @@ async function compressImages(doc) {
   return { compressedCount, skippedCount };
 }
 
-async function compressPdf() {
-  const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
-  const { compressedCount, skippedCount } = await compressImages(doc);
+/** Reads the checked target-size radio and returns bytes, or 0 for "no target". */
+function getTargetSizeBytes() {
+  const checked = document.querySelector('input[name="targetSize"]:checked');
+  const kb = checked ? Number(checked.value) : 0;
+  return kb > 0 ? kb * 1024 : 0;
+}
 
+/**
+ * Runs one compression pass (fresh doc load + compressImages + save) at a
+ * given quality/maxDimension and returns the result bytes plus counts.
+ * Reloads the PDF from the original file bytes each time because
+ * compressImages mutates doc.context in place — re-running on an already
+ * -mutated doc would double-compress already-compressed images.
+ */
+async function compressPass(quality, maxDimension) {
+  const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
+  const { compressedCount, skippedCount } = await compressImages(doc, quality, maxDimension);
   // Even with zero compressible images, re-serializing through pdf-lib
   // (object streams on) often shaves some size off text/vector-only PDFs.
   const bytes = await doc.save({ useObjectStreams: true });
+  return { bytes, compressedCount, skippedCount };
+}
+
+async function compressPdf() {
+  const targetBytes = getTargetSizeBytes();
+  const originalSize = loaded.file.size;
+
+  // No target picked: one pass at the standard default, same as before.
+  if (!targetBytes) {
+    const { bytes, compressedCount, skippedCount } = await compressPass(JPEG_QUALITY, MAX_DIMENSION);
+    return {
+      blob: new Blob([bytes], { type: "application/pdf" }),
+      fileName: `${baseName(loaded.file.name)}-compressed.pdf`,
+      compressedCount,
+      skippedCount,
+      originalSize,
+      newSize: bytes.length,
+      targetBytes: 0,
+      targetHit: null,
+      stepsTried: 1,
+    };
+  }
+
+  // Target picked: try each step (best quality first), stopping as soon as
+  // the output fits. If we run out of steps, keep the smallest attempt and
+  // report honestly that the target wasn't reached.
+  let best = null;
+  let stepsTried = 0;
+  for (const step of TARGET_SIZE_STEPS) {
+    stepsTried++;
+    const attempt = await compressPass(step.quality, step.maxDimension);
+    if (!best || attempt.bytes.length < best.bytes.length) {
+      best = attempt;
+    }
+    if (attempt.bytes.length <= targetBytes) {
+      best = attempt;
+      break;
+    }
+  }
+
+  const targetHit = best.bytes.length <= targetBytes;
 
   return {
-    blob: new Blob([bytes], { type: "application/pdf" }),
+    blob: new Blob([best.bytes], { type: "application/pdf" }),
     fileName: `${baseName(loaded.file.name)}-compressed.pdf`,
-    compressedCount,
-    skippedCount,
-    originalSize: loaded.file.size,
-    newSize: bytes.length,
+    compressedCount: best.compressedCount,
+    skippedCount: best.skippedCount,
+    originalSize,
+    newSize: best.bytes.length,
+    targetBytes,
+    targetHit,
+    stepsTried,
   };
 }
 
@@ -304,7 +373,8 @@ compressBtn.addEventListener("click", async () => {
   const requestsBefore = requestsSinceLoad;
 
   try {
-    const { blob, fileName, compressedCount, skippedCount, originalSize, newSize } = await compressPdf();
+    const { blob, fileName, compressedCount, skippedCount, originalSize, newSize, targetBytes, targetHit, stepsTried } =
+      await compressPdf();
     const url = URL.createObjectURL(blob);
     const elapsedMs = Math.round(performance.now() - startedAt);
     const requestsDuring = requestsSinceLoad - requestsBefore;
@@ -326,10 +396,27 @@ compressBtn.addEventListener("click", async () => {
           }.`
         : `No compressible JPEG images found in this PDF — only re-serialized the file structure.`;
 
+    let targetLine = "";
+    let resultClass = "result";
+    if (targetBytes) {
+      if (targetHit) {
+        targetLine = ` Hit your target of under ${formatSize(targetBytes)}${
+          stepsTried > 1 ? ` (took ${stepsTried} compression pass${stepsTried === 1 ? "" : "es"})` : ""
+        }.`;
+      } else {
+        targetLine = ` Couldn't reach your target of under ${formatSize(
+          targetBytes
+        )} without significant quality loss — this is the smallest version we could produce after ${stepsTried} pass${
+          stepsTried === 1 ? "" : "es"
+        } at our quality floor.`;
+        resultClass = "result result-warning";
+      }
+    }
+
     resultEl.hidden = false;
-    resultEl.className = "result";
+    resultEl.className = resultClass;
     resultEl.innerHTML = `
-      <span><strong>Done.</strong> ${sizeLine}. ${imageLine}
+      <span><strong>Done.</strong> ${sizeLine}.${targetLine} ${imageLine}
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
       <a class="btn btn-primary" href="${url}" download="${fileName}">Download ${fileName}</a>
     `;

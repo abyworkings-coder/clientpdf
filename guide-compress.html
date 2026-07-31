@@ -79,6 +79,16 @@
       "@type": "Question",
       "name": "What actually reduces a scanned PDF's file size?",
       "acceptedAnswer": { "@type": "Answer", "text": "A scanned PDF is usually a sequence of full-page images, often saved as PNG or Flate/CCITT-encoded bitmaps rather than JPEG. Shrinking those requires decoding the image, re-encoding it as JPEG (which is lossy but far smaller for photographic content), and rebuilding the PDF around the new image — a different code path than re-compressing an existing JPEG." }
+    },
+    {
+      "@type": "Question",
+      "name": "How do I compress a PDF to an exact size like 100KB or 1MB?",
+      "acceptedAnswer": { "@type": "Answer", "text": "Use the target-size option on ClientPDF's compress tool: pick Under 100 KB, Under 500 KB, Under 1 MB, or Under 5 MB instead of the default best-quality setting, and it automatically re-runs the JPEG re-encode at progressively lower quality and image dimensions until the output fits your target or hits a quality floor." }
+    },
+    {
+      "@type": "Question",
+      "name": "What if my PDF can't be compressed small enough to hit my target?",
+      "acceptedAnswer": { "@type": "Answer", "text": "If the smallest version reachable without severe quality loss is still over your target, ClientPDF tells you plainly and gives you that smallest version rather than pretending it hit the number. This almost always means the file has little or no compressible JPEG content to begin with — see the reasons above." }
     }
   ]
 }
@@ -189,6 +199,30 @@
       <a href="./compress.html">ClientPDF's compressor</a> targets the common case —
       PDFs with existing JPEG images — honestly, and tells you when there's nothing
       compressible found rather than pretending to have done work it didn't do.
+    </p>
+
+    <h2>How to compress a PDF to an exact size (100KB, 1MB, etc.)</h2>
+    <p>
+      Everything above explains why a fixed-quality compressor sometimes doesn't
+      move the number at all — but if you actually need the file under a specific
+      size (a 1MB email attachment limit, a 100KB form upload cap), guessing at
+      quality settings and re-running the tool by hand is tedious.
+      <a href="./compress.html">ClientPDF's compressor</a> now has a target-size
+      option for exactly this: pick "Under 100 KB," "Under 500 KB," "Under 1 MB,"
+      or "Under 5 MB" instead of the default "No target — best quality," and the
+      tool re-runs the same JPEG re-encode pass with quality and max image
+      dimension stepped down in stages — 0.65 → 0.5 → 0.35 → 0.3, image edge
+      capped at 1600px → 1200px → 900px — checking the real output size after
+      each pass, until it fits or hits a quality floor.
+    </p>
+    <p>
+      If the file still can't reach your target at that floor without visibly
+      damaging the images, the tool says so directly and hands you the smallest
+      version it could produce, rather than silently returning something over
+      your limit or faking a number. As explained above, this only works on
+      PDFs with compressible JPEG content in the first place — a text-only PDF
+      or one that's already PNG-encoded won't shrink further no matter how many
+      passes it runs.
     </p>
 
     <div class="cta-box">
