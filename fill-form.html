@@ -157,6 +157,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Typing into an existing form, not creating one</h2>
+  <p>Fill Form Fields reads an AcroForm already built into a PDF — text fields, checkboxes, radio buttons, dropdowns, and multi-select lists — and lets you type or select values directly, using pdf-lib's <code>setText</code>/<code>check</code>/<code>select</code> accessors, then downloads the file with those fields still interactive and editable later. Button and signature fields are detected and shown as unsupported rather than silently ignored, since there's no reliable way to fill either of those without a real signing flow.</p>
+  <p>This only works on a form the PDF actually has built in — it doesn't create new fields on a static page. If the form stopped registering input properly after a split or reorder somewhere upstream, <a href="./guide-split-reorder-form-fields.html">this explains what breaks and how to avoid it</a>. Once you're happy with the values, <a href="./flatten.html">Flatten Form Fields</a> is the tool that locks them in permanently.</p>
+</section>
+
 </main>
 
 <footer class="footer">

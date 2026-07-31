@@ -443,6 +443,14 @@ html, body {
 .article .cta-box { background: var(--bg-card); border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 24px; margin: 32px 0; }
 .article .cta-box p { margin: 0 0 12px; }
 
+/* Tool page body copy (what/why/how) */
+.about { padding: 12px 0 56px; border-top: 1px solid var(--line); max-width: 680px; }
+.about h2 { font-family: var(--serif); font-weight: 500; font-size: 1.3rem; margin: 0 0 14px; color: var(--ink); }
+.about p { color: var(--ink-dim); margin: 0 0 14px; font-size: 0.92rem; }
+.about p:last-child { margin-bottom: 0; }
+.about a { color: var(--accent); }
+.about strong { color: var(--ink); }
+
 .footer {
   border-top: 1px solid var(--line);
   padding: 22px 0 40px;

@@ -154,6 +154,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>What "compress" means here, specifically</h2>
+  <p>This tool re-encodes JPEG-filtered images (the <code>/DCTDecode</code> streams) embedded in a PDF at a smaller size — capping the longest edge at 1600px and re-encoding at quality 0.65 via a canvas round-trip — then rebuilds the file around the smaller images. Images with transparency or a CMYK color space are skipped rather than guessed at, and if a re-encode wouldn't actually come out smaller, it's skipped too. The before/after size shown is always the real result of that pass, never a display trick.</p>
+  <p>If your file comes back close to its original size, that almost always means one of two things: it's mostly text or vector content with nothing photographic to shrink, or its images are already PNG/lossless-encoded rather than JPEG. <a href="./guide-compress.html">This walks through exactly which of those applies to your file, and what to try instead.</a> And if the PDF was already so large it struggled to load before you even clicked Compress, <a href="./guide-large-file-freeze.html">here's why, since that's a browser-memory limit compress itself can't get around.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

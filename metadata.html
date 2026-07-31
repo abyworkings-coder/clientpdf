@@ -183,6 +183,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Reading and rewriting a PDF's document properties</h2>
+  <p>Metadata reads and lets you edit a PDF's Title, Author, Subject, Keywords, Creation Date, and Modification Date — the fields that show up in a file's "Properties" panel in any PDF reader, not anything printed on the pages themselves. Useful for cleaning up a scanner's generic "Untitled_Scan_04212019" title before you send a document out, or stripping an old author name from a template you've reused.</p>
+  <p>The Producer field is deliberately not exposed as editable here: pdf-lib rewrites it to its own signature on every save regardless of what you set it to, so leaving it out avoids showing a value in the UI that wouldn't actually stick. As with every tool on this site, an encrypted PDF's metadata can't be read or edited until it's decrypted first — <a href="./guide-password-protected.html">here's why password-protected files don't open here.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

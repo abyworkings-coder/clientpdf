@@ -170,6 +170,12 @@
 
   <p class="article-meta">Splitting out a page with a fillable form field? <a href="./guide-split-reorder-form-fields.html">Here's why it may stop being fillable, and what to do about it.</a></p>
 
+<section class="about">
+  <h2>Pulling pages out vs. exploding a whole file</h2>
+  <p>Split has two distinct modes: pull a specific page range out as one file, or explode every page of the source PDF into its own separate file, downloaded together as a .zip. Both run through the same page-extraction path in pdf-lib — nothing is rasterized, so extracted pages keep their original text, fonts, and vector content byte-for-byte.</p>
+  <p>If the PDF you're splitting has a fillable form, be aware that pulling pages out of the middle of a form can orphan fields that reference each other across pages — <a href="./guide-split-reorder-form-fields.html">here's why the fields may stop being fillable afterward, and what to do about it</a>. And a several-hundred-page source file will take longer to explode into individual files than most people expect, since there's no server queue doing that work in the background — see <a href="./guide-large-file-freeze.html">why large files can stall a tab</a> if that happens to you.</p>
+</section>
+
 </main>
 
 <footer class="footer">

@@ -163,6 +163,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Adding a table of contents a reader can click through</h2>
+  <p>Add Bookmarks writes named outline entries that jump straight to a page in any PDF reader's sidebar — built at a low level via pdf-lib's <code>context.nextRef</code>/<code>context.assign</code>, since pdf-lib has no built-in outline helper, with the <code>/Outlines</code> dictionary and each entry's Parent/First/Last/Next/Prev links assembled by hand per the PDF spec. Entries are sorted by page number before linking, so the sidebar always reads top-to-bottom regardless of the order you added them in.</p>
+  <p>This is the direct fix if you've just come from merging several files and noticed the combined PDF lost its original tables of contents — <a href="./guide-merge-bookmarks.html">merging doesn't carry bookmarks over automatically, and this explains why, but adding them back here only takes a minute.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

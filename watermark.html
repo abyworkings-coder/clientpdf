@@ -178,6 +178,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Stamping text without touching the page underneath</h2>
+  <p>Watermark draws your text across every page using pdf-lib's native <code>drawText</code>, with control over opacity and rotation angle — it's additive, layered on top of the existing content rather than replacing or reflowing it, so the original page is fully intact underneath if you ever need to remove the watermark by regenerating from the source file.</p>
+  <p>Because it's drawn text rather than a burned-in image, the watermark stays crisp at any zoom level and adds only a few bytes per page to the file. One caveat that applies to this tool same as every other one here: a PDF encrypted with an open password can't be loaded at all before watermarking even starts — <a href="./guide-password-protected.html">here's why, and what your options are.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

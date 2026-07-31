@@ -186,6 +186,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Rescaling the page itself, not just the view</h2>
+  <p>Resize Pages changes a page's actual MediaBox and CropBox dimensions and its content transformation matrix together, via pdf-lib's <code>page.scale()</code> — so the content genuinely gets bigger or smaller, unlike zooming in a viewer. Pick a standard target (A4, Letter, Legal, A3, A5) or a raw percentage; "fit to size" mode scales uniformly using the smaller of the two axis ratios, so content never distorts even when the source and target aspect ratios don't match.</p>
+  <p>This is a different operation from <a href="./crop.html">Crop</a>, which only changes what's visible without touching page dimensions or scale. Rescaling every page of a long or image-heavy PDF at once is one of the more memory-intensive operations here, since each page's content has to be recomputed — <a href="./guide-large-file-freeze.html">if a big file stalls mid-resize, here's why.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

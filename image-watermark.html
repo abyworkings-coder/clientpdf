@@ -197,6 +197,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Stamping a logo instead of typed text</h2>
+  <p>Image Watermark embeds a PNG or JPG you supply onto every page via pdf-lib's <code>embedPng</code>/<code>embedJpg</code> and <code>drawImage</code>, with control over opacity, scale as a percentage of page width, and one of nine anchor positions. The image type is detected from the file's actual signature bytes, not just its extension, so a mislabeled file fails with a clear message instead of throwing a raw error partway through. Aspect ratio is preserved automatically, so a logo never comes out stretched regardless of the page it lands on.</p>
+  <p>Embedding a full-resolution logo image onto every page of a long document adds up — a hundred-page PDF with the same watermark on each page is meaningfully heavier to build in the browser than a text watermark would be. <a href="./guide-large-file-freeze.html">If a long document stalls while watermarking, this is usually why.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

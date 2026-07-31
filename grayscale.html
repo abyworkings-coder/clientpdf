@@ -163,6 +163,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Converting drawing instructions, not pixels</h2>
+  <p>Grayscale PDF rewrites the RGB/CMYK color-setting operators inside each page's own content stream (<code>rg</code>, <code>RG</code>, <code>k</code>, <code>K</code>) to their grayscale equivalents using the standard luminosity formula, decoding each stream, regex-rewriting the color values on token boundaries, and writing it back — a genuinely different code path from every other tool here, since it edits drawing instructions rather than page structure or embedded assets.</p>
+  <p>That also means it's honest about its limits: pattern, Separation, and ICC-based color spaces, plus any embedded raster images, are intentionally left untouched rather than guessed at — so a scanned page that's really just one big colored image won't visibly change here, only vector graphics and text-drawing colors will. If that's what you need converted, this isn't the right tool for it yet. As with the other tools, a locked PDF can't be processed at all — <a href="./guide-password-protected.html">here's why password-protected files don't open here.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

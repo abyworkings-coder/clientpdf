@@ -186,6 +186,12 @@
 
   <p class="article-meta">Rotated file looks right here but sideways somewhere else? <a href="./guide-rotate-viewer-mismatch.html">Here's why, and how to make it stick everywhere.</a></p>
 
+<section class="about">
+  <h2>Fixing pages that scanned in sideways</h2>
+  <p>Rotate sets the PDF page's own rotation property in 90° increments — it doesn't redraw or re-render the page content, so a sideways-scanned page stays exactly as sharp after rotating as before. Apply it to a single page, a range, or the whole document, which matters for double-sided scans where only the even pages came in upside down.</p>
+  <p>If a rotated PDF looks correct in the browser preview here but comes out sideways again in another PDF reader (or vice versa), that's not this tool failing — different viewers can disagree on how to honor the page rotation flag. <a href="./guide-rotate-viewer-mismatch.html">Here's why that happens and how to make the rotation stick everywhere.</a> If you're also stamping page numbers on a rotated document, <a href="./guide-page-numbers-rotated.html">check this first</a> — rotation changes which corner "top-right" actually means.</p>
+</section>
+
 </main>
 
 <footer class="footer">

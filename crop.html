@@ -181,6 +181,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Trimming what's visible, not what's there</h2>
+  <p>Crop sets a custom CropBox on every page — the region a compliant PDF viewer actually renders — by margins you specify for each side, in points. It's the right tool for trimming a wide scan margin or removing a printer's bleed area before sharing a document.</p>
+  <p>Worth knowing before you rely on this for anything sensitive: cropping doesn't delete the content outside the new CropBox, it only hides it from view. The original page content stream, including anything trimmed away, is still physically present in the file and recoverable by anyone who knows to look for it — this is not a redaction tool. If you need something permanently removed, use <a href="./delete-pages.html">Delete Pages</a> for whole pages, since there's currently no tool here for redacting part of a page's content.</p>
+</section>
+
 </main>
 
 <footer class="footer">

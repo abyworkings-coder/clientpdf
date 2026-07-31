@@ -177,6 +177,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Drawing a frame without touching what's inside it</h2>
+  <p>Page Borders draws an unfilled rectangular outline on every page — margin, color, and stroke width are all yours to set — via pdf-lib's <code>drawRectangle</code>, the same drawing primitive Watermark's text and Resize's scaling build on, just used here for a stroke-only shape. The margin you enter is validated against half of the page's own smallest dimension, so an oversized value fails cleanly with a message instead of drawing a rectangle that's inverted or doesn't make sense.</p>
+  <p>This only adds a border; it doesn't rescale the page like <a href="./resize.html">Resize Pages</a> or overlay content like <a href="./watermark.html">Watermark</a> — everything else on the page stays exactly where it was. Same rule as everywhere else here: a password-protected file has to be decrypted before this or any tool can touch it — <a href="./guide-password-protected.html">here's why.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

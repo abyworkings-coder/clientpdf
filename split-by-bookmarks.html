@@ -155,6 +155,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Splitting by structure instead of by page number</h2>
+  <p>Split by Bookmarks reads a PDF's <em>existing</em> outline — rather than writing one, the way <a href="./bookmarks.html">Add Bookmarks</a> does — walking the <code>/Outlines</code> linked list and resolving each entry's target page through either a direct <code>/Dest</code> array or an <code>/A</code> GoTo action's <code>/D</code> array, which covers PDFs exported from Word or LibreOffice as well as ones built with pdf-lib. Each bookmarked section is then extracted as its own file, running from one bookmark to the next (or to the end of the document).</p>
+  <p>This only works if the source PDF has bookmarks to read in the first place. If you merged several files and the combined document came out with no outline at all, <a href="./guide-merge-bookmarks.html">here's why merging drops bookmarks by default, and how to rebuild them with Add Bookmarks first</a> — then this tool has something to split on.</p>
+</section>
+
 </main>
 
 <footer class="footer">

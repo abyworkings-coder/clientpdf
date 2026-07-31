@@ -150,6 +150,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>What merging actually does, and what it doesn't</h2>
+  <p>Merge takes every PDF you drop in, in the order you drop them, and concatenates their pages into one new file using <a href="https://github.com/Hopding/pdf-lib" target="_blank" rel="noopener">pdf-lib</a>'s page-copying API — it isn't re-rendering or flattening anything, so text stays selectable, links stay clickable, and vector graphics stay sharp. Reorder the file list before you merge; there's no way to reorder pages inside the combined output afterward without a second pass through <a href="./reorder.html">Reorder</a>.</p>
+  <p>Two things worth knowing before you rely on this for something official: bookmarks and outline entries from your source files don't automatically carry into the merged PDF — <a href="./guide-merge-bookmarks.html">here's what does and doesn't survive a merge, and how to add them back</a>. And dropping in a dozen large scans at once asks a lot of a browser tab with no server to offload to; if it stalls, <a href="./guide-large-file-freeze.html">this explains why and how to work around it</a>.</p>
+</section>
+
 </main>
 
 <footer class="footer">

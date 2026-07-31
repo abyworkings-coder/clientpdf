@@ -155,6 +155,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Pulling the original image files back out</h2>
+  <p>Extract Images walks a PDF's page resources looking for JPEG-filtered image streams (<code>/DCTDecode</code>) and pulls their raw bytes back out as standalone <code>.jpg</code> files — since a JPEG stream inside a PDF is already a byte-identical JPEG file, there's no re-encoding or quality loss involved, unlike Compress. Images using other encodings (raw Flate-compressed pixel data, JPEG2000, CCITT fax) are reported as skipped rather than silently dropped or falsely claimed as extracted, so the count you see always matches what actually downloaded.</p>
+  <p>Pulling images from a PDF with dozens of embedded photos, or a scanned document where every page <em>is</em> an image, means holding a lot of decoded image data in memory at once before it's zipped up. <a href="./guide-large-file-freeze.html">If that makes the tab sluggish on a large source file, this explains why.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">

@@ -175,6 +175,12 @@
     </div>
   </section>
 
+<section class="about">
+  <h2>Compositing pages, not just shrinking them</h2>
+  <p>Pages per Sheet lays 2 or 4 original pages onto each printed sheet using pdf-lib's <code>embedPages</code>/<code>drawPage</code> — genuinely different from cropping or resizing, since it composites multiple source pages into a brand-new page rather than trimming or rescaling existing ones. Choose a landscape or portrait sheet layout; each source page is scaled and centered within its cell automatically, saving paper and ink for anything you're printing rather than reading on screen.</p>
+  <p>Compositing multiple full pages into each output page means the tool is effectively re-rendering the whole document — for a long or image-heavy source PDF, that's more work for the browser to do at once than a straightforward page reorder. <a href="./guide-large-file-freeze.html">If a big file stalls while combining, here's why, and what to try.</a></p>
+</section>
+
 </main>
 
 <footer class="footer">
