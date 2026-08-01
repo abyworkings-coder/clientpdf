@@ -2,7 +2,7 @@
 
 > Free, browser-based PDF tools. Every operation — merge, split, compress, rotate, watermark, and more — runs entirely client-side using pdf-lib in JavaScript. No file is ever uploaded to a server; nothing to sign up for.
 
-ClientPDF is a static site (GitHub Pages) offering 23 single-purpose PDF tools plus troubleshooting guides and comparison pages against upload-based competitors (Smallpdf, iLovePDF, PDF2Go). All processing happens in the user's browser; files never leave the device.
+ClientPDF is a static site (GitHub Pages) offering 25 single-purpose PDF tools plus troubleshooting guides and comparison pages against upload-based competitors (Smallpdf, iLovePDF, PDF2Go). All processing happens in the user's browser; files never leave the device.
 
 ## Tools
 
@@ -29,6 +29,7 @@ ClientPDF is a static site (GitHub Pages) offering 23 single-purpose PDF tools p
 - [Fill Form Fields](https://abyworkings-coder.github.io/clientpdf/fill-form.html): fill out PDF form fields
 - [Add Bookmarks](https://abyworkings-coder.github.io/clientpdf/bookmarks.html): add a bookmark/outline structure to a PDF
 - [Pages per Sheet](https://abyworkings-coder.github.io/clientpdf/pages-per-sheet.html): print multiple pages onto a single sheet (N-up)
+- [Redact](https://abyworkings-coder.github.io/clientpdf/redact.html): remove text runs under a drawn rectangle and black out the area
 - [All Tools](https://abyworkings-coder.github.io/clientpdf/tools.html): full listing of every tool above
 
 ## Guides

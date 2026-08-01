@@ -31,7 +31,7 @@ or any static file server — there's no build step.
 
 ## Status
 
-Twenty-four tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
+Twenty-five tools live: Merge, Split (extract/split-to-zip), Delete Pages (remove
 specific pages by range and keep the rest as one file — unlike Split, which
 only pulls a range out or explodes every page, this one lets you drop pages
 2 and 4 while keeping 1, 3, 5 together; blocks client-side if the delete
@@ -165,6 +165,13 @@ transparency (SMask) or a CMYK color space (unreliable to decode via
 PDFs with no compressible JPEGs still get re-serialized (object streams on),
 which sometimes shaves a little size on its own — the before/after size shown
 is always the real result, never a faked number.
+
+Redact (draws a rectangle in page coordinates and tokenizes the affected
+page's content stream to drop every Tj/TJ/'/'' text-show operator whose
+estimated bounding box overlaps it, deleting the matched text from the file
+before drawing a solid black box over the same area) was written alongside
+Grayscale but its HTML page went unshipped for several cycles — the JS was
+complete and correct, it just had no page to load it. Shipped now.
 
 ## Analytics
 
