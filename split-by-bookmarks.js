@@ -124,7 +124,10 @@ async function readTopLevelOutline(doc) {
 function buildSections(items, pageCount) {
   const sorted = [...items].sort((a, b) => a.pageIndex - b.pageIndex);
   return sorted.map((item, i) => {
-    const endPage = i < sorted.length - 1 ? sorted[i + 1].pageIndex - 1 : pageCount - 1;
+    const endPage =
+      i < sorted.length - 1
+        ? Math.max(sorted[i + 1].pageIndex - 1, item.pageIndex)
+        : pageCount - 1;
     return { title: item.title, startPage: item.pageIndex, endPage };
   });
 }
