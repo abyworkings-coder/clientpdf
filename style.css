@@ -331,6 +331,20 @@ html, body {
   padding: 2px 4px;
 }
 .file-row .remove:hover { color: var(--danger); }
+.file-row .move-up,
+.file-row .move-down {
+  background: none;
+  border: none;
+  color: var(--ink-faint);
+  cursor: pointer;
+  font-size: 0.9rem;
+  line-height: 1;
+  padding: 2px 4px;
+}
+.file-row .move-up:hover:not(:disabled),
+.file-row .move-down:hover:not(:disabled) { color: var(--ink); }
+.file-row .move-up:disabled,
+.file-row .move-down:disabled { opacity: 0.3; cursor: default; }
 .file-row .row-btn {
   background: none;
   border: 1px solid var(--line);

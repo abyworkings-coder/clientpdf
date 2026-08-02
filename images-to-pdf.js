@@ -61,6 +61,8 @@ function renderList() {
       <span class="handle">⠿</span>
       <span class="name">${i + 1}. ${escapeHtml(entry.file.name)}</span>
       <span class="size">${formatSize(entry.file.size)}</span>
+      <button class="move-up" type="button" aria-label="Move ${escapeHtml(entry.file.name)} up" ${i === 0 ? "disabled" : ""}>↑</button>
+      <button class="move-down" type="button" aria-label="Move ${escapeHtml(entry.file.name)} down" ${i === images.length - 1 ? "disabled" : ""}>↓</button>
       <button class="remove" type="button" aria-label="Remove ${escapeHtml(entry.file.name)}">✕</button>
     `;
 
@@ -68,6 +70,18 @@ function renderList() {
       images = images.filter((f) => f.id !== entry.id);
       renderList();
       updateActions();
+    });
+
+    li.querySelector(".move-up").addEventListener("click", () => {
+      if (i === 0) return;
+      [images[i - 1], images[i]] = [images[i], images[i - 1]];
+      renderList();
+    });
+
+    li.querySelector(".move-down").addEventListener("click", () => {
+      if (i === images.length - 1) return;
+      [images[i], images[i + 1]] = [images[i + 1], images[i]];
+      renderList();
     });
 
     li.addEventListener("dragstart", () => {

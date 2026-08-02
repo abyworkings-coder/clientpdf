@@ -66,6 +66,8 @@ function renderPages() {
     li.innerHTML = `
       <span class="handle">⠿</span>
       <span class="name">${position + 1}. Page ${pageIndex + 1} of ${escapeHtml(loaded.file.name)}</span>
+      <button class="move-up" type="button" aria-label="Move page ${pageIndex + 1} up" ${position === 0 ? "disabled" : ""}>↑</button>
+      <button class="move-down" type="button" aria-label="Move page ${pageIndex + 1} down" ${position === loaded.order.length - 1 ? "disabled" : ""}>↓</button>
       <button class="remove" type="button" aria-label="Remove page ${pageIndex + 1}">✕</button>
     `;
 
@@ -73,6 +75,20 @@ function renderPages() {
       loaded.order.splice(position, 1);
       renderPages();
       updateActions();
+    });
+
+    li.querySelector(".move-up").addEventListener("click", () => {
+      if (position === 0) return;
+      const [moved] = loaded.order.splice(position, 1);
+      loaded.order.splice(position - 1, 0, moved);
+      renderPages();
+    });
+
+    li.querySelector(".move-down").addEventListener("click", () => {
+      if (position === loaded.order.length - 1) return;
+      const [moved] = loaded.order.splice(position, 1);
+      loaded.order.splice(position + 1, 0, moved);
+      renderPages();
     });
 
     li.addEventListener("dragstart", () => {
