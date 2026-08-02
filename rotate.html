@@ -178,7 +178,7 @@
     <div class="split-panel" id="rotatePanel" hidden>
       <div class="split-meta" id="rotateMeta"></div>
 
-      <div class="split-mode">
+      <div class="split-mode" role="radiogroup" aria-label="Rotation scope">
         <label class="split-mode-option">
           <input type="radio" name="rotateScope" value="all" checked />
           <span>Rotate every page</span>
@@ -194,7 +194,7 @@
         <input type="text" id="rotateRangeInput" placeholder="e.g. 1-3, 5, 8-10" />
       </div>
 
-      <div class="split-mode">
+      <div class="split-mode" role="radiogroup" aria-label="Rotation angle">
         <label class="split-mode-option">
           <input type="radio" name="rotateAngle" value="90" checked />
           <span>90° clockwise</span>
