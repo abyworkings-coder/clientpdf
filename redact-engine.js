@@ -89,7 +89,31 @@ function tokenize(text) {
     let start = i;
     while (i < n && !/[\s/[\]<>()]/.test(text[i])) i++;
     if (i === start) { i++; continue; }
-    tokens.push({ type: "op", raw: text.slice(start, i) });
+    const rawOp = text.slice(start, i);
+    tokens.push({ type: "op", raw: rawOp });
+    if (rawOp === "ID") {
+      // Inline image: exactly one whitespace byte separates ID from the raw
+      // (often binary) image data, which runs until whitespace+"EI"+delimiter.
+      // That data is arbitrary bytes, not PDF syntax, so it must be captured
+      // verbatim rather than re-tokenized (binary can contain "(", ")", etc.
+      // that would otherwise desync the parser for the rest of the stream).
+      const dataStart = i + 1;
+      let j = dataStart;
+      while (j < n) {
+        if (
+          /\s/.test(text[j]) &&
+          text[j + 1] === "E" &&
+          text[j + 2] === "I" &&
+          (j + 3 >= n || /[\s/[\]<>()]/.test(text[j + 3]))
+        ) {
+          break;
+        }
+        j++;
+      }
+      tokens.push({ type: "raw", raw: text.slice(dataStart, j) });
+      tokens.push({ type: "op", raw: "EI" });
+      i = j + 3;
+    }
   }
   return tokens;
 }
