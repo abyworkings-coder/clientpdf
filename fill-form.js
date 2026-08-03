@@ -178,19 +178,32 @@ function updateActions() {
 }
 
 async function loadFile(file) {
-  const pdfLib = await getPdfLib();
-  const { PDFDocument } = pdfLib;
-  const bytes = await file.arrayBuffer();
-  const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-  const form = doc.getForm();
-  const fields = form.getFields().map((field) => ({
-    name: field.getName(),
-    ...classifyField(field, pdfLib),
-  }));
-  loaded = { file, pageCount: doc.getPageCount(), fields };
-  renderFile();
-  renderFields();
-  updateActions();
+  try {
+    const pdfLib = await getPdfLib();
+    const { PDFDocument } = pdfLib;
+    const bytes = await file.arrayBuffer();
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+    const form = doc.getForm();
+    const fields = form.getFields().map((field) => ({
+      name: field.getName(),
+      ...classifyField(field, pdfLib),
+    }));
+    loaded = { file, pageCount: doc.getPageCount(), fields };
+    renderFile();
+    renderFields();
+    updateActions();
+  } catch (err) {
+    loaded = null;
+    fileInput.value = "";
+    renderFile();
+    renderFields();
+    updateActions();
+    resultEl.hidden = false;
+    resultEl.className = "result result-error";
+    resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
+      err instanceof Error ? err.message : "This file may be corrupted or password-protected."
+    )}</span>`;
+  }
 }
 
 dropzone.addEventListener("click", () => fileInput.click());

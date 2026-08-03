@@ -164,21 +164,37 @@ function revokeAll() {
 }
 
 async function loadFile(file) {
-  const { PDFDocument } = await getPdfLib();
-  revokeAll();
-  const bytes = await file.arrayBuffer();
-  const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-  const pageCount = doc.getPageCount();
-  const { found, skipped } = await extractImages(doc);
-  images = found.map((img) => ({
-    ...img,
-    url: URL.createObjectURL(new Blob([img.bytes], { type: "image/jpeg" })),
-  }));
-  skippedCount = skipped;
-  loaded = { file, pageCount };
-  renderFile();
-  renderImages();
-  updateActions();
+  try {
+    const { PDFDocument } = await getPdfLib();
+    revokeAll();
+    const bytes = await file.arrayBuffer();
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+    const pageCount = doc.getPageCount();
+    const { found, skipped } = await extractImages(doc);
+    images = found.map((img) => ({
+      ...img,
+      url: URL.createObjectURL(new Blob([img.bytes], { type: "image/jpeg" })),
+    }));
+    skippedCount = skipped;
+    loaded = { file, pageCount };
+    renderFile();
+    renderImages();
+    updateActions();
+  } catch (err) {
+    revokeAll();
+    loaded = null;
+    images = [];
+    skippedCount = 0;
+    fileInput.value = "";
+    renderFile();
+    renderImages();
+    updateActions();
+    resultEl.hidden = false;
+    resultEl.className = "result result-error";
+    resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
+      err instanceof Error ? err.message : "This file may be corrupted or password-protected."
+    )}</span>`;
+  }
 }
 
 dropzone.addEventListener("click", () => fileInput.click());

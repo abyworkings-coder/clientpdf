@@ -107,12 +107,27 @@ function updateActions() {
 }
 
 async function loadFile(file) {
-  const { PDFDocument } = await getPdfLib();
-  const bytes = await file.arrayBuffer();
-  const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-  loaded = { file, pageCount: doc.getPageCount() };
-  renderFile();
-  updateActions();
+  try {
+    const { PDFDocument } = await getPdfLib();
+    const bytes = await file.arrayBuffer();
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+    loaded = { file, pageCount: doc.getPageCount() };
+    renderFile();
+    updateActions();
+  } catch (err) {
+    loaded = null;
+    logo = null;
+    fileInput.value = "";
+    imgInput.value = "";
+    renderFile();
+    renderLogo();
+    updateActions();
+    resultEl.hidden = false;
+    resultEl.className = "result result-error";
+    resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
+      err instanceof Error ? err.message : "This file may be corrupted or password-protected."
+    )}</span>`;
+  }
 }
 
 /** Detect PNG vs JPEG by file signature (magic bytes), not just extension/MIME. */

@@ -97,23 +97,41 @@ function updateActions() {
 }
 
 async function loadFile(file) {
-  const { PDFDocument } = await getPdfLib();
-  const bytes = await file.arrayBuffer();
-  const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
-  loaded = { file, pageCount: doc.getPageCount() };
+  try {
+    const { PDFDocument } = await getPdfLib();
+    const bytes = await file.arrayBuffer();
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+    loaded = { file, pageCount: doc.getPageCount() };
 
-  titleInput.value = doc.getTitle() || "";
-  authorInput.value = doc.getAuthor() || "";
-  subjectInput.value = doc.getSubject() || "";
-  const keywords = doc.getKeywords();
-  // pdf-lib returns getKeywords() as a single space-joined string; show it
-  // comma-separated in the UI for easier editing either way.
-  keywordsInput.value = keywords ? keywords.split(/\s+/).filter(Boolean).join(", ") : "";
-  createdInput.value = dateToLocalInputValue(doc.getCreationDate());
-  modifiedInput.value = dateToLocalInputValue(doc.getModificationDate());
+    titleInput.value = doc.getTitle() || "";
+    authorInput.value = doc.getAuthor() || "";
+    subjectInput.value = doc.getSubject() || "";
+    const keywords = doc.getKeywords();
+    // pdf-lib returns getKeywords() as a single space-joined string; show it
+    // comma-separated in the UI for easier editing either way.
+    keywordsInput.value = keywords ? keywords.split(/\s+/).filter(Boolean).join(", ") : "";
+    createdInput.value = dateToLocalInputValue(doc.getCreationDate());
+    modifiedInput.value = dateToLocalInputValue(doc.getModificationDate());
 
-  renderFile();
-  updateActions();
+    renderFile();
+    updateActions();
+  } catch (err) {
+    loaded = null;
+    fileInput.value = "";
+    titleInput.value = "";
+    authorInput.value = "";
+    subjectInput.value = "";
+    keywordsInput.value = "";
+    createdInput.value = "";
+    modifiedInput.value = "";
+    renderFile();
+    updateActions();
+    resultEl.hidden = false;
+    resultEl.className = "result result-error";
+    resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
+      err instanceof Error ? err.message : "This file may be corrupted or password-protected."
+    )}</span>`;
+  }
 }
 
 dropzone.addEventListener("click", () => fileInput.click());
