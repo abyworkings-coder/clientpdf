@@ -166,10 +166,14 @@ async function cropPdf() {
   }
 
   pages.forEach((page) => {
-    const { width, height } = page.getSize();
-    const cropWidth = width - left - right;
-    const cropHeight = height - top - bottom;
-    page.setCropBox(left, bottom, cropWidth, cropHeight);
+    // setCropBox(x, y, w, h) takes an absolute page-space origin, not a
+    // (0,0)-relative one — pages whose MediaBox doesn't start at (0,0)
+    // (common in scanned/print-shop PDFs) need the margins offset by the
+    // MediaBox's own x/y, or the crop lands in the wrong place on the page.
+    const box = page.getMediaBox();
+    const cropWidth = box.width - left - right;
+    const cropHeight = box.height - top - bottom;
+    page.setCropBox(box.x + left, box.y + bottom, cropWidth, cropHeight);
   });
 
   const bytes = await doc.save();
