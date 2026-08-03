@@ -157,6 +157,40 @@ function readPercent() {
   return value / 100;
 }
 
+// pdf-lib's page.scale() rescales content around the ABSOLUTE (0,0) origin of
+// page space, but leaves each box's own (x,y) origin untouched (or, for boxes
+// that differ from MediaBox, doesn't touch them at all). For a page whose
+// MediaBox/CropBox/etc. doesn't start at (0,0) — scanned docs, print-shop
+// output, PDFs with bleed — that mismatch drifts the visible box away from
+// where the scaled content actually landed. Re-derive every box by scaling
+// its pre-scale rect about (0,0), matching how the content itself was scaled.
+function scalePageBoxes(page, factor) {
+  const before = {
+    media: page.getMediaBox(),
+    crop: page.getCropBox(),
+    bleed: page.getBleedBox(),
+    trim: page.getTrimBox(),
+    art: page.getArtBox(),
+  };
+  page.scale(factor, factor);
+  const scaleBox = (b) => ({
+    x: b.x * factor,
+    y: b.y * factor,
+    width: b.width * factor,
+    height: b.height * factor,
+  });
+  const m = scaleBox(before.media);
+  page.setMediaBox(m.x, m.y, m.width, m.height);
+  const c = scaleBox(before.crop);
+  page.setCropBox(c.x, c.y, c.width, c.height);
+  const bl = scaleBox(before.bleed);
+  page.setBleedBox(bl.x, bl.y, bl.width, bl.height);
+  const tr = scaleBox(before.trim);
+  page.setTrimBox(tr.x, tr.y, tr.width, tr.height);
+  const ar = scaleBox(before.art);
+  page.setArtBox(ar.x, ar.y, ar.width, ar.height);
+}
+
 async function resizePdf() {
   const { PDFDocument } = await getPdfLib();
   const mode = resizeModeSelect.value;
@@ -166,14 +200,14 @@ async function resizePdf() {
   let suffix;
   if (mode === "percent") {
     const factor = readPercent();
-    pages.forEach((page) => page.scale(factor, factor));
+    pages.forEach((page) => scalePageBoxes(page, factor));
     suffix = `-${Math.round(factor * 100)}pct`;
   } else {
     const preset = PRESETS[presetSelect.value];
     pages.forEach((page) => {
       const { width, height } = page.getSize();
       const factor = Math.min(preset.width / width, preset.height / height);
-      page.scale(factor, factor);
+      scalePageBoxes(page, factor);
     });
     suffix = `-${presetSelect.value}`;
   }
