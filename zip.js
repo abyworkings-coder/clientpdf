@@ -51,7 +51,7 @@ export function createZip(entries) {
     const local = new DataView(new ArrayBuffer(30));
     local.setUint32(0, 0x04034b50, true);
     local.setUint16(4, 20, true);
-    local.setUint16(6, 0, true);
+    local.setUint16(6, 0x0800, true); // bit 11: filename/comment are UTF-8
     local.setUint16(8, 0, true); // stored, no compression
     local.setUint16(10, time, true);
     local.setUint16(12, dosDate, true);
@@ -66,7 +66,7 @@ export function createZip(entries) {
     central.setUint32(0, 0x02014b50, true);
     central.setUint16(4, 20, true);
     central.setUint16(6, 20, true);
-    central.setUint16(8, 0, true);
+    central.setUint16(8, 0x0800, true); // bit 11: filename/comment are UTF-8
     central.setUint16(10, 0, true);
     central.setUint16(12, time, true);
     central.setUint16(14, dosDate, true);
