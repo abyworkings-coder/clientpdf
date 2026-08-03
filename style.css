@@ -334,6 +334,9 @@ html, body {
 }
 .file-row .size { color: var(--ink-faint); font-size: 0.78rem; flex-shrink: 0; }
 .file-row .remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   color: var(--ink-faint);
@@ -341,10 +344,15 @@ html, body {
   font-size: 1rem;
   line-height: 1;
   padding: 2px 4px;
+  min-width: 44px;
+  min-height: 44px;
 }
 .file-row .remove:hover { color: var(--danger); }
 .file-row .move-up,
 .file-row .move-down {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
   color: var(--ink-faint);
@@ -352,6 +360,8 @@ html, body {
   font-size: 0.9rem;
   line-height: 1;
   padding: 2px 4px;
+  min-width: 44px;
+  min-height: 44px;
 }
 .file-row .move-up:hover:not(:disabled),
 .file-row .move-down:hover:not(:disabled) { color: var(--ink); }
