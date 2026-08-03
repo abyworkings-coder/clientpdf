@@ -155,13 +155,14 @@ async function watermarkPdf() {
 
   pages.forEach((page) => {
     const { width, height } = page.getSize();
+    const box = page.getMediaBox();
     // Size the text to the page so it reads clearly without spilling too far
     // off the edges at typical letter/A4 dimensions.
     const fontSize = Math.max(24, Math.min(width, height) * 0.12);
     const textWidth = font.widthOfTextAtSize(text, fontSize);
     page.drawText(text, {
-      x: width / 2 - textWidth / 2,
-      y: height / 2,
+      x: box.x + width / 2 - textWidth / 2,
+      y: box.y + height / 2,
       size: fontSize,
       font,
       color: rgb(0.4, 0.4, 0.4),

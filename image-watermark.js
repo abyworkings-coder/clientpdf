@@ -282,13 +282,14 @@ async function watermarkPdf() {
 
   pages.forEach((page) => {
     const { width, height } = page.getSize();
+    const box = page.getMediaBox();
     const imgWidth = width * (scalePct / 100);
     const imgHeight = imgWidth * aspect;
     const { x, y } = computePosition(position, width, height, imgWidth, imgHeight);
 
     page.drawImage(embedded, {
-      x,
-      y,
+      x: box.x + x,
+      y: box.y + y,
       width: imgWidth,
       height: imgHeight,
       opacity,

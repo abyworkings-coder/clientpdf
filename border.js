@@ -176,10 +176,11 @@ async function addBordersToPdf() {
 
   pages.forEach((page) => {
     const { width, height } = page.getSize();
+    const box = page.getMediaBox();
     validateMarginForPage(margin, width, height);
     page.drawRectangle({
-      x: margin,
-      y: margin,
+      x: box.x + margin,
+      y: box.y + margin,
       width: width - margin * 2,
       height: height - margin * 2,
       borderColor,

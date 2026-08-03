@@ -167,8 +167,9 @@ async function numberPdf() {
     const text = String(number);
     const textWidth = font.widthOfTextAtSize(text, fontSize);
     const { width, height } = page.getSize();
+    const box = page.getMediaBox();
     const { x, y } = marginFor(position, textWidth, width, height);
-    page.drawText(text, { x, y, size: fontSize, font, color: rgb(0.35, 0.35, 0.35) });
+    page.drawText(text, { x: box.x + x, y: box.y + y, size: fontSize, font, color: rgb(0.35, 0.35, 0.35) });
     stamped++;
   });
 
