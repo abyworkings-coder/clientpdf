@@ -198,6 +198,7 @@ convertBtn.addEventListener("click", async () => {
     const pdfBytes = await doc.save();
     const blob = new Blob([pdfBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
     const elapsedMs = Math.round(performance.now() - startedAt);
     const requestsDuring = requestsSinceLoad - requestsBefore;
 

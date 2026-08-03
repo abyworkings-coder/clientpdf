@@ -396,6 +396,7 @@ compressBtn.addEventListener("click", async () => {
     const { blob, fileName, compressedCount, skippedCount, originalSize, newSize, targetBytes, targetHit, stepsTried } =
       await compressPdf();
     const url = URL.createObjectURL(blob);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
     const elapsedMs = Math.round(performance.now() - startedAt);
     const requestsDuring = requestsSinceLoad - requestsBefore;
 

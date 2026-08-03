@@ -197,6 +197,7 @@ deleteBtn.addEventListener("click", async () => {
   try {
     const { blob, fileName, pageCount } = await deletePages();
     const url = URL.createObjectURL(blob);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
     const elapsedMs = Math.round(performance.now() - startedAt);
     const requestsDuring = requestsSinceLoad - requestsBefore;
 

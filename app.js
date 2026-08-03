@@ -175,6 +175,7 @@ mergeBtn.addEventListener("click", async () => {
     const mergedBytes = await merged.save();
     const blob = new Blob([mergedBytes], { type: "application/pdf" });
     const url = URL.createObjectURL(blob);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
     const elapsedMs = Math.round(performance.now() - startedAt);
     const requestsDuringMerge = requestsSinceLoad - requestsBefore;
 

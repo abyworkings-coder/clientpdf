@@ -194,6 +194,7 @@ numberBtn.addEventListener("click", async () => {
   try {
     const { blob, fileName, stamped } = await numberPdf();
     const url = URL.createObjectURL(blob);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
     const elapsedMs = Math.round(performance.now() - startedAt);
     const requestsDuring = requestsSinceLoad - requestsBefore;
 

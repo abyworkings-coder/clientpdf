@@ -177,6 +177,7 @@ flattenBtn.addEventListener("click", async () => {
 
     const { blob, fileName, fieldCount } = outcome;
     const url = URL.createObjectURL(blob);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
     const elapsedMs = Math.round(performance.now() - startedAt);
     const requestsDuring = requestsSinceLoad - requestsBefore;
 

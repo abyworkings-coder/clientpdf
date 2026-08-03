@@ -220,6 +220,7 @@ splitBtn.addEventListener("click", async () => {
   try {
     const { blob, fileName, pageCount } = mode === "range" ? await extractRange() : await splitEveryPage();
     const url = URL.createObjectURL(blob);
+    setTimeout(() => URL.revokeObjectURL(url), 30000);
     const elapsedMs = Math.round(performance.now() - startedAt);
     const requestsDuring = requestsSinceLoad - requestsBefore;
 
