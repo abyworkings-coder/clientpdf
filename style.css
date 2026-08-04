@@ -293,7 +293,8 @@ html, body {
   font-family: var(--mono);
   font-size: 0.88rem;
 }
-.split-range input:focus { outline: none; border-color: var(--accent-dim); }
+.split-range input:focus { border-color: var(--accent-dim); }
+.split-range input:focus-visible { outline: 2px solid var(--accent-dim); outline-offset: 1px; }
 .split-range input[type="color"] {
   flex: none;
   min-width: 0;
@@ -531,7 +532,8 @@ html, body {
   font-family: var(--mono);
   font-size: 0.86rem;
 }
-.pro-form input:focus { outline: none; border-color: var(--accent-dim); }
+.pro-form input:focus { border-color: var(--accent-dim); }
+.pro-form input:focus-visible { outline: 2px solid var(--accent-dim); outline-offset: 1px; }
 .pro-note { color: var(--accent-dim); font-size: 0.82rem; margin: 0; }
 
 /* Footer */
@@ -604,7 +606,10 @@ html, body {
 .field-row textarea { resize: vertical; }
 .field-row input[type="text"]:focus,
 .field-row select:focus,
-.field-row textarea:focus { outline: none; border-color: var(--accent-dim); }
+.field-row textarea:focus { border-color: var(--accent-dim); }
+.field-row input[type="text"]:focus-visible,
+.field-row select:focus-visible,
+.field-row textarea:focus-visible { outline: 2px solid var(--accent-dim); outline-offset: 1px; }
 .field-check {
   display: flex;
   align-items: center;
