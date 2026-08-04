@@ -122,7 +122,7 @@ async function loadFile(file) {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
-      err instanceof Error ? err.message : "This file may be corrupted or password-protected."
+      "This file may be corrupted or password-protected."
     )}</span>`;
   }
 }
@@ -193,7 +193,7 @@ addBookmarkBtn.addEventListener("click", () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't add bookmark.</strong> ${escapeHtml(
-      err instanceof Error ? err.message : "Check the title and page number."
+      "Check the title and page number."
     )}</span>`;
   }
 });
@@ -293,7 +293,7 @@ saveBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't add bookmarks.</strong> ${escapeHtml(
-      err instanceof Error ? err.message : "This file may be corrupted or password-protected."
+      "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     saveBtn.disabled = false;

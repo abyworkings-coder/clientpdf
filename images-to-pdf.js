@@ -217,7 +217,7 @@ convertBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Conversion failed.</strong> ${escapeHtml(
-      err instanceof Error ? err.message : "One of these files may not be a valid JPG or PNG."
+      "One of these files may not be a valid JPG or PNG."
     )}</span>`;
   } finally {
     convertBtn.disabled = images.length === 0;

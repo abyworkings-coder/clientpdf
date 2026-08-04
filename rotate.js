@@ -106,7 +106,7 @@ async function loadFile(file) {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
-      err instanceof Error ? err.message : "This file may be corrupted or password-protected."
+      "This file may be corrupted or password-protected."
     )}</span>`;
   }
 }
@@ -234,7 +234,7 @@ rotateBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Rotate failed.</strong> ${escapeHtml(
-      err instanceof Error ? err.message : "This file may be corrupted or password-protected."
+      "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     rotateBtn.disabled = false;

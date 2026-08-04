@@ -194,7 +194,7 @@ mergeBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Merge failed.</strong> ${escapeHtml(
-      err instanceof Error ? err.message : "One of these files may be corrupted or password-protected."
+      "One of these files may be corrupted or password-protected."
     )}</span>`;
   } finally {
     mergeBtn.disabled = files.length < 2;
