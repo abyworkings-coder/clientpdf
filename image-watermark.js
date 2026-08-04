@@ -64,7 +64,7 @@ function renderFile() {
   const li = document.createElement("li");
   li.className = "file-row";
   li.innerHTML = `
-    <span class="handle">◆</span>
+    <span class="handle" aria-hidden="true">◆</span>
     <span class="name">${escapeHtml(loaded.file.name)} — ${loaded.pageCount} page${loaded.pageCount === 1 ? "" : "s"}</span>
     <span class="size">${formatSize(loaded.file.size)}</span>
   `;
@@ -77,7 +77,7 @@ function renderLogo() {
   const li = document.createElement("li");
   li.className = "file-row";
   li.innerHTML = `
-    <span class="handle">🖼</span>
+    <span class="handle" aria-hidden="true">🖼</span>
     <span class="name">${escapeHtml(logo.file.name)} — ${logo.kind.toUpperCase()}</span>
     <span class="size">${formatSize(logo.file.size)}</span>
   `;

@@ -58,7 +58,7 @@ function renderPages() {
     li.dataset.position = String(position);
 
     li.innerHTML = `
-      <span class="handle">⠿</span>
+      <span class="handle" aria-hidden="true">⠿</span>
       <span class="name">${position + 1}. Page ${pageIndex + 1} of ${escapeHtml(loaded.file.name)}</span>
       <button class="move-up" type="button" aria-label="Move page ${pageIndex + 1} up" ${position === 0 ? "disabled" : ""}>↑</button>
       <button class="move-down" type="button" aria-label="Move page ${pageIndex + 1} down" ${position === loaded.order.length - 1 ? "disabled" : ""}>↓</button>

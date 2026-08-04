@@ -58,7 +58,7 @@ function renderList() {
     li.dataset.index = String(i);
 
     li.innerHTML = `
-      <span class="handle">⠿</span>
+      <span class="handle" aria-hidden="true">⠿</span>
       <span class="name">${i + 1}. ${escapeHtml(entry.file.name)}</span>
       <span class="size">${formatSize(entry.file.size)}</span>
       <button class="move-up" type="button" aria-label="Move ${escapeHtml(entry.file.name)} up" ${i === 0 ? "disabled" : ""}>↑</button>

@@ -138,7 +138,7 @@ function renderFile() {
   const li = document.createElement("li");
   li.className = "file-row";
   li.innerHTML = `
-    <span class="handle">◆</span>
+    <span class="handle" aria-hidden="true">◆</span>
     <span class="name">${escapeHtml(loaded.file.name)} — ${loaded.pageCount} page${loaded.pageCount === 1 ? "" : "s"}</span>
     <span class="size">${formatSize(loaded.file.size)}</span>
   `;
@@ -155,7 +155,7 @@ function renderSections() {
     const li = document.createElement("li");
     li.className = "file-row";
     li.innerHTML = `
-      <span class="handle">▤</span>
+      <span class="handle" aria-hidden="true">▤</span>
       <span class="name">${escapeHtml(s.title)}</span>
       <span class="size">${pageRange}</span>
       <button class="row-btn" type="button" data-index="${i}">Download</button>

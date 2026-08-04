@@ -60,7 +60,7 @@ function renderFile() {
   const li = document.createElement("li");
   li.className = "file-row";
   li.innerHTML = `
-    <span class="handle">◆</span>
+    <span class="handle" aria-hidden="true">◆</span>
     <span class="name">${escapeHtml(loaded.file.name)} — ${loaded.pageCount} page${loaded.pageCount === 1 ? "" : "s"}</span>
     <span class="size">${formatSize(loaded.file.size)}</span>
   `;
@@ -73,7 +73,7 @@ function renderRects() {
     const li = document.createElement("li");
     li.className = "file-row";
     li.innerHTML = `
-      <span class="handle">▪</span>
+      <span class="handle" aria-hidden="true">▪</span>
       <span class="name">Page ${r.page} — x:${r.x}, y:${r.y}, w:${r.w}, h:${r.h} pt</span>
       <button class="remove" type="button" data-idx="${i}" aria-label="Remove area">✕</button>
     `;
