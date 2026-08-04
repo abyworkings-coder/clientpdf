@@ -45,7 +45,7 @@ function formatSize(bytes) {
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
-  return div.innerHTML;
+  return div.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 function currentCount() {
@@ -212,7 +212,7 @@ nupBtn.addEventListener("click", async () => {
     resultEl.innerHTML = `
       <span><strong>Done.</strong> ${originalPages} page${originalPages === 1 ? "" : "s"} laid out onto ${sheetsMade} sheet${sheetsMade === 1 ? "" : "s"} —
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
-      <a class="btn btn-primary" href="${url}" download="${fileName}">Download ${fileName}</a>
+      <a class="btn btn-primary" href="${url}" download="${escapeHtml(fileName)}">Download ${escapeHtml(fileName)}</a>
     `;
   } catch (err) {
     resultEl.hidden = false;

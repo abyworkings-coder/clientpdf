@@ -57,7 +57,7 @@ function formatSize(bytes) {
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
-  return div.innerHTML;
+  return div.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 function baseName(fileName) {
@@ -267,7 +267,7 @@ convertBtn.addEventListener("click", async () => {
       resultEl.innerHTML = `
         <span><strong>Done.</strong> 1 page rendered as ${formatLabel} —
         ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
-        <a class="btn btn-primary" href="${url}" download="${entries[0].name}">Download ${entries[0].name}</a>
+        <a class="btn btn-primary" href="${url}" download="${escapeHtml(entries[0].name)}">Download ${escapeHtml(entries[0].name)}</a>
       `;
     } else {
       const zipBlob = createZip(entries);
@@ -276,7 +276,7 @@ convertBtn.addEventListener("click", async () => {
       resultEl.hidden = false;
       resultEl.className = "result";
       resultEl.innerHTML = `
-        <span><strong>Done.</strong> ${entries.length} pages rendered as ${formatLabel} and packed into ${zipName} —
+        <span><strong>Done.</strong> ${entries.length} pages rendered as ${formatLabel} and packed into ${escapeHtml(zipName)} —
         ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
       `;
     }

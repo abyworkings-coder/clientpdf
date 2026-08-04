@@ -51,7 +51,7 @@ function formatSize(bytes) {
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
-  return div.innerHTML;
+  return div.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 function renderFile() {
@@ -273,7 +273,7 @@ redactBtn.addEventListener("click", async () => {
       <span><strong>Done.</strong> ${areaCount} area${areaCount === 1 ? "" : "s"} redacted
       (${removedCount} text run${removedCount === 1 ? "" : "s"} removed from the file, plus black boxes drawn) —
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
-      <a class="btn btn-primary" href="${url}" download="${fileName}">Download ${fileName}</a>
+      <a class="btn btn-primary" href="${url}" download="${escapeHtml(fileName)}">Download ${escapeHtml(fileName)}</a>
     `;
   } catch (err) {
     resultEl.hidden = false;

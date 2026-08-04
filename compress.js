@@ -61,7 +61,7 @@ function formatSize(bytes) {
 function escapeHtml(str) {
   const div = document.createElement("div");
   div.textContent = str;
-  return div.innerHTML;
+  return div.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
 function baseName(fileName) {
@@ -439,7 +439,7 @@ compressBtn.addEventListener("click", async () => {
     resultEl.innerHTML = `
       <span><strong>Done.</strong> ${sizeLine}.${targetLine} ${imageLine}
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
-      <a class="btn btn-primary" href="${url}" download="${fileName}">Download ${fileName}</a>
+      <a class="btn btn-primary" href="${url}" download="${escapeHtml(fileName)}">Download ${escapeHtml(fileName)}</a>
     `;
   } catch (err) {
     resultEl.hidden = false;
