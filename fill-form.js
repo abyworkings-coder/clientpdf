@@ -126,7 +126,7 @@ function renderFields() {
         .join("");
       row.innerHTML = `
         <label>${escapeHtml(f.name)}</label>
-        <div class="field-radio-group">${options}</div>
+        <div class="field-radio-group" role="radiogroup" aria-label="${escapeHtml(f.name)}">${options}</div>
       `;
       fieldsContainer.appendChild(row);
     } else if (f.kind === "dropdown") {
