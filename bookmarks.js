@@ -119,6 +119,8 @@ async function loadFile(file) {
     updateActions();
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
@@ -188,6 +190,8 @@ addBookmarkBtn.addEventListener("click", () => {
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't add bookmark.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "Check the title and page number."
     )}</span>`;
@@ -276,6 +280,8 @@ saveBtn.addEventListener("click", async () => {
 
     resultEl.hidden = false;
     resultEl.className = "result";
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
     resultEl.innerHTML = `
       <span><strong>Done.</strong> ${count} bookmark${count === 1 ? "" : "s"} added —
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
@@ -284,6 +290,8 @@ saveBtn.addEventListener("click", async () => {
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't add bookmarks.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;

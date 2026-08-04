@@ -104,6 +104,8 @@ async function loadFile(file) {
     updateActions();
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
@@ -436,6 +438,8 @@ compressBtn.addEventListener("click", async () => {
 
     resultEl.hidden = false;
     resultEl.className = resultClass;
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
     resultEl.innerHTML = `
       <span><strong>Done.</strong> ${sizeLine}.${targetLine} ${imageLine}
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
@@ -444,6 +448,8 @@ compressBtn.addEventListener("click", async () => {
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Compress failed.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;

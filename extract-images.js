@@ -191,6 +191,8 @@ async function loadFile(file) {
     updateActions();
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
@@ -268,12 +270,16 @@ downloadAllBtn.addEventListener("click", async () => {
     triggerDownload(zipBlob, `${baseName(loaded.file.name)}-images.zip`);
     resultEl.hidden = false;
     resultEl.className = "result";
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
     resultEl.innerHTML = `<span><strong>Done.</strong> ${images.length} image${
       images.length === 1 ? "" : "s"
     } packed into one .zip, entirely on this device.</span>`;
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't build the zip.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted."
     )}</span>`;

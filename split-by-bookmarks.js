@@ -201,6 +201,8 @@ async function loadFile(file) {
     updateActions();
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
@@ -282,6 +284,8 @@ async function downloadSection(index) {
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't extract that section.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
@@ -304,12 +308,16 @@ downloadAllBtn.addEventListener("click", async () => {
     const requestsDuring = requestsSinceLoad - requestsBefore;
     resultEl.hidden = false;
     resultEl.className = "result";
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
     resultEl.innerHTML = `<span><strong>Done.</strong> ${sections.length} file${
       sections.length === 1 ? "" : "s"
     } downloaded — ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device. If your browser blocked any of them, allow multiple downloads for this site and click "Download all" again.</span>`;
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't extract sections.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;

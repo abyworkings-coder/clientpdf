@@ -86,6 +86,8 @@ async function loadFile(file) {
     updateActions();
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
@@ -199,6 +201,8 @@ insertBtn.addEventListener("click", async () => {
 
     resultEl.hidden = false;
     resultEl.className = "result";
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
     resultEl.innerHTML = `
       <span><strong>Done.</strong> ${pageCount} page${pageCount === 1 ? "" : "s"} total —
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
@@ -207,6 +211,8 @@ insertBtn.addEventListener("click", async () => {
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Insert failed.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;

@@ -129,6 +129,8 @@ async function loadFile(file) {
     updateActions();
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
@@ -191,6 +193,8 @@ addRectBtn.addEventListener("click", () => {
 function showError(message) {
   resultEl.hidden = false;
   resultEl.className = "result result-error";
+  resultEl.setAttribute("role", "alert");
+  resultEl.setAttribute("aria-live", "assertive");
   resultEl.innerHTML = `<span><strong>Couldn't add that area.</strong> ${escapeHtml(message)}</span>`;
 }
 
@@ -269,6 +273,8 @@ redactBtn.addEventListener("click", async () => {
 
     resultEl.hidden = false;
     resultEl.className = "result";
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
     resultEl.innerHTML = `
       <span><strong>Done.</strong> ${areaCount} area${areaCount === 1 ? "" : "s"} redacted
       (${removedCount} text run${removedCount === 1 ? "" : "s"} removed from the file, plus black boxes drawn) —
@@ -278,6 +284,8 @@ redactBtn.addEventListener("click", async () => {
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Redaction failed.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;

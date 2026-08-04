@@ -204,6 +204,8 @@ convertBtn.addEventListener("click", async () => {
 
     resultEl.hidden = false;
     resultEl.className = "result";
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
     resultEl.innerHTML = `
       <span><strong>Done.</strong> ${images.length} image${images.length === 1 ? "" : "s"} converted, ${doc.getPageCount()} page${doc.getPageCount() === 1 ? "" : "s"} —
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
@@ -212,6 +214,8 @@ convertBtn.addEventListener("click", async () => {
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Conversion failed.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "One of these files may not be a valid JPG or PNG."
     )}</span>`;

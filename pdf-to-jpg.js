@@ -104,6 +104,8 @@ async function loadFile(file) {
     updateActions();
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't load file.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
@@ -264,6 +266,8 @@ convertBtn.addEventListener("click", async () => {
       const url = URL.createObjectURL(blob);
       resultEl.hidden = false;
       resultEl.className = "result";
+      resultEl.setAttribute("role", "status");
+      resultEl.setAttribute("aria-live", "polite");
       resultEl.innerHTML = `
         <span><strong>Done.</strong> 1 page rendered as ${formatLabel} —
         ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
@@ -275,6 +279,8 @@ convertBtn.addEventListener("click", async () => {
       triggerDownload(zipBlob, zipName);
       resultEl.hidden = false;
       resultEl.className = "result";
+      resultEl.setAttribute("role", "status");
+      resultEl.setAttribute("aria-live", "polite");
       resultEl.innerHTML = `
         <span><strong>Done.</strong> ${entries.length} pages rendered as ${formatLabel} and packed into ${escapeHtml(zipName)} —
         ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
@@ -283,6 +289,8 @@ convertBtn.addEventListener("click", async () => {
   } catch (err) {
     resultEl.hidden = false;
     resultEl.className = "result result-error";
+    resultEl.setAttribute("role", "alert");
+    resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Conversion failed.</strong> ${escapeHtml(
       err instanceof Error ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
