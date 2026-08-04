@@ -219,6 +219,7 @@ watermarkBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     watermarkBtn.disabled = false;
+    watermarkBtn.focus();
     watermarkBtnLabel.textContent = originalLabel;
   }
 });

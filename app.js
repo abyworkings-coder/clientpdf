@@ -198,6 +198,7 @@ mergeBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     mergeBtn.disabled = files.length < 2;
+    mergeBtn.focus();
     mergeBtnLabel.textContent = `Merge ${files.length} PDFs`;
   }
 });

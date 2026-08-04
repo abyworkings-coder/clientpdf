@@ -258,6 +258,7 @@ resizeBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     resizeBtn.disabled = false;
+    resizeBtn.focus();
     resizeBtnLabel.textContent = originalLabel;
   }
 });

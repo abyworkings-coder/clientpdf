@@ -326,6 +326,7 @@ grayscaleBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     grayscaleBtn.disabled = false;
+    grayscaleBtn.focus();
     grayscaleBtnLabel.textContent = originalLabel;
   }
 });

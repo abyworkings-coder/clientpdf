@@ -296,6 +296,7 @@ convertBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     convertBtn.disabled = false;
+    convertBtn.focus();
     convertBtnLabel.textContent = originalLabel;
   }
 });

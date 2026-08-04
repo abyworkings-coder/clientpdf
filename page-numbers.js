@@ -220,6 +220,7 @@ numberBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     numberBtn.disabled = false;
+    numberBtn.focus();
     numberBtnLabel.textContent = originalLabel;
   }
 });

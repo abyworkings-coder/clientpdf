@@ -346,6 +346,7 @@ watermarkBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     watermarkBtn.disabled = !logo;
+    watermarkBtn.focus();
     watermarkBtnLabel.textContent = logo ? originalLabel : "Add a logo image first";
   }
 });

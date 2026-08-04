@@ -204,6 +204,7 @@ flattenBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     flattenBtn.disabled = false;
+    flattenBtn.focus();
     flattenBtnLabel.textContent = originalLabel;
   }
 });

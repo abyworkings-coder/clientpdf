@@ -222,6 +222,7 @@ cropBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     cropBtn.disabled = false;
+    cropBtn.focus();
     cropBtnLabel.textContent = originalLabel;
   }
 });

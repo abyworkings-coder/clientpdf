@@ -228,6 +228,7 @@ nupBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     nupBtn.disabled = false;
+    nupBtn.focus();
     nupBtnLabel.textContent = originalLabel;
   }
 });

@@ -234,6 +234,7 @@ borderBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     borderBtn.disabled = false;
+    borderBtn.focus();
     borderBtnLabel.textContent = originalLabel;
   }
 });

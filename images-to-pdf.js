@@ -221,6 +221,7 @@ convertBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     convertBtn.disabled = images.length === 0;
+    convertBtn.focus();
     convertBtnLabel.textContent =
       images.length === 0
         ? "Add at least 1 image"

@@ -291,6 +291,7 @@ redactBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     redactBtn.disabled = rects.length === 0;
+    redactBtn.focus();
     redactBtnLabel.textContent = originalLabel;
   }
 });

@@ -285,6 +285,7 @@ downloadAllBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     downloadAllBtn.disabled = false;
+    downloadAllBtn.focus();
   }
 });
 

@@ -455,6 +455,7 @@ compressBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     compressBtn.disabled = false;
+    compressBtn.focus();
     compressBtnLabel.textContent = originalLabel;
   }
 });

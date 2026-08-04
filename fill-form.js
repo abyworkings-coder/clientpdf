@@ -335,6 +335,7 @@ fillBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     fillBtn.disabled = false;
+    fillBtn.focus();
     fillBtnLabel.textContent = originalLabel;
   }
 });

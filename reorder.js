@@ -225,6 +225,7 @@ reorderBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     reorderBtn.disabled = loaded ? loaded.order.length === 0 : true;
+    reorderBtn.focus();
     reorderBtnLabel.textContent = originalLabel;
   }
 });

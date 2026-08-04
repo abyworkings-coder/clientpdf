@@ -224,6 +224,7 @@ duplicateBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     duplicateBtn.disabled = false;
+    duplicateBtn.focus();
     duplicateBtnLabel.textContent = originalLabel;
   }
 });

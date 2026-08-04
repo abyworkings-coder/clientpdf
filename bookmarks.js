@@ -297,6 +297,7 @@ saveBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     saveBtn.disabled = false;
+    saveBtn.focus();
     saveBtnLabel.textContent = originalLabel;
   }
 });

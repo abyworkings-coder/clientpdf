@@ -218,6 +218,7 @@ insertBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     insertBtn.disabled = false;
+    insertBtn.focus();
     insertBtnLabel.textContent = originalLabel;
   }
 });

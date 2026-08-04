@@ -247,6 +247,7 @@ metaBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     metaBtn.disabled = false;
+    metaBtn.focus();
     metaBtnLabel.textContent = originalLabel;
   }
 });

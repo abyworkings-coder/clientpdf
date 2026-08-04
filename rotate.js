@@ -238,6 +238,7 @@ rotateBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     rotateBtn.disabled = false;
+    rotateBtn.focus();
     rotateBtnLabel.textContent = originalLabel;
   }
 });

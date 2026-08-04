@@ -245,6 +245,7 @@ splitBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     splitBtn.disabled = false;
+    splitBtn.focus();
     splitBtnLabel.textContent = originalLabel;
   }
 });

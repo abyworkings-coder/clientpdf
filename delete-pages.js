@@ -222,6 +222,7 @@ deleteBtn.addEventListener("click", async () => {
     )}</span>`;
   } finally {
     deleteBtn.disabled = false;
+    deleteBtn.focus();
     deleteBtnLabel.textContent = originalLabel;
   }
 });
