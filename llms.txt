@@ -18,6 +18,7 @@ ClientPDF is a static site (GitHub Pages) offering 25 single-purpose PDF tools p
 - [Page Numbers](https://abyworkings-coder.github.io/clientpdf/page-numbers.html): add page numbers to a PDF
 - [Images to PDF](https://abyworkings-coder.github.io/clientpdf/images-to-pdf.html): convert JPG/PNG images into a PDF
 - [Extract Images](https://abyworkings-coder.github.io/clientpdf/extract-images.html): pull embedded images out of a PDF
+- [PDF to JPG](https://abyworkings-coder.github.io/clientpdf/pdf-to-jpg.html): convert every PDF page into a JPG or PNG image
 - [Watermark PDF](https://abyworkings-coder.github.io/clientpdf/watermark.html): add a text watermark
 - [Image Watermark](https://abyworkings-coder.github.io/clientpdf/image-watermark.html): add an image/logo watermark
 - [Edit Metadata](https://abyworkings-coder.github.io/clientpdf/metadata.html): view and edit PDF metadata (title, author, etc.)
