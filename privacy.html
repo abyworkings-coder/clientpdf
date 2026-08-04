@@ -100,7 +100,7 @@
 <main class="wrap" id="main-content">
   <article class="article">
     <h1>Privacy Policy</h1>
-    <p class="article-meta">Last updated 2026-07-31 · plain-language version, no legalese</p>
+    <p class="article-meta">Last updated 2026-08-04 · plain-language version, no legalese</p>
 
     <p>
       ClientPDF is a static, client-side tool. There is no backend server that your files
@@ -131,12 +131,16 @@
         the exact code for this in the inline script at the bottom of any page.
       </li>
       <li>
-        <strong>An email address, only if you submit it.</strong> The homepage has an
+        <strong>An email address, only if you submit it.</strong> Every tool page has an
         optional "Notify me" form for a future Pro batch-mode tier. If you type your email
         into that form and submit it, it's forwarded via <a href="https://formsubmit.co" target="_blank" rel="noopener">formsubmit.co</a>
         to the site operator, for the sole purpose of letting you know when Pro is available.
         We don't sell it, share it with third parties, or use it for anything else. If you
-        don't submit that form, we don't have your email.
+        don't submit that form, we don't have your email. As a fallback in case that network
+        request fails, the browser also keeps a local copy of what you submitted in your own
+        <code>localStorage</code> — this never leaves your device and isn't a cookie or a
+        tracker, it just means the signal isn't lost if the request to formsubmit.co doesn't
+        go through.
       </li>
     </ol>
 
