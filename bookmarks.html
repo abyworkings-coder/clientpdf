@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0d0f0c" />
 <link rel="preload" href="vendor/fonts/ibmplexmono-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="vendor/fonts/fraunces-normal-300.woff2" as="font" type="font/woff2" crossorigin />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.counterapi.dev https://formsubmit.co; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.counterapi.dev https://formsubmit.co; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>Add bookmarks to a PDF without uploading it — ClientPDF</title>
 <meta name="description" content="Add named bookmarks to a PDF that jump straight to a page in any reader's sidebar — entirely in your browser. Free, fast, private." />
@@ -186,9 +186,9 @@
 
       <div class="split-range" id="addRow">
         <label for="titleInput">Title</label>
-        <input type="text" id="titleInput" placeholder="e.g. Chapter 3" style="flex: 2;" />
+        <input type="text" id="titleInput" class="field-grow-2" placeholder="e.g. Chapter 3" />
         <label for="pageInput">Page</label>
-        <input type="text" id="pageInput" placeholder="e.g. 12" style="flex: 0 0 90px; min-width: 90px;" />
+        <input type="text" id="pageInput" class="field-narrow" placeholder="e.g. 12" />
         <button class="btn btn-ghost" id="addBookmarkBtn" type="button">Add bookmark</button>
       </div>
     </div>
@@ -255,22 +255,7 @@
   </div>
 </footer>
 
-<script>
-  (function () {
-    try {
-      var ref = document.referrer;
-      var bucket = "direct";
-      if (ref) {
-        bucket = /github\.com/i.test(ref) ? "github" : "other";
-      }
-      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
-      fetch(base + "visits-total/up", { mode: "no-cors" });
-      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
-    } catch (e) {
-      // analytics must never break the tool
-    }
-  })();
-</script>
+<script src="./counter.js"></script>
 <script type="module" src="bookmarks.js"></script>
 </body>
 </html>

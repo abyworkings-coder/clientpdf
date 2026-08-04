@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0d0f0c" />
 <link rel="preload" href="vendor/fonts/ibmplexmono-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="vendor/fonts/fraunces-normal-300.woff2" as="font" type="font/woff2" crossorigin />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.counterapi.dev https://formsubmit.co; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.counterapi.dev https://formsubmit.co; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>Terms of Service — ClientPDF</title>
 <meta name="description" content="ClientPDF's terms of service: free to use, provided as-is, all processing happens locally in your browser with no account required." />
@@ -171,23 +171,6 @@
   </div>
 </footer>
 
-<script>
-  // Minimal, cookie-free visit counter — counts page loads and coarse referrer
-  // source only, no personal data. See README for what this does and why.
-  (function () {
-    try {
-      var ref = document.referrer;
-      var bucket = "direct";
-      if (ref) {
-        bucket = /github\.com/i.test(ref) ? "github" : "other";
-      }
-      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
-      fetch(base + "visits-total/up", { mode: "no-cors" });
-      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
-    } catch (e) {
-      // analytics must never break the tool
-    }
-  })();
-</script>
+<script src="./counter.js"></script>
 </body>
 </html>

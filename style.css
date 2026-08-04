@@ -304,6 +304,8 @@ html, body {
 }
 .split-range input:focus { border-color: var(--accent-dim); }
 .split-range input:focus-visible { outline: 2px solid var(--accent-dim); outline-offset: 1px; }
+.split-range input.field-grow-2 { flex: 2; }
+.split-range input.field-narrow { flex: 0 0 90px; min-width: 90px; }
 .split-range input[type="color"] {
   flex: none;
   min-width: 0;

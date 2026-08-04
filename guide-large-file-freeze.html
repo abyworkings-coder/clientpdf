@@ -6,7 +6,7 @@
 <meta name="theme-color" content="#0d0f0c" />
 <link rel="preload" href="vendor/fonts/ibmplexmono-400.woff2" as="font" type="font/woff2" crossorigin />
 <link rel="preload" href="vendor/fonts/fraunces-normal-300.woff2" as="font" type="font/woff2" crossorigin />
-<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.counterapi.dev https://formsubmit.co; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;" />
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: blob:; font-src 'self'; connect-src 'self' https://api.counterapi.dev https://formsubmit.co; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <title>Why does my tab freeze on a large PDF? — ClientPDF Guide</title>
 <meta name="description" content="ClientPDF processes files in your browser tab — a very large or high-page-count PDF can make it freeze or crash. Here's why, and how to work around it." />
@@ -213,21 +213,6 @@
   </div>
 </footer>
 
-<script>
-  (function () {
-    try {
-      var ref = document.referrer;
-      var bucket = "direct";
-      if (ref) {
-        bucket = /github\.com/i.test(ref) ? "github" : "other";
-      }
-      var base = "https://api.counterapi.dev/v1/clientpdf-abyworkings/";
-      fetch(base + "visits-total/up", { mode: "no-cors" });
-      fetch(base + "visits-" + bucket + "/up", { mode: "no-cors" });
-    } catch (e) {
-      // analytics must never break the tool
-    }
-  })();
-</script>
+<script src="./counter.js"></script>
 </body>
 </html>
