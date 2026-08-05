@@ -145,7 +145,10 @@ dropzone.addEventListener("keydown", (e) => {
     fileInput.click();
   }
 });
-fileInput.addEventListener("change", (e) => addFiles(e.target.files));
+fileInput.addEventListener("change", (e) => {
+  addFiles(e.target.files);
+  fileInput.value = "";
+});
 
 ["dragenter", "dragover"].forEach((evt) =>
   dropzone.addEventListener(evt, (e) => {
