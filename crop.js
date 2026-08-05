@@ -136,10 +136,14 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 function readMargin(input, label) {
   const value = parseFloat(input.value);
   if (!Number.isFinite(value) || value < 0) {
-    throw new Error(`Enter a valid ${label} margin (0 or higher).`);
+    throw new ValidationError(`Enter a valid ${label} margin (0 or higher).`);
   }
   return value;
 }
@@ -161,7 +165,7 @@ async function cropPdf() {
     const cropWidth = width - left - right;
     const cropHeight = height - top - bottom;
     if (cropWidth <= 0 || cropHeight <= 0) {
-      throw new Error(
+      throw new ValidationError(
         `Margins too large — page ${i + 1} would have zero or negative size. Reduce the margins and try again.`
       );
     }
@@ -218,7 +222,7 @@ cropBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Crop failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     cropBtn.disabled = false;

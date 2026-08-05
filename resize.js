@@ -151,10 +151,14 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 function readPercent() {
   const value = parseFloat(percentInput.value);
   if (!Number.isFinite(value) || value <= 0 || value > 1000) {
-    throw new Error("Enter a valid scale percentage between 1 and 1000.");
+    throw new ValidationError("Enter a valid scale percentage between 1 and 1000.");
   }
   return value / 100;
 }
@@ -254,7 +258,7 @@ resizeBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Resize failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     resizeBtn.disabled = false;

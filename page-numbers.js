@@ -148,12 +148,16 @@ function marginFor(position, textWidth, pageWidth, pageHeight) {
   return { x, y };
 }
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 async function numberPdf() {
   const { PDFDocument, StandardFonts, rgb } = await getPdfLib();
   const position = currentPosition();
   const start = parseInt(numStartInput.value, 10);
   if (!Number.isFinite(start) || start < 0) {
-    throw new Error("Enter a valid starting number (0 or higher).");
+    throw new ValidationError("Enter a valid starting number (0 or higher).");
   }
   const skipFirst = numSkipFirst.checked;
 
@@ -175,7 +179,7 @@ async function numberPdf() {
     stamped++;
   });
 
-  if (stamped === 0) throw new Error("No pages left to number after skipping the cover page.");
+  if (stamped === 0) throw new ValidationError("No pages left to number after skipping the cover page.");
 
   const bytes = await doc.save();
   return {
@@ -216,7 +220,7 @@ numberBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Numbering failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     numberBtn.disabled = false;

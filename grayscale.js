@@ -246,6 +246,10 @@ async function collectContentStreams(page) {
   return [contentsObj];
 }
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 async function grayscalePdf() {
   const { PDFDocument, PDFRawStream, PDFName, decodePDFRawStream } = await getPdfLib();
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
@@ -275,7 +279,7 @@ async function grayscalePdf() {
   }
 
   if (opsConverted === 0) {
-    throw new Error(
+    throw new ValidationError(
       "No RGB or CMYK color operators found to convert — this PDF may already be grayscale, or its color comes from patterns/spot colors/embedded images, which this tool intentionally leaves untouched."
     );
   }
@@ -322,7 +326,7 @@ grayscaleBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Grayscale conversion failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     grayscaleBtn.disabled = false;

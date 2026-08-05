@@ -233,10 +233,14 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 function readScalePct() {
   const value = parseFloat(scaleInput.value);
   if (!Number.isFinite(value) || value <= 0 || value > 100) {
-    throw new Error("Enter a scale between 1 and 100 (% of page width).");
+    throw new ValidationError("Enter a scale between 1 and 100 (% of page width).");
   }
   return value;
 }
@@ -244,7 +248,7 @@ function readScalePct() {
 function readOpacityPct() {
   const value = parseInt(opacityInput.value, 10);
   if (!Number.isFinite(value) || value < 1 || value > 100) {
-    throw new Error("Enter a valid opacity between 1 and 100.");
+    throw new ValidationError("Enter a valid opacity between 1 and 100.");
   }
   return value;
 }
@@ -269,7 +273,7 @@ function computePosition(position, pageWidth, pageHeight, imgWidth, imgHeight) {
 
 async function watermarkPdf() {
   const { PDFDocument } = await getPdfLib();
-  if (!logo) throw new Error("Add a PNG or JPG logo image to stamp.");
+  if (!logo) throw new ValidationError("Add a PNG or JPG logo image to stamp.");
 
   const scalePct = readScalePct();
   const opacityPct = readOpacityPct();
@@ -301,7 +305,7 @@ async function watermarkPdf() {
     stamped++;
   });
 
-  if (stamped === 0) throw new Error("This PDF has no pages to watermark.");
+  if (stamped === 0) throw new ValidationError("This PDF has no pages to watermark.");
 
   const bytes = await doc.save();
   return {
@@ -342,7 +346,7 @@ watermarkBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Watermarking failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     watermarkBtn.disabled = !logo;

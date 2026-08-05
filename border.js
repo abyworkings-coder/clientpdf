@@ -135,17 +135,21 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 async function hexToRgb01(hex) {
   const { rgb } = await getPdfLib();
   const m = /^#?([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec((hex || "").trim());
-  if (!m) throw new Error("Enter a valid border color.");
+  if (!m) throw new ValidationError("Enter a valid border color.");
   return rgb(parseInt(m[1], 16) / 255, parseInt(m[2], 16) / 255, parseInt(m[3], 16) / 255);
 }
 
 function readMargin() {
   const value = parseFloat(marginInput.value);
   if (!Number.isFinite(value) || value < 0) {
-    throw new Error("Enter a margin of 0 or higher.");
+    throw new ValidationError("Enter a margin of 0 or higher.");
   }
   return value;
 }
@@ -153,7 +157,7 @@ function readMargin() {
 function readStrokeWidth() {
   const value = parseFloat(widthInput.value);
   if (!Number.isFinite(value) || value <= 0) {
-    throw new Error("Enter a stroke width greater than 0.");
+    throw new ValidationError("Enter a stroke width greater than 0.");
   }
   return value;
 }
@@ -161,7 +165,7 @@ function readStrokeWidth() {
 function validateMarginForPage(margin, width, height) {
   const minDim = Math.min(width, height);
   if (margin >= minDim / 2) {
-    throw new Error(
+    throw new ValidationError(
       `Margin is too large for a ${Math.round(width)}×${Math.round(height)}pt page — use ${(minDim / 2 - 0.5).toFixed(1)}pt or less.`
     );
   }
@@ -230,7 +234,7 @@ borderBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Border failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     borderBtn.disabled = false;

@@ -47,6 +47,10 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 function focusRow(position, selector, fallback) {
   const row = fileListEl.querySelector(`li[data-position="${position}"]`);
   const el = row ? row.querySelector(selector) : null;
@@ -199,7 +203,7 @@ reorderBtn.addEventListener("click", async () => {
   const requestsBefore = requestsSinceLoad;
 
   try {
-    if (loaded.order.length === 0) throw new Error("Keep at least one page.");
+    if (loaded.order.length === 0) throw new ValidationError("Keep at least one page.");
 
     const { PDFDocument } = await getPdfLib();
     const src = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
@@ -230,7 +234,7 @@ reorderBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Reorder failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     reorderBtn.disabled = loaded ? loaded.order.length === 0 : true;

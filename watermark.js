@@ -138,14 +138,18 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 async function watermarkPdf() {
   const { PDFDocument, StandardFonts, rgb, degrees } = await getPdfLib();
   const text = wmTextInput.value.trim();
-  if (!text) throw new Error("Enter some watermark text.");
+  if (!text) throw new ValidationError("Enter some watermark text.");
 
   const opacityPct = parseInt(wmOpacityInput.value, 10);
   if (!Number.isFinite(opacityPct) || opacityPct < 1 || opacityPct > 100) {
-    throw new Error("Enter a valid opacity between 1 and 100.");
+    throw new ValidationError("Enter a valid opacity between 1 and 100.");
   }
   const opacity = opacityPct / 100;
   const angle = currentAngle();
@@ -174,7 +178,7 @@ async function watermarkPdf() {
     stamped++;
   });
 
-  if (stamped === 0) throw new Error("This PDF has no pages to watermark.");
+  if (stamped === 0) throw new ValidationError("This PDF has no pages to watermark.");
 
   const bytes = await doc.save();
   return {
@@ -215,7 +219,7 @@ watermarkBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Watermarking failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     watermarkBtn.disabled = false;
