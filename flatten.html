@@ -88,7 +88,7 @@
       "@type": "HowToStep",
       "position": 2,
       "name": "Click Flatten form fields",
-      "text": "ClientPDF bakes the current values of every text field, checkbox, radio button, and dropdown into the page via pdf-lib's form.flatten()."
+      "text": "ClientPDF bakes the current values of every text field, checkbox, radio button, dropdown, and option list into the page via pdf-lib's form.flatten()."
     },
     {
       "@type": "HowToStep",
@@ -154,8 +154,8 @@
     <h1>Open DevTools.<br />Flatten the form fields.<br />Watch nothing get sent anywhere.</h1>
     <p class="lede">
       Turn a filled-out PDF form into permanent, non-editable content —
-      text fields, checkboxes, radio buttons, and dropdowns all get baked
-      into the page — all inside this tab. Zero network requests after the
+      text fields, checkboxes, radio buttons, dropdowns, and option lists
+      all get baked into the page — all inside this tab. Zero network requests after the
       page loads, same rule as every other tool here. Check the Network tab
       yourself.
     </p>
@@ -230,7 +230,7 @@
 
 <section class="about">
   <h2>Making a filled form permanent</h2>
-  <p>Flatten Form Fields takes an AcroForm's text fields, checkboxes, radio buttons, and dropdowns — whatever values they currently hold — and bakes them into the page as permanent, non-interactive content via pdf-lib's <code>form.flatten()</code>. The result looks identical to the filled form but can no longer be edited field-by-field; it's a plain page from that point on. A PDF with no form fields at all is detected before processing and reported as a no-op rather than silently handing back a byte-identical download that looks like it did something.</p>
+  <p>Flatten Form Fields takes an AcroForm's text fields, checkboxes, radio buttons, dropdowns, and option lists — whatever values they currently hold — and bakes them into the page as permanent, non-interactive content via pdf-lib's <code>form.flatten()</code>. The result looks identical to the filled form but can no longer be edited field-by-field; it's a plain page from that point on. A PDF with no form fields at all is detected before processing and reported as a no-op rather than silently handing back a byte-identical download that looks like it did something.</p>
   <p>This is the natural next step after <a href="./fill-form.html">Fill Form Fields</a> once you're done editing and want to lock the values in. If the form's fields were already behaving strangely before you got here — jumping between the wrong pages, or refusing input — that's often a side effect of an earlier split or reorder operation on the same file; <a href="./guide-split-reorder-form-fields.html">here's why that happens and what to check.</a></p>
 </section>
 
