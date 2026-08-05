@@ -82,9 +82,13 @@ function renderBookmarks() {
   });
   bookmarkListEl.querySelectorAll(".remove").forEach((btn) => {
     btn.addEventListener("click", () => {
-      bookmarks.splice(Number(btn.dataset.index), 1);
+      const i = Number(btn.dataset.index);
+      bookmarks.splice(i, 1);
       renderBookmarks();
       updateActions();
+      const nextIndex = Math.min(i, bookmarks.length - 1);
+      const nextBtn = bookmarkListEl.querySelector(`button.remove[data-index="${nextIndex}"]`);
+      (nextBtn || addBookmarkBtn)?.focus();
     });
   });
 }

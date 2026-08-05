@@ -49,6 +49,12 @@ function escapeHtml(str) {
   return div.innerHTML.replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
+function focusRow(index, selector, fallback) {
+  const row = fileListEl.querySelector(`li[data-index="${index}"]`);
+  const el = row ? row.querySelector(selector) : null;
+  (el || fallback || clearBtn)?.focus();
+}
+
 function renderList() {
   fileListEl.innerHTML = "";
   images.forEach((entry, i) => {
@@ -70,18 +76,21 @@ function renderList() {
       images = images.filter((f) => f.id !== entry.id);
       renderList();
       updateActions();
+      focusRow(Math.min(i, images.length - 1), ".remove", dropzone);
     });
 
     li.querySelector(".move-up").addEventListener("click", () => {
       if (i === 0) return;
       [images[i - 1], images[i]] = [images[i], images[i - 1]];
       renderList();
+      focusRow(i - 1, ".move-up");
     });
 
     li.querySelector(".move-down").addEventListener("click", () => {
       if (i === images.length - 1) return;
       [images[i], images[i + 1]] = [images[i + 1], images[i]];
       renderList();
+      focusRow(i + 1, ".move-down");
     });
 
     li.addEventListener("dragstart", () => {

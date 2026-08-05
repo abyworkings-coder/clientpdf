@@ -85,8 +85,12 @@ function renderRects() {
 rectListEl.addEventListener("click", (e) => {
   const btn = e.target.closest("button[data-idx]");
   if (!btn) return;
-  rects.splice(parseInt(btn.dataset.idx, 10), 1);
+  const i = parseInt(btn.dataset.idx, 10);
+  rects.splice(i, 1);
   renderRects();
+  const nextIndex = Math.min(i, rects.length - 1);
+  const nextBtn = rectListEl.querySelector(`button[data-idx="${nextIndex}"]`);
+  (nextBtn || addRectBtn)?.focus();
 });
 
 function updatePageSizeHint() {

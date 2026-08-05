@@ -43,6 +43,12 @@ function formatSize(bytes) {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
+function focusRow(index, selector, fallback) {
+  const row = fileListEl.querySelector(`li[data-index="${index}"]`);
+  const el = row ? row.querySelector(selector) : null;
+  (el || fallback || clearBtn)?.focus();
+}
+
 function renderList() {
   fileListEl.innerHTML = "";
   files.forEach((entry, i) => {
@@ -64,18 +70,21 @@ function renderList() {
       files = files.filter((f) => f.id !== entry.id);
       renderList();
       updateActions();
+      focusRow(Math.min(i, files.length - 1), ".remove", dropzone);
     });
 
     li.querySelector(".move-up").addEventListener("click", () => {
       if (i === 0) return;
       [files[i - 1], files[i]] = [files[i], files[i - 1]];
       renderList();
+      focusRow(i - 1, ".move-up");
     });
 
     li.querySelector(".move-down").addEventListener("click", () => {
       if (i === files.length - 1) return;
       [files[i], files[i + 1]] = [files[i + 1], files[i]];
       renderList();
+      focusRow(i + 1, ".move-down");
     });
 
     li.addEventListener("dragstart", () => {

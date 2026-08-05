@@ -47,6 +47,12 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+function focusRow(position, selector, fallback) {
+  const row = fileListEl.querySelector(`li[data-position="${position}"]`);
+  const el = row ? row.querySelector(selector) : null;
+  (el || fallback || clearBtn)?.focus();
+}
+
 function renderPages() {
   fileListEl.innerHTML = "";
   if (!loaded) return;
@@ -69,6 +75,7 @@ function renderPages() {
       loaded.order.splice(position, 1);
       renderPages();
       updateActions();
+      focusRow(Math.min(position, loaded.order.length - 1), ".remove", dropzone);
     });
 
     li.querySelector(".move-up").addEventListener("click", () => {
@@ -76,6 +83,7 @@ function renderPages() {
       const [moved] = loaded.order.splice(position, 1);
       loaded.order.splice(position - 1, 0, moved);
       renderPages();
+      focusRow(position - 1, ".move-up");
     });
 
     li.querySelector(".move-down").addEventListener("click", () => {
@@ -83,6 +91,7 @@ function renderPages() {
       const [moved] = loaded.order.splice(position, 1);
       loaded.order.splice(position + 1, 0, moved);
       renderPages();
+      focusRow(position + 1, ".move-down");
     });
 
     li.addEventListener("dragstart", () => {
