@@ -249,6 +249,8 @@ proForm.addEventListener("submit", async (e) => {
   e.preventDefault();
   const email = document.getElementById("proEmail").value.trim();
   if (!email) return;
+  const proSubmitBtn = proForm.querySelector('button[type="submit"]');
+  proSubmitBtn.disabled = true;
   // Keep a local copy so the signal is not lost if the network request fails.
   const saved = JSON.parse(localStorage.getItem("clientpdf_waitlist") || "[]");
   saved.push({ email, at: new Date().toISOString() });
