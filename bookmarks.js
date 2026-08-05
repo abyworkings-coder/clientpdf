@@ -76,7 +76,7 @@ function renderBookmarks() {
       <span class="handle" aria-hidden="true">▤</span>
       <span class="name">${escapeHtml(b.title)}</span>
       <span class="size">page ${b.page}</span>
-      <button class="remove" type="button" aria-label="Remove bookmark" data-index="${i}">✕</button>
+      <button class="remove" type="button" aria-label="Remove bookmark: ${escapeHtml(b.title)} (page ${b.page})" data-index="${i}">✕</button>
     `;
     bookmarkListEl.appendChild(li);
   });

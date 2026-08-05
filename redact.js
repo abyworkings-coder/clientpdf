@@ -75,7 +75,7 @@ function renderRects() {
     li.innerHTML = `
       <span class="handle" aria-hidden="true">▪</span>
       <span class="name">Page ${r.page} — x:${r.x}, y:${r.y}, w:${r.w}, h:${r.h} pt</span>
-      <button class="remove" type="button" data-idx="${i}" aria-label="Remove area">✕</button>
+      <button class="remove" type="button" data-idx="${i}" aria-label="Remove area on page ${r.page} (x:${r.x}, y:${r.y})">✕</button>
     `;
     rectListEl.appendChild(li);
   });
