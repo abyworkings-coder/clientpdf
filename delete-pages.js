@@ -131,6 +131,10 @@ clearBtn.addEventListener("click", () => {
   updateActions();
 });
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 /**
  * Parses "1-3, 5, 8-10" into a Set of 0-based page indices to delete.
  * Throws with a human-readable message on invalid input or out-of-range pages.
@@ -138,15 +142,15 @@ clearBtn.addEventListener("click", () => {
 function parseDeleteSet(input, pageCount) {
   const indices = new Set();
   const parts = input.split(",").map((s) => s.trim()).filter(Boolean);
-  if (parts.length === 0) throw new Error("Enter at least one page or range to delete.");
+  if (parts.length === 0) throw new ValidationError("Enter at least one page or range to delete.");
 
   for (const part of parts) {
     const match = part.match(/^(\d+)(?:-(\d+))?$/);
-    if (!match) throw new Error(`"${part}" isn't a valid page or range.`);
+    if (!match) throw new ValidationError(`"${part}" isn't a valid page or range.`);
     const start = parseInt(match[1], 10);
     const end = match[2] ? parseInt(match[2], 10) : start;
     if (start < 1 || end < 1 || start > pageCount || end > pageCount) {
-      throw new Error(`Page ${Math.max(start, end)} is out of range (1–${pageCount}).`);
+      throw new ValidationError(`Page ${Math.max(start, end)} is out of range (1–${pageCount}).`);
     }
     const lo = Math.min(start, end);
     const hi = Math.max(start, end);
@@ -169,7 +173,7 @@ async function deletePages() {
   }
 
   if (survivors.length === 0) {
-    throw new Error(
+    throw new ValidationError(
       "That would delete every page, leaving an empty PDF. Keep at least one page."
     );
   }
@@ -218,7 +222,7 @@ deleteBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Delete failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     deleteBtn.disabled = false;

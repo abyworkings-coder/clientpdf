@@ -131,6 +131,10 @@ clearBtn.addEventListener("click", () => {
   updateActions();
 });
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 /**
  * Parses "0, 3, 5" into a sorted array of unique insert positions, where
  * position N means "insert a blank page after original page N" (0 means
@@ -140,13 +144,13 @@ clearBtn.addEventListener("click", () => {
 function parseInsertList(input, pageCount) {
   const positions = new Set();
   const parts = input.split(",").map((s) => s.trim()).filter(Boolean);
-  if (parts.length === 0) throw new Error("Enter at least one position to insert a blank page after.");
+  if (parts.length === 0) throw new ValidationError("Enter at least one position to insert a blank page after.");
 
   for (const part of parts) {
-    if (!/^\d+$/.test(part)) throw new Error(`"${part}" isn't a valid page number.`);
+    if (!/^\d+$/.test(part)) throw new ValidationError(`"${part}" isn't a valid page number.`);
     const pos = parseInt(part, 10);
     if (pos < 0 || pos > pageCount) {
-      throw new Error(`Position ${pos} is out of range (0–${pageCount}).`);
+      throw new ValidationError(`Position ${pos} is out of range (0–${pageCount}).`);
     }
     positions.add(pos);
   }
@@ -214,7 +218,7 @@ insertBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Insert failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     insertBtn.disabled = false;

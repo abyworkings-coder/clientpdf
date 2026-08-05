@@ -171,14 +171,18 @@ clearBtn.addEventListener("click", () => {
   updateActions();
 });
 
+/** Marks an error as a known, user-facing validation message (safe to show verbatim),
+ * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
+class ValidationError extends Error {}
+
 function addBookmark() {
   const title = titleInput.value.trim();
   const pageStr = pageInput.value.trim();
-  if (!title) throw new Error("Enter a bookmark title.");
-  if (!/^\d+$/.test(pageStr)) throw new Error("Enter a valid page number.");
+  if (!title) throw new ValidationError("Enter a bookmark title.");
+  if (!/^\d+$/.test(pageStr)) throw new ValidationError("Enter a valid page number.");
   const page = parseInt(pageStr, 10);
   if (page < 1 || page > loaded.pageCount) {
-    throw new Error(`Page ${page} is out of range (1–${loaded.pageCount}).`);
+    throw new ValidationError(`Page ${page} is out of range (1–${loaded.pageCount}).`);
   }
   bookmarks.push({ title, page });
   titleInput.value = "";
@@ -197,7 +201,7 @@ addBookmarkBtn.addEventListener("click", () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Couldn't add bookmark.</strong> ${escapeHtml(
-      "Check the title and page number."
+      err instanceof ValidationError ? err.message : "Check the title and page number."
     )}</span>`;
   }
 });
