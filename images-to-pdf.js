@@ -135,7 +135,10 @@ function addImages(fileList) {
     resultEl.innerHTML = `<span><strong>${skipped} file${skipped === 1 ? "" : "s"} skipped.</strong> ${escapeHtml(
       "Only JPG and PNG images are accepted."
     )}</span>`;
-  } else if (resultEl.classList.contains("result-warning")) {
+  } else if (
+    resultEl.classList.contains("result-warning") ||
+    resultEl.classList.contains("result-error")
+  ) {
     resultEl.hidden = true;
   }
 }
