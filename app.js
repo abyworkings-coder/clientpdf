@@ -130,6 +130,8 @@ function addFiles(fileList) {
     resultEl.innerHTML = `<span><strong>${skipped} file${skipped === 1 ? "" : "s"} skipped.</strong> ${escapeHtml(
       "Only PDF files are accepted."
     )}</span>`;
+  } else if (resultEl.classList.contains("result-warning")) {
+    resultEl.hidden = true;
   }
 }
 
