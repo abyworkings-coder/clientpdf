@@ -55,7 +55,8 @@ function fieldInputId(index) {
 }
 
 function classifyField(field, { PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown, PDFOptionList }) {
-  if (field instanceof PDFTextField) return { kind: "text", multiline: field.isMultiline() };
+  if (field instanceof PDFTextField)
+    return { kind: "text", multiline: field.isMultiline(), maxLength: field.getMaxLength() };
   if (field instanceof PDFCheckBox) return { kind: "checkbox" };
   if (field instanceof PDFRadioGroup) return { kind: "radio", options: field.getOptions() };
   if (field instanceof PDFDropdown) return { kind: "dropdown", options: field.getOptions() };
@@ -95,12 +96,13 @@ function renderFields() {
     if (f.kind === "text") {
       const row = document.createElement("div");
       row.className = "field-row";
+      const maxLengthAttr = f.maxLength !== undefined ? ` maxlength="${f.maxLength}"` : "";
       row.innerHTML = `
         <label for="${id}">${escapeHtml(f.name)}</label>
         ${
           f.multiline
-            ? `<textarea id="${id}" rows="3" placeholder="(empty)"></textarea>`
-            : `<input type="text" id="${id}" placeholder="(empty)" />`
+            ? `<textarea id="${id}" rows="3" placeholder="(empty)"${maxLengthAttr}></textarea>`
+            : `<input type="text" id="${id}" placeholder="(empty)"${maxLengthAttr} />`
         }
       `;
       fieldsContainer.appendChild(row);
