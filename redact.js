@@ -186,6 +186,12 @@ addRectBtn.addEventListener("click", () => {
   if (![x, y, w, h].every(Number.isFinite) || w <= 0 || h <= 0) {
     return showError("x, y, width, and height must be numbers, with width and height greater than 0.");
   }
+  const size = loaded.pageSizes[page - 1];
+  if (x < 0 || y < 0 || x + w > size.w || y + h > size.h) {
+    return showError(
+      `That area falls outside page ${page} (${Math.round(size.w)} × ${Math.round(size.h)} pt). Check x, y, width, and height against the page size shown above.`
+    );
+  }
   rects.push({ page, x, y, w, h });
   renderRects();
 });
