@@ -281,7 +281,10 @@ async function fillForm() {
       filledCount++;
     } else if (f.kind === "dropdown") {
       const el = document.getElementById(id);
-      if (!el || !el.value) return;
+      // selectedIndex 0 is always the synthetic "(unset)" placeholder we prepend
+      // in renderFields(); checking it (rather than el.value) avoids conflating
+      // "nothing chosen" with a PDF option whose own value is legitimately "".
+      if (!el || el.selectedIndex === 0) return;
       field.select(el.value);
       filledCount++;
     } else if (f.kind === "optionlist") {
