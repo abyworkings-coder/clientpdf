@@ -112,14 +112,25 @@ function updateActions() {
 }
 
 function addFiles(fileList) {
-  const incoming = Array.from(fileList).filter(
+  const all = Array.from(fileList);
+  const incoming = all.filter(
     (f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf")
   );
+  const skipped = all.length - incoming.length;
   for (const file of incoming) {
     files.push({ id: `${file.name}-${file.size}-${Math.random()}`, file });
   }
   renderList();
   updateActions();
+  if (skipped > 0) {
+    resultEl.hidden = false;
+    resultEl.className = "result result-warning";
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
+    resultEl.innerHTML = `<span><strong>${skipped} file${skipped === 1 ? "" : "s"} skipped.</strong> ${escapeHtml(
+      "Only PDF files are accepted."
+    )}</span>`;
+  }
 }
 
 dropzone.addEventListener("click", () => fileInput.click());

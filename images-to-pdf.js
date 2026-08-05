@@ -114,17 +114,28 @@ function updateActions() {
 }
 
 function addImages(fileList) {
-  const incoming = Array.from(fileList).filter(
+  const all = Array.from(fileList);
+  const incoming = all.filter(
     (f) =>
       f.type === "image/jpeg" ||
       f.type === "image/png" ||
       /\.(jpe?g|png)$/i.test(f.name)
   );
+  const skipped = all.length - incoming.length;
   for (const file of incoming) {
     images.push({ id: `${file.name}-${file.size}-${Math.random()}`, file });
   }
   renderList();
   updateActions();
+  if (skipped > 0) {
+    resultEl.hidden = false;
+    resultEl.className = "result result-warning";
+    resultEl.setAttribute("role", "status");
+    resultEl.setAttribute("aria-live", "polite");
+    resultEl.innerHTML = `<span><strong>${skipped} file${skipped === 1 ? "" : "s"} skipped.</strong> ${escapeHtml(
+      "Only JPG and PNG images are accepted."
+    )}</span>`;
+  }
 }
 
 dropzone.addEventListener("click", () => fileInput.click());
