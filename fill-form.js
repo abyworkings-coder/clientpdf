@@ -251,11 +251,33 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+class ValidationError extends Error {}
+
 async function fillForm() {
-  const { PDFDocument } = await getPdfLib();
+  const { PDFDocument, StandardFonts } = await getPdfLib();
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
   const form = doc.getForm();
+  // Text-field appearances are regenerated on save() using this same standard
+  // font (pdf-lib's own default for any field marked dirty by setText()), so
+  // pre-checking against it here catches unrenderable characters before the
+  // save-time throw, which would otherwise be misread as a corrupted file.
+  const font = await doc.embedFont(StandardFonts.Helvetica);
   let filledCount = 0;
+
+  // pdf-lib regenerates a field's appearance (using this same default font)
+  // whenever setText()/select() marks it dirty, regardless of what font the
+  // PDF's own author originally used for that field — so a dropdown/optionlist
+  // option written in a non-Latin script can fail at save() time even though
+  // the user only picked from options the PDF itself provided.
+  function assertEncodable(text, fieldName) {
+    try {
+      font.widthOfTextAtSize(text, 1);
+    } catch (e) {
+      throw new ValidationError(
+        `The value for "${fieldName}" has a character the form's font can't render (likely emoji, CJK, or another non-Latin script). Remove it and try again.`
+      );
+    }
+  }
 
   loaded.fields.forEach((f, index) => {
     const id = fieldInputId(index);
@@ -266,6 +288,7 @@ async function fillForm() {
       if (!el) return;
       const value = el.value;
       if (value.trim() === "") return;
+      assertEncodable(value, f.name);
       field.setText(value);
       filledCount++;
     } else if (f.kind === "checkbox") {
@@ -285,6 +308,7 @@ async function fillForm() {
       // in renderFields(); checking it (rather than el.value) avoids conflating
       // "nothing chosen" with a PDF option whose own value is legitimately "".
       if (!el || el.selectedIndex === 0) return;
+      assertEncodable(el.value, f.name);
       field.select(el.value);
       filledCount++;
     } else if (f.kind === "optionlist") {
@@ -292,6 +316,7 @@ async function fillForm() {
       if (!el) return;
       const selected = Array.from(el.selectedOptions).map((o) => o.value);
       if (selected.length === 0) return;
+      selected.forEach((value) => assertEncodable(value, f.name));
       field.select(selected);
       filledCount++;
     }
@@ -336,7 +361,7 @@ fillBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Fill failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     fillBtn.disabled = false;
