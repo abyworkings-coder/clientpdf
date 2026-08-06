@@ -20,7 +20,7 @@ const addRectBtn = document.getElementById("addRectBtn");
 const rectListEl = document.getElementById("rectList");
 const pageSizeHint = document.getElementById("pageSizeHint");
 
-/** @type {{file: File, pageCount: number, pageSizes: {w:number,h:number}[]} | null} */
+/** @type {{file: File, pageCount: number, pageSizes: {w:number,h:number,rotation:number}[]} | null} */
 let loaded = null;
 /** @type {{page: number, x: number, y: number, w: number, h: number}[]} */
 let rects = [];
@@ -98,7 +98,10 @@ function updatePageSizeHint() {
   const p = parseInt(pageInput.value, 10);
   const size = loaded.pageSizes[p - 1];
   pageSizeHint.textContent = size
-    ? `Page ${p} is ${Math.round(size.w)} × ${Math.round(size.h)} pt (origin bottom-left).`
+    ? `Page ${p} is ${Math.round(size.w)} × ${Math.round(size.h)} pt (origin bottom-left).` +
+      (size.rotation !== 0
+        ? ` Note: this page has a ${size.rotation}° rotation flag — these coordinates are in the page's underlying, unrotated space and may not line up with what you see in a viewer.`
+        : "")
     : `Page number out of range (1–${loaded.pageCount}).`;
 }
 pageInput.addEventListener("input", updatePageSizeHint);
@@ -121,7 +124,7 @@ async function loadFile(file) {
     const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
     const pageSizes = doc.getPages().map((p) => {
       const { width, height } = p.getSize();
-      return { w: width, h: height };
+      return { w: width, h: height, rotation: ((p.getRotation().angle % 360) + 360) % 360 };
     });
     loaded = { file, pageCount: doc.getPageCount(), pageSizes };
     renderFile();
