@@ -156,6 +156,21 @@ async function watermarkPdf() {
 
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
   const font = await doc.embedFont(StandardFonts.HelveticaBold);
+
+  // The built-in font only supports WinAnsi (Latin/Western) characters. Any other
+  // character (CJK, emoji, Cyrillic, Arabic, unicode line separators, etc.) makes
+  // pdf-lib throw deep inside drawText — without this pre-check that throw was
+  // caught by the generic handler below and shown as "This file may be corrupted
+  // or password-protected," which is wrong and confusing for what's actually a
+  // watermark-text-input problem, not a file problem.
+  try {
+    font.widthOfTextAtSize(text, 1);
+  } catch (e) {
+    throw new ValidationError(
+      "Watermark text has a character the built-in font can't render (only Latin/Western characters are supported). Remove emoji, non-Latin script, or special symbols and try again."
+    );
+  }
+
   const pages = doc.getPages();
   let stamped = 0;
 
