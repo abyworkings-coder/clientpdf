@@ -56,7 +56,7 @@ function fieldInputId(index) {
 
 function classifyField(field, { PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown, PDFOptionList }) {
   if (field instanceof PDFTextField)
-    return { kind: "text", multiline: field.isMultiline(), maxLength: field.getMaxLength() };
+    return { kind: "text", multiline: field.isMultiline(), maxLength: field.getMaxLength(), value: field.getText() };
   if (field instanceof PDFCheckBox) return { kind: "checkbox", checked: field.isChecked() };
   if (field instanceof PDFRadioGroup) return { kind: "radio", options: field.getOptions() };
   if (field instanceof PDFDropdown)
@@ -99,12 +99,13 @@ function renderFields() {
       const row = document.createElement("div");
       row.className = "field-row";
       const maxLengthAttr = f.maxLength !== undefined ? ` maxlength="${f.maxLength}"` : "";
+      const currentValue = f.value || "";
       row.innerHTML = `
         <label for="${id}">${escapeHtml(f.name)}</label>
         ${
           f.multiline
-            ? `<textarea id="${id}" rows="3" placeholder="(empty)"${maxLengthAttr}></textarea>`
-            : `<input type="text" id="${id}" placeholder="(empty)"${maxLengthAttr} />`
+            ? `<textarea id="${id}" rows="3" placeholder="(empty)"${maxLengthAttr}>${escapeHtml(currentValue)}</textarea>`
+            : `<input type="text" id="${id}" placeholder="(empty)"${maxLengthAttr} value="${escapeHtml(currentValue)}" />`
         }
       `;
       fieldsContainer.appendChild(row);
@@ -297,7 +298,14 @@ async function fillForm() {
       const el = document.getElementById(id);
       if (!el) return;
       const value = el.value;
-      if (value.trim() === "") return;
+      const initialValue = f.value || "";
+      // Skip when the field is exactly as pre-populated (either genuinely
+      // untouched, or re-typed back to its own original value) — this is the
+      // same "don't re-trigger assertEncodable on a field the user never
+      // meaningfully changed" reasoning as the dropdown/optionlist fields
+      // below, now that the input starts pre-filled with the PDF's own value
+      // instead of always starting blank.
+      if (value === initialValue) return;
       assertEncodable(value, f.name);
       field.setText(value);
       filledCount++;
