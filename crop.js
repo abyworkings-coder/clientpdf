@@ -148,6 +148,22 @@ function readMargin(input, label) {
   return value;
 }
 
+// The four margin inputs are given in VISUAL terms (as the page displays in
+// any normal viewer), but pdf-lib's box coordinates always live in the
+// page's raw, unrotated space. For a page carrying a non-zero /Rotate
+// (common on phone-scanned PDFs), the visual top/right/bottom/left edges are
+// a rotated page's raw left/top/right/bottom (verified against pdf.js's own
+// PageViewport rotation matrix) — so the visual margins must be permuted
+// back into raw-space margins before they're applied, or the crop lands on
+// the wrong edge once a compliant viewer rotates the page back for display.
+function rawMarginsForRotation(rotation, top, bottom, left, right) {
+  const rot = ((Math.round(rotation) % 360) + 360) % 360;
+  if (rot === 90) return { top: right, right: bottom, bottom: left, left: top };
+  if (rot === 180) return { top: bottom, right: left, bottom: top, left: right };
+  if (rot === 270) return { top: left, right: top, bottom: right, left: bottom };
+  return { top, right, bottom, left };
+}
+
 async function cropPdf() {
   const { PDFDocument } = await getPdfLib();
   const top = readMargin(cropTopInput, "top");
@@ -162,8 +178,9 @@ async function cropPdf() {
   // page, before touching save() — never produce a broken/degenerate PDF.
   for (let i = 0; i < pages.length; i++) {
     const { width, height } = pages[i].getSize();
-    const cropWidth = width - left - right;
-    const cropHeight = height - top - bottom;
+    const m = rawMarginsForRotation(pages[i].getRotation().angle, top, bottom, left, right);
+    const cropWidth = width - m.left - m.right;
+    const cropHeight = height - m.top - m.bottom;
     if (cropWidth <= 0 || cropHeight <= 0) {
       throw new ValidationError(
         `Margins too large — page ${i + 1} would have zero or negative size. Reduce the margins and try again.`
@@ -177,9 +194,10 @@ async function cropPdf() {
     // (common in scanned/print-shop PDFs) need the margins offset by the
     // MediaBox's own x/y, or the crop lands in the wrong place on the page.
     const box = page.getMediaBox();
-    const cropWidth = box.width - left - right;
-    const cropHeight = box.height - top - bottom;
-    page.setCropBox(box.x + left, box.y + bottom, cropWidth, cropHeight);
+    const m = rawMarginsForRotation(page.getRotation().angle, top, bottom, left, right);
+    const cropWidth = box.width - m.left - m.right;
+    const cropHeight = box.height - m.top - m.bottom;
+    page.setCropBox(box.x + m.left, box.y + m.bottom, cropWidth, cropHeight);
   });
 
   const bytes = await doc.save();
