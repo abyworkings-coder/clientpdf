@@ -137,7 +137,10 @@ function renderFields() {
     } else if (f.kind === "dropdown") {
       const row = document.createElement("div");
       row.className = "field-row";
-      const currentValue = (f.selected && f.selected[0]) || "";
+      // undefined (not "") means the PDF has no current selection — kept distinct
+      // from a real PDF option whose own value happens to be the empty string, so
+      // the synthetic "(unset)" placeholder never collides with that real option.
+      const currentValue = f.selected && f.selected.length > 0 ? f.selected[0] : undefined;
       const options = (f.options || [])
         .map(
           (opt) =>
@@ -146,7 +149,7 @@ function renderFields() {
         .join("");
       row.innerHTML = `
         <label for="${id}">${escapeHtml(f.name)}</label>
-        <select id="${id}"><option value=""${currentValue === "" ? " selected" : ""}>(unset)</option>${options}</select>
+        <select id="${id}"><option value=""${currentValue === undefined ? " selected" : ""}>(unset)</option>${options}</select>
       `;
       fieldsContainer.appendChild(row);
     } else if (f.kind === "optionlist") {
@@ -327,14 +330,17 @@ async function fillForm() {
     } else if (f.kind === "dropdown") {
       const el = document.getElementById(id);
       if (!el) return;
-      const initialValue = (f.selected && f.selected[0]) || "";
-      // el.value === "" is always the synthetic "(unset)" placeholder — never a
-      // real PDF option value — so it's always skipped, matching renderFields()'s
-      // real options never carrying value="". el.value === initialValue means the
-      // dropdown is untouched (or re-set to its own pre-existing selection): skip
-      // rather than re-select, so a field the user never interacted with can never
-      // trigger assertEncodable() on a non-Latin option the PDF's own author chose.
-      if (el.value === "" || el.value === initialValue) return;
+      // undefined means the PDF had no selection — kept distinct from a real PDF
+      // option whose own value is "", matching renderFields()'s sentinel so a user
+      // who explicitly picks that real blank option isn't mistaken for someone who
+      // left the synthetic "(unset)" placeholder untouched (el.value alone can't
+      // tell the two apart, since both carry value="").
+      const initialValue = f.selected && f.selected.length > 0 ? f.selected[0] : undefined;
+      // selectedIndex 0 is always the synthetic placeholder (real options never
+      // occupy index 0) — only treat it as untouched when the PDF genuinely had no
+      // selection; otherwise fall through so a real current value (including "")
+      // is still correctly recognized as unchanged via the value comparison.
+      if ((el.selectedIndex === 0 && initialValue === undefined) || el.value === initialValue) return;
       assertEncodable(el.value, f.name);
       field.select(el.value);
       filledCount++;
