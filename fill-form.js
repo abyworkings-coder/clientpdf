@@ -59,8 +59,10 @@ function classifyField(field, { PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDro
     return { kind: "text", multiline: field.isMultiline(), maxLength: field.getMaxLength() };
   if (field instanceof PDFCheckBox) return { kind: "checkbox", checked: field.isChecked() };
   if (field instanceof PDFRadioGroup) return { kind: "radio", options: field.getOptions() };
-  if (field instanceof PDFDropdown) return { kind: "dropdown", options: field.getOptions() };
-  if (field instanceof PDFOptionList) return { kind: "optionlist", options: field.getOptions() };
+  if (field instanceof PDFDropdown)
+    return { kind: "dropdown", options: field.getOptions(), selected: field.getSelected() };
+  if (field instanceof PDFOptionList)
+    return { kind: "optionlist", options: field.getOptions(), selected: field.getSelected() };
   return { kind: "unsupported" };
 }
 
@@ -134,19 +136,27 @@ function renderFields() {
     } else if (f.kind === "dropdown") {
       const row = document.createElement("div");
       row.className = "field-row";
+      const currentValue = (f.selected && f.selected[0]) || "";
       const options = (f.options || [])
-        .map((opt) => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`)
+        .map(
+          (opt) =>
+            `<option value="${escapeHtml(opt)}"${opt === currentValue ? " selected" : ""}>${escapeHtml(opt)}</option>`
+        )
         .join("");
       row.innerHTML = `
         <label for="${id}">${escapeHtml(f.name)}</label>
-        <select id="${id}"><option value="">(unset)</option>${options}</select>
+        <select id="${id}"><option value=""${currentValue === "" ? " selected" : ""}>(unset)</option>${options}</select>
       `;
       fieldsContainer.appendChild(row);
     } else if (f.kind === "optionlist") {
       const row = document.createElement("div");
       row.className = "field-row";
+      const currentValues = f.selected || [];
       const options = (f.options || [])
-        .map((opt) => `<option value="${escapeHtml(opt)}">${escapeHtml(opt)}</option>`)
+        .map(
+          (opt) =>
+            `<option value="${escapeHtml(opt)}"${currentValues.includes(opt) ? " selected" : ""}>${escapeHtml(opt)}</option>`
+        )
         .join("");
       row.innerHTML = `
         <label for="${id}">${escapeHtml(f.name)} (multi-select)</label>
@@ -304,10 +314,15 @@ async function fillForm() {
       filledCount++;
     } else if (f.kind === "dropdown") {
       const el = document.getElementById(id);
-      // selectedIndex 0 is always the synthetic "(unset)" placeholder we prepend
-      // in renderFields(); checking it (rather than el.value) avoids conflating
-      // "nothing chosen" with a PDF option whose own value is legitimately "".
-      if (!el || el.selectedIndex === 0) return;
+      if (!el) return;
+      const initialValue = (f.selected && f.selected[0]) || "";
+      // el.value === "" is always the synthetic "(unset)" placeholder — never a
+      // real PDF option value — so it's always skipped, matching renderFields()'s
+      // real options never carrying value="". el.value === initialValue means the
+      // dropdown is untouched (or re-set to its own pre-existing selection): skip
+      // rather than re-select, so a field the user never interacted with can never
+      // trigger assertEncodable() on a non-Latin option the PDF's own author chose.
+      if (el.value === "" || el.value === initialValue) return;
       assertEncodable(el.value, f.name);
       field.select(el.value);
       filledCount++;
@@ -315,7 +330,13 @@ async function fillForm() {
       const el = document.getElementById(id);
       if (!el) return;
       const selected = Array.from(el.selectedOptions).map((o) => o.value);
-      if (selected.length === 0) return;
+      const initialSelected = f.selected || [];
+      const unchanged =
+        selected.length === initialSelected.length && selected.every((v) => initialSelected.includes(v));
+      // Same reasoning as dropdown: skip when nothing is selected (matches prior
+      // behavior) or when the selection set is unchanged from the PDF's own
+      // current value, so an untouched field never re-triggers assertEncodable().
+      if (selected.length === 0 || unchanged) return;
       selected.forEach((value) => assertEncodable(value, f.name));
       field.select(selected);
       filledCount++;
