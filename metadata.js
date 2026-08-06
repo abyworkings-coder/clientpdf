@@ -100,7 +100,7 @@ async function loadFile(file) {
   try {
     const { PDFDocument } = await getPdfLib();
     const bytes = await file.arrayBuffer();
-    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
+    const doc = await PDFDocument.load(bytes, { ignoreEncryption: true, updateMetadata: false });
     loaded = { file, pageCount: doc.getPageCount() };
 
     titleInput.value = doc.getTitle() || "";
@@ -183,8 +183,11 @@ function baseName(fileName) {
 }
 
 async function saveMetadata() {
-  const { PDFDocument } = await getPdfLib();
-  const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
+  const { PDFDocument, PDFName } = await getPdfLib();
+  const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), {
+    ignoreEncryption: true,
+    updateMetadata: false,
+  });
 
   doc.setTitle(titleInput.value.trim());
   doc.setAuthor(authorInput.value.trim());
@@ -197,14 +200,25 @@ async function saveMetadata() {
   doc.setKeywords(keywordList);
 
   const createdDate = localInputValueToDate(createdInput.value);
-  if (createdDate) doc.setCreationDate(createdDate);
+  if (createdDate) {
+    doc.setCreationDate(createdDate);
+  } else {
+    doc.getInfoDict().delete(PDFName.of("CreationDate"));
+  }
 
   const modifiedDate = localInputValueToDate(modifiedInput.value);
-  if (modifiedDate) doc.setModificationDate(modifiedDate);
+  if (modifiedDate) {
+    doc.setModificationDate(modifiedDate);
+  } else {
+    doc.getInfoDict().delete(PDFName.of("ModDate"));
+  }
 
-  // Note: pdf-lib always overwrites the Producer field to its own signature
-  // on save(), regardless of setProducer() or save options — that field is
-  // not user-controllable, so it's intentionally not exposed in this UI.
+  // Note: pdf-lib stamps Producer/Creator/CreationDate/ModificationDate
+  // automatically, but only via PDFDocument.load()'s `updateMetadata` option
+  // (default true) — not unconditionally on save(). Loading with
+  // `updateMetadata: false` above keeps Producer/Creator untouched here
+  // (so they're correctly left out of this UI) while letting Created/
+  // Modified reflect the PDF's real values and the user's explicit edits.
   const bytes = await doc.save();
   return {
     blob: new Blob([bytes], { type: "application/pdf" }),
