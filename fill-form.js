@@ -58,7 +58,7 @@ function classifyField(field, { PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDro
   if (field instanceof PDFTextField)
     return { kind: "text", multiline: field.isMultiline(), maxLength: field.getMaxLength(), value: field.getText() };
   if (field instanceof PDFCheckBox) return { kind: "checkbox", checked: field.isChecked() };
-  if (field instanceof PDFRadioGroup) return { kind: "radio", options: field.getOptions() };
+  if (field instanceof PDFRadioGroup) return { kind: "radio", options: field.getOptions(), selected: field.getSelected() };
   if (field instanceof PDFDropdown)
     return { kind: "dropdown", options: field.getOptions(), selected: field.getSelected() };
   if (field instanceof PDFOptionList)
@@ -123,7 +123,7 @@ function renderFields() {
           const optId = `${id}-${optIndex}`;
           return `
             <label>
-              <input type="radio" name="${id}" id="${optId}" value="${escapeHtml(opt)}" />
+              <input type="radio" name="${id}" id="${optId}" value="${escapeHtml(opt)}"${opt === f.selected ? " checked" : ""} />
               ${escapeHtml(opt)}
             </label>
           `;
@@ -317,7 +317,11 @@ async function fillForm() {
       filledCount++;
     } else if (f.kind === "radio") {
       const checked = document.querySelector(`input[name="${id}"]:checked`);
-      if (!checked) return;
+      // Now that the matching option is pre-checked from the PDF's own current
+      // selection, an untouched group always has a `:checked` input — skip when
+      // it's still the pre-existing value so an untouched radio never re-triggers
+      // a write, matching the dropdown/optionlist skip-if-unchanged pattern.
+      if (!checked || checked.value === f.selected) return;
       field.select(checked.value);
       filledCount++;
     } else if (f.kind === "dropdown") {
