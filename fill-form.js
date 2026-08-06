@@ -57,7 +57,7 @@ function fieldInputId(index) {
 function classifyField(field, { PDFTextField, PDFCheckBox, PDFRadioGroup, PDFDropdown, PDFOptionList }) {
   if (field instanceof PDFTextField)
     return { kind: "text", multiline: field.isMultiline(), maxLength: field.getMaxLength() };
-  if (field instanceof PDFCheckBox) return { kind: "checkbox" };
+  if (field instanceof PDFCheckBox) return { kind: "checkbox", checked: field.isChecked() };
   if (field instanceof PDFRadioGroup) return { kind: "radio", options: field.getOptions() };
   if (field instanceof PDFDropdown) return { kind: "dropdown", options: field.getOptions() };
   if (field instanceof PDFOptionList) return { kind: "optionlist", options: field.getOptions() };
@@ -110,7 +110,7 @@ function renderFields() {
       const label = document.createElement("label");
       label.className = "field-check";
       label.setAttribute("for", id);
-      label.innerHTML = `<input type="checkbox" id="${id}" /> ${escapeHtml(f.name)}`;
+      label.innerHTML = `<input type="checkbox" id="${id}"${f.checked ? " checked" : ""} /> ${escapeHtml(f.name)}`;
       fieldsContainer.appendChild(label);
     } else if (f.kind === "radio") {
       const row = document.createElement("div");
