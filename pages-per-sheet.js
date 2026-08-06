@@ -152,13 +152,16 @@ function gridFor(count, orientation) {
 }
 
 async function nupPdf() {
-  const { PDFDocument } = await getPdfLib();
+  const { PDFDocument, degrees } = await getPdfLib();
   const count = currentCount();
   const orientation = currentOrientation();
   const { sheet, cols, rows } = gridFor(count, orientation);
 
   const srcDoc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
   const srcPages = srcDoc.getPages();
+  // embedPages() discards each page's own /Rotate — capture it before embedding,
+  // or a rotated source page (e.g. a phone-scanned PDF) draws sideways on the sheet.
+  const srcRotations = srcPages.map((p) => (((p.getRotation().angle % 360) + 360) % 360));
   const outDoc = await PDFDocument.create();
   const embedded = await outDoc.embedPages(srcPages);
 
@@ -172,14 +175,26 @@ async function nupPdf() {
     chunk.forEach((embeddedPage, idx) => {
       const col = idx % cols;
       const row = Math.floor(idx / cols);
-      const scale = Math.min(cellW / embeddedPage.width, cellH / embeddedPage.height);
-      const drawW = embeddedPage.width * scale;
-      const drawH = embeddedPage.height * scale;
+      const rot = srcRotations[i + idx];
+      // Visual footprint after the page's own rotation is applied (swapped for 90/270).
+      const visW = rot === 90 || rot === 270 ? embeddedPage.height : embeddedPage.width;
+      const visH = rot === 90 || rot === 270 ? embeddedPage.width : embeddedPage.height;
+      // PDF's /Rotate is clockwise; drawPage()'s own rotate option is counterclockwise.
+      const effRot = (360 - rot) % 360;
+      const scale = Math.min(cellW / visW, cellH / visH);
+      const drawW = visW * scale;
+      const drawH = visH * scale;
       const cellX = GAP + col * (cellW + GAP);
       const cellTopY = sheet.height - GAP - row * (cellH + GAP);
-      const x = cellX + (cellW - drawW) / 2;
-      const y = cellTopY - cellH + (cellH - drawH) / 2;
-      page.drawPage(embeddedPage, { x, y, xScale: scale, yScale: scale });
+      const cellBottom = cellTopY - cellH;
+      const boxLeft = cellX + (cellW - drawW) / 2;
+      const boxBottom = cellBottom + (cellH - drawH) / 2;
+      let x, y;
+      if (effRot === 0) { x = boxLeft; y = boxBottom; }
+      else if (effRot === 90) { x = boxLeft + drawW; y = boxBottom; }
+      else if (effRot === 180) { x = boxLeft + drawW; y = boxBottom + drawH; }
+      else { x = boxLeft; y = boxBottom + drawH; }
+      page.drawPage(embeddedPage, { x, y, xScale: scale, yScale: scale, rotate: degrees(effRot) });
     });
     sheetsMade++;
   }
