@@ -51,6 +51,94 @@ function baseName(fileName) {
  * as opposed to a raw pdf-lib/parser exception (which must stay hidden from users). */
 class ValidationError extends Error {}
 
+/**
+ * Reads the source PDF's own top-level /Outlines linked list (if any) as a
+ * flat list of {title, page} entries (1-based page numbers), so a bookmark
+ * can be carried over into the reordered output instead of silently dropped
+ * — building `out` via PDFDocument.create()+copyPages() never brings
+ * /Outlines along on its own. Only direct [pageRef, ...] /Dest arrays are
+ * resolved (not named destinations, not /A GoTo actions) — an entry that
+ * can't be resolved to a page is dropped rather than guessed at.
+ */
+async function readExistingBookmarks(doc) {
+  const { PDFName } = await getPdfLib();
+  const context = doc.context;
+  const outlinesRef = doc.catalog.get(PDFName.of("Outlines"));
+  if (!outlinesRef) return [];
+  const outlines = context.lookup(outlinesRef);
+  if (!outlines) return [];
+
+  const pageRefs = doc.getPages().map((p) => p.ref);
+  function resolvePage(dest) {
+    if (!dest || typeof dest.get !== "function") return -1;
+    try {
+      const pageRef = dest.get(0);
+      if (!pageRef) return -1;
+      return pageRefs.findIndex(
+        (r) => r.tag === pageRef.tag && r.objectNumber === pageRef.objectNumber
+      );
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  const items = [];
+  let cur = outlines.get(PDFName.of("First"));
+  let guard = 0;
+  while (cur && guard++ < 10000) {
+    const item = context.lookup(cur);
+    if (!item) break;
+    const titleObj = item.get(PDFName.of("Title"));
+    const title = titleObj && titleObj.decodeText ? titleObj.decodeText() : "";
+    const dest = item.get(PDFName.of("Dest"));
+    const pageIndex = resolvePage(dest);
+    if (title && pageIndex >= 0) items.push({ title, page: pageIndex + 1 });
+    cur = item.get(PDFName.of("Next"));
+  }
+  return items;
+}
+
+/**
+ * Rebuilds a flat PDF outline (bookmark) tree on `doc` from a list of
+ * {title, page} entries (1-based) via pdf-lib's low-level context API —
+ * pdf-lib has no high-level outline API, so /Outlines and each item dict
+ * are constructed and linked (Parent/First/Last/Next/Prev/Count) by hand.
+ * Mirrors bookmarks.js's addOutline() exactly.
+ */
+async function addOutline(doc, entries) {
+  if (entries.length === 0) return;
+  const { PDFName, PDFString, PDFNumber } = await getPdfLib();
+  const context = doc.context;
+  const sorted = [...entries].sort((a, b) => a.page - b.page);
+
+  const outlineRef = context.nextRef();
+  const itemRefs = sorted.map(() => context.nextRef());
+
+  sorted.forEach((entry, i) => {
+    const page = doc.getPage(entry.page - 1);
+    const dict = {
+      Title: PDFString.of(entry.title),
+      Parent: outlineRef,
+      Dest: context.obj([page.ref, PDFName.of("Fit")]),
+    };
+    if (i > 0) dict.Prev = itemRefs[i - 1];
+    if (i < itemRefs.length - 1) dict.Next = itemRefs[i + 1];
+    context.assign(itemRefs[i], context.obj(dict));
+  });
+
+  context.assign(
+    outlineRef,
+    context.obj({
+      Type: PDFName.of("Outlines"),
+      First: itemRefs[0],
+      Last: itemRefs[itemRefs.length - 1],
+      Count: PDFNumber.of(itemRefs.length),
+    })
+  );
+
+  doc.catalog.set(PDFName.of("Outlines"), outlineRef);
+}
+
 function focusRow(position, selector, fallback) {
   const row = fileListEl.querySelector(`li[data-position="${position}"]`);
   const el = row ? row.querySelector(selector) : null;
@@ -207,9 +295,20 @@ reorderBtn.addEventListener("click", async () => {
 
     const { PDFDocument } = await getPdfLib();
     const src = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
+    const existingBookmarks = await readExistingBookmarks(src).catch(() => []);
+
+    // Remap each bookmark's old (1-based) page number to its new position
+    // under the reordered page list.
+    const oldToNewIndex = new Map();
+    loaded.order.forEach((oldIndex, newIndex) => oldToNewIndex.set(oldIndex, newIndex));
+    const remappedBookmarks = existingBookmarks
+      .filter((b) => oldToNewIndex.has(b.page - 1))
+      .map((b) => ({ title: b.title, page: oldToNewIndex.get(b.page - 1) + 1 }));
+
     const out = await PDFDocument.create();
     const pages = await out.copyPages(src, loaded.order);
     pages.forEach((page) => out.addPage(page));
+    await addOutline(out, remappedBookmarks);
 
     const bytes = await out.save();
     const blob = new Blob([bytes], { type: "application/pdf" });
