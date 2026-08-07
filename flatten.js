@@ -137,8 +137,10 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+class ValidationError extends Error {}
+
 async function flattenPdf() {
-  const { PDFDocument } = await getPdfLib();
+  const { PDFDocument, StandardFonts, PDFTextField, PDFDropdown, PDFOptionList } = await getPdfLib();
   const doc = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
   const form = doc.getForm();
   const fieldCount = form.getFields().length;
@@ -146,6 +148,33 @@ async function flattenPdf() {
   if (fieldCount === 0) {
     return { noop: true };
   }
+
+  // form.flatten() regenerates appearance streams (using this same default
+  // font) for any field lacking a valid one — including fields the user never
+  // touched, e.g. a PDF authored by another tool that set field values but
+  // relied on NeedAppearances instead of writing its own appearance streams.
+  // Pre-checking every field's own pre-existing value here catches unrenderable
+  // characters (CJK, emoji, other non-Latin scripts) before flatten()'s
+  // internal save-time throw, which would otherwise be misread as a
+  // corrupted/password-protected file.
+  const font = await doc.embedFont(StandardFonts.Helvetica);
+  function assertEncodable(text, fieldName) {
+    if (!text) return;
+    try {
+      font.widthOfTextAtSize(text, 1);
+    } catch (e) {
+      throw new ValidationError(
+        `The value for "${fieldName}" has a character the form's font can't render (likely emoji, CJK, or another non-Latin script) — flattening would fail. Fix it in Fill Form first, or remove the field's value, and try again.`
+      );
+    }
+  }
+  form.getFields().forEach((field) => {
+    if (field instanceof PDFTextField) {
+      assertEncodable(field.getText(), field.getName());
+    } else if (field instanceof PDFDropdown || field instanceof PDFOptionList) {
+      field.getSelected().forEach((value) => assertEncodable(value, field.getName()));
+    }
+  });
 
   form.flatten();
   const bytes = await doc.save();
@@ -200,7 +229,7 @@ flattenBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "alert");
     resultEl.setAttribute("aria-live", "assertive");
     resultEl.innerHTML = `<span><strong>Flatten failed.</strong> ${escapeHtml(
-      "This file may be corrupted or password-protected."
+      err instanceof ValidationError ? err.message : "This file may be corrupted or password-protected."
     )}</span>`;
   } finally {
     flattenBtn.disabled = false;
