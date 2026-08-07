@@ -181,13 +181,114 @@ function baseName(fileName) {
   return fileName.replace(/\.pdf$/i, "");
 }
 
+/**
+ * Reads the source PDF's own top-level /Outlines linked list (if any) as a
+ * flat list of {title, page} entries (1-based page numbers) — building an
+ * output via PDFDocument.create()+copyPages() never brings /Outlines along
+ * on its own. Only direct [pageRef, ...] /Dest arrays are resolved (not
+ * named destinations, not /A GoTo actions) — an entry that can't be resolved
+ * to a page is dropped rather than guessed at. Mirrors bookmarks.js/
+ * delete-pages.js/duplicate-pages.js.
+ */
+async function readExistingBookmarks(doc) {
+  const { PDFName } = await getPdfLib();
+  const context = doc.context;
+  const outlinesRef = doc.catalog.get(PDFName.of("Outlines"));
+  if (!outlinesRef) return [];
+  const outlines = context.lookup(outlinesRef);
+  if (!outlines) return [];
+
+  const pageRefs = doc.getPages().map((p) => p.ref);
+  function resolvePage(dest) {
+    if (!dest || typeof dest.get !== "function") return -1;
+    try {
+      const pageRef = dest.get(0);
+      if (!pageRef) return -1;
+      return pageRefs.findIndex(
+        (r) => r.tag === pageRef.tag && r.objectNumber === pageRef.objectNumber
+      );
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  const items = [];
+  let cur = outlines.get(PDFName.of("First"));
+  let guard = 0;
+  while (cur && guard++ < 10000) {
+    const item = context.lookup(cur);
+    if (!item) break;
+    const titleObj = item.get(PDFName.of("Title"));
+    const title = titleObj && titleObj.decodeText ? titleObj.decodeText() : "";
+    const dest = item.get(PDFName.of("Dest"));
+    const pageIndex = resolvePage(dest);
+    if (title && pageIndex >= 0) items.push({ title, page: pageIndex + 1 });
+    cur = item.get(PDFName.of("Next"));
+  }
+  return items;
+}
+
+/**
+ * Rebuilds a flat PDF outline (bookmark) tree on `doc` from a list of
+ * {title, page} entries (1-based) via pdf-lib's low-level context API.
+ * Mirrors bookmarks.js's/delete-pages.js's addOutline() exactly.
+ */
+async function addOutline(doc, entries) {
+  if (entries.length === 0) return;
+  const { PDFName, PDFString, PDFNumber } = await getPdfLib();
+  const context = doc.context;
+  const sorted = [...entries].sort((a, b) => a.page - b.page);
+
+  const outlineRef = context.nextRef();
+  const itemRefs = sorted.map(() => context.nextRef());
+
+  sorted.forEach((entry, i) => {
+    const page = doc.getPage(entry.page - 1);
+    const dict = {
+      Title: PDFString.of(entry.title),
+      Parent: outlineRef,
+      Dest: context.obj([page.ref, PDFName.of("Fit")]),
+    };
+    if (i > 0) dict.Prev = itemRefs[i - 1];
+    if (i < itemRefs.length - 1) dict.Next = itemRefs[i + 1];
+    context.assign(itemRefs[i], context.obj(dict));
+  });
+
+  context.assign(
+    outlineRef,
+    context.obj({
+      Type: PDFName.of("Outlines"),
+      First: itemRefs[0],
+      Last: itemRefs[itemRefs.length - 1],
+      Count: PDFNumber.of(itemRefs.length),
+    })
+  );
+
+  doc.catalog.set(PDFName.of("Outlines"), outlineRef);
+}
+
 async function extractRange() {
   const { PDFDocument } = await getPdfLib();
   const indices = parseRanges(rangeInput.value, loaded.pageCount);
   const src = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
+  const existingBookmarks = await readExistingBookmarks(src).catch(() => []);
   const out = await PDFDocument.create();
   const pages = await out.copyPages(src, indices);
   pages.forEach((page) => out.addPage(page));
+
+  // A bookmark whose page appears in the extracted range is carried over,
+  // remapped to that page's new position in the output — the FIRST index
+  // in `indices` that resolves to a given old page wins if the user's range
+  // list caused the same page to be included more than once (e.g. "1-3, 2").
+  const oldToNewIndex = new Map();
+  indices.forEach((oldIndex, newIndex) => {
+    if (!oldToNewIndex.has(oldIndex)) oldToNewIndex.set(oldIndex, newIndex);
+  });
+  const remappedBookmarks = existingBookmarks
+    .filter((b) => oldToNewIndex.has(b.page - 1))
+    .map((b) => ({ title: b.title, page: oldToNewIndex.get(b.page - 1) + 1 }));
+  await addOutline(out, remappedBookmarks);
+
   const bytes = await out.save();
   return {
     blob: new Blob([bytes], { type: "application/pdf" }),
@@ -199,6 +300,13 @@ async function extractRange() {
 async function splitEveryPage() {
   const { PDFDocument } = await getPdfLib();
   const src = await PDFDocument.load(await loaded.file.arrayBuffer(), { ignoreEncryption: true });
+  const existingBookmarks = await readExistingBookmarks(src).catch(() => []);
+  const bookmarksByPage = new Map();
+  for (const b of existingBookmarks) {
+    if (!bookmarksByPage.has(b.page)) bookmarksByPage.set(b.page, []);
+    bookmarksByPage.get(b.page).push(b.title);
+  }
+
   const name = baseName(loaded.file.name);
   const digits = String(loaded.pageCount).length;
   const entries = [];
@@ -206,6 +314,10 @@ async function splitEveryPage() {
     const out = await PDFDocument.create();
     const [page] = await out.copyPages(src, [i]);
     out.addPage(page);
+    // Each output PDF has exactly one page, so a bookmark on source page
+    // i+1 unambiguously maps to page 1 of this file — no remap ambiguity.
+    const titles = bookmarksByPage.get(i + 1) || [];
+    await addOutline(out, titles.map((title) => ({ title, page: 1 })));
     const bytes = await out.save();
     entries.push({ name: `${name}-page-${String(i + 1).padStart(digits, "0")}.pdf`, data: bytes });
   }
