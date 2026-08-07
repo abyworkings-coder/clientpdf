@@ -351,10 +351,15 @@ async function fillForm() {
       const initialSelected = f.selected || [];
       const unchanged =
         selected.length === initialSelected.length && selected.every((v) => initialSelected.includes(v));
-      // Same reasoning as dropdown: skip when nothing is selected (matches prior
-      // behavior) or when the selection set is unchanged from the PDF's own
-      // current value, so an untouched field never re-triggers assertEncodable().
-      if (selected.length === 0 || unchanged) return;
+      // Skip only when the selection set is unchanged from the PDF's own current
+      // value (this already covers "untouched, both empty" — an unselected field
+      // that started with no selection has selected.length === initialSelected.length
+      // === 0, so `unchanged` is true). The old code also unconditionally skipped
+      // whenever `selected.length === 0`, which silently discarded a user's
+      // explicit action to deselect every option in a field that DID start with a
+      // selection — indistinguishable from "never touched" once nothing remains
+      // selected, the same ambiguity already fixed for dropdown fields above.
+      if (unchanged) return;
       selected.forEach((value) => assertEncodable(value, f.name));
       field.select(selected);
       filledCount++;
