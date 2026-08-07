@@ -247,6 +247,44 @@ clearBtn.addEventListener("click", () => {
   updateActions();
 });
 
+/**
+ * Builds a flat PDF outline (bookmark) tree from a list of {title, page}
+ * entries via pdf-lib's low-level context API, same construction as
+ * bookmarks.js's addOutline() — pdf-lib has no high-level outline API.
+ */
+async function addOutline(doc, entries) {
+  const { PDFName, PDFString, PDFNumber } = await getPdfLib();
+  const context = doc.context;
+  const sorted = [...entries].sort((a, b) => a.page - b.page);
+
+  const outlineRef = context.nextRef();
+  const itemRefs = sorted.map(() => context.nextRef());
+
+  sorted.forEach((entry, i) => {
+    const page = doc.getPage(entry.page - 1);
+    const dict = {
+      Title: PDFString.of(entry.title),
+      Parent: outlineRef,
+      Dest: context.obj([page.ref, PDFName.of("Fit")]),
+    };
+    if (i > 0) dict.Prev = itemRefs[i - 1];
+    if (i < itemRefs.length - 1) dict.Next = itemRefs[i + 1];
+    context.assign(itemRefs[i], context.obj(dict));
+  });
+
+  context.assign(
+    outlineRef,
+    context.obj({
+      Type: PDFName.of("Outlines"),
+      First: itemRefs[0],
+      Last: itemRefs[itemRefs.length - 1],
+      Count: PDFNumber.of(itemRefs.length),
+    })
+  );
+
+  doc.catalog.set(PDFName.of("Outlines"), outlineRef);
+}
+
 async function extractSection(section) {
   const { PDFDocument } = await getPdfLib();
   const bytes = await loaded.file.arrayBuffer();
@@ -257,6 +295,10 @@ async function extractSection(section) {
   const out = await PDFDocument.create();
   const pages = await out.copyPages(src, indices);
   pages.forEach((page) => out.addPage(page));
+  // Each section is itself the bookmark that defined its boundaries — carry
+  // that one bookmark (title, page 1 of the new file) into the output, so the
+  // split file isn't the only place its own identifying bookmark disappears.
+  await addOutline(out, [{ title: section.title, page: 1 }]);
   const outBytes = await out.save();
 
   return {
