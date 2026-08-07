@@ -181,9 +181,33 @@ async function watermarkPdf() {
     // off the edges at typical letter/A4 dimensions.
     const fontSize = Math.max(24, Math.min(width, height) * 0.12);
     const textWidth = font.widthOfTextAtSize(text, fontSize);
+
+    // pdf-lib's drawText rotates around the (x, y) anchor itself — the anchor
+    // is the *baseline start* of the text, and it does not move when `rotate`
+    // is applied (Tm = [cos, sin, -sin, cos, x, y]). So computing x/y for an
+    // unrotated, horizontally-centered layout and then just adding `rotate`
+    // does NOT keep the text centered: at +-45 degrees (the default angle
+    // option in this tool) the visual centroid of the stamped text lands
+    // roughly textWidth/2 away from the page center, both horizontally and
+    // vertically — a large, visible offset, not a rounding error. To keep
+    // the text centered at any angle, solve for the anchor that places the
+    // text's local center point (textWidth/2, midY) at the page's true
+    // center after the same rotation matrix pdf-lib applies.
+    const angleRad = (angle * Math.PI) / 180;
+    const cos = Math.cos(angleRad);
+    const sin = Math.sin(angleRad);
+    const ascent = font.heightAtSize(fontSize, { descender: false });
+    const fullHeight = font.heightAtSize(fontSize);
+    const descent = fullHeight - ascent;
+    const midY = (ascent - descent) / 2; // baseline -> visual vertical center
+    const cx = box.x + width / 2;
+    const cy = box.y + height / 2;
+    const x = cx - cos * (textWidth / 2) + sin * midY;
+    const y = cy - sin * (textWidth / 2) - cos * midY;
+
     page.drawText(text, {
-      x: box.x + width / 2 - textWidth / 2,
-      y: box.y + height / 2,
+      x,
+      y,
       size: fontSize,
       font,
       color: rgb(0.4, 0.4, 0.4),
