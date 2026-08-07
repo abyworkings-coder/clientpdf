@@ -102,13 +102,59 @@ function updateActions() {
   saveBtn.disabled = bookmarks.length === 0;
 }
 
+/**
+ * Reads the PDF's own top-level /Outlines linked list, if any, so pre-existing
+ * bookmarks aren't silently destroyed when the user adds a new one — addOutline()
+ * below always rebuilds /Outlines from scratch, so whatever isn't in `bookmarks`
+ * at save time is gone. Only direct [pageRef, ...] /Dest arrays are resolved
+ * (not named destinations via /Names, and not /A GoTo actions) — an entry that
+ * can't be resolved to a page is dropped rather than guessed at.
+ */
+async function readExistingBookmarks(doc) {
+  const { PDFName } = await getPdfLib();
+  const context = doc.context;
+  const outlinesRef = doc.catalog.get(PDFName.of("Outlines"));
+  if (!outlinesRef) return [];
+  const outlines = context.lookup(outlinesRef);
+  if (!outlines) return [];
+
+  const pageRefs = doc.getPages().map((p) => p.ref);
+  function resolvePage(dest) {
+    if (!dest || typeof dest.get !== "function") return -1;
+    try {
+      const pageRef = dest.get(0);
+      if (!pageRef) return -1;
+      return pageRefs.findIndex(
+        (r) => r.tag === pageRef.tag && r.objectNumber === pageRef.objectNumber
+      );
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  const items = [];
+  let cur = outlines.get(PDFName.of("First"));
+  let guard = 0;
+  while (cur && guard++ < 10000) {
+    const item = context.lookup(cur);
+    if (!item) break;
+    const titleObj = item.get(PDFName.of("Title"));
+    const title = titleObj && titleObj.decodeText ? titleObj.decodeText() : "";
+    const dest = item.get(PDFName.of("Dest"));
+    const pageIndex = resolvePage(dest);
+    if (title && pageIndex >= 0) items.push({ title, page: pageIndex + 1 });
+    cur = item.get(PDFName.of("Next"));
+  }
+  return items;
+}
+
 async function loadFile(file) {
   try {
     const { PDFDocument } = await getPdfLib();
     const bytes = await file.arrayBuffer();
     const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
     loaded = { file, pageCount: doc.getPageCount() };
-    bookmarks = [];
+    bookmarks = await readExistingBookmarks(doc).catch(() => []);
     renderFile();
     renderBookmarks();
     updateActions();
@@ -291,7 +337,7 @@ saveBtn.addEventListener("click", async () => {
     resultEl.setAttribute("role", "status");
     resultEl.setAttribute("aria-live", "polite");
     resultEl.innerHTML = `
-      <span><strong>Done.</strong> ${count} bookmark${count === 1 ? "" : "s"} added —
+      <span><strong>Done.</strong> ${count} bookmark${count === 1 ? "" : "s"} saved —
       ${elapsedMs}ms, ${requestsDuring} network requests, entirely on this device.</span>
       <a class="btn btn-primary" href="${url}" download="${escapeHtml(fileName)}">Download ${escapeHtml(fileName)}</a>
     `;
