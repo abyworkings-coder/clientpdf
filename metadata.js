@@ -107,10 +107,11 @@ async function loadFile(file) {
     titleInput.value = doc.getTitle() || "";
     authorInput.value = doc.getAuthor() || "";
     subjectInput.value = doc.getSubject() || "";
-    const keywords = doc.getKeywords();
-    // pdf-lib returns getKeywords() as a single space-joined string; show it
-    // comma-separated in the UI for easier editing either way.
-    keywordsInput.value = keywords ? keywords.split(/\s+/).filter(Boolean).join(", ") : "";
+    // Keywords is a single free-text PDF field, not a real array — show it
+    // verbatim. Splitting/rejoining on whitespace would silently mangle any
+    // keyword that itself contains a space (e.g. "machine learning" becomes
+    // two separate keywords "machine" and "learning" on save+reload).
+    keywordsInput.value = doc.getKeywords() || "";
     createdInput.value = dateToLocalInputValue(doc.getCreationDate());
     modifiedInput.value = dateToLocalInputValue(doc.getModificationDate());
 
@@ -194,11 +195,11 @@ async function saveMetadata() {
   doc.setAuthor(authorInput.value.trim());
   doc.setSubject(subjectInput.value.trim());
 
-  const keywordList = keywordsInput.value
-    .split(",")
-    .map((k) => k.trim())
-    .filter((k) => k.length > 0);
-  doc.setKeywords(keywordList);
+  // Pass the raw text as a single array element so pdf-lib's join(" ")
+  // (used internally by setKeywords) is a no-op and the user's exact text
+  // — commas, spaces, and all — survives the round trip untouched.
+  const keywordsValue = keywordsInput.value.trim();
+  doc.setKeywords(keywordsValue ? [keywordsValue] : []);
 
   const createdDate = localInputValueToDate(createdInput.value);
   if (createdDate) {
