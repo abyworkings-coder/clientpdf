@@ -165,7 +165,13 @@ function rectsOverlap(a, b) {
 export function redactContentStream(source, rects) {
   const tokens = tokenize(source);
   const out = [];
-  let ctmStack = [];
+  // Per the PDF spec, the CTM plus the text-state parameters (font, font
+  // size, leading, etc.) are all part of the graphics state saved/restored
+  // by q/Q -- only Tm/Tlm are excluded (they're reset by BT instead). So
+  // fontSize/leading must be stacked alongside ctm, or a font-size change
+  // made inside a q...Q block would leak past the matching Q and corrupt
+  // the bbox estimate for text drawn after it.
+  let gsStack = [];
   let ctm = [1, 0, 0, 1, 0, 0];
   let tm = [1, 0, 0, 1, 0, 0];
   let tlm = [1, 0, 0, 1, 0, 0];
@@ -194,11 +200,19 @@ export function redactContentStream(source, rects) {
     const op = tok.raw;
     switch (op) {
       case "q":
-        ctmStack.push(ctm);
+        gsStack.push({ ctm, fontSize, leading });
         break;
-      case "Q":
-        ctm = ctmStack.pop() || [1, 0, 0, 1, 0, 0];
+      case "Q": {
+        const restored = gsStack.pop();
+        if (restored) {
+          ctm = restored.ctm;
+          fontSize = restored.fontSize;
+          leading = restored.leading;
+        } else {
+          ctm = [1, 0, 0, 1, 0, 0];
+        }
         break;
+      }
       case "cm": {
         const nums = pending.filter((t) => t.type === "num").map((t) => t.value);
         if (nums.length === 6) ctm = mul(nums, ctm);
