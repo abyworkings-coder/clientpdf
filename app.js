@@ -4,6 +4,90 @@ function getPdfLib() {
   return _pdfLibPromise;
 }
 
+/**
+ * Reads a source PDF's own top-level /Outlines linked list, if any, so its
+ * bookmarks can be carried into the merged output instead of silently
+ * dropped (plain copyPages/addPage never touches /Outlines). Only direct
+ * [pageRef, ...] /Dest arrays are resolved (not named destinations via
+ * /Names, and not /A GoTo actions) — an entry that can't be resolved to a
+ * page is dropped rather than guessed at. Mirrors bookmarks.js's reader.
+ */
+async function readExistingBookmarks(doc) {
+  const { PDFName } = await getPdfLib();
+  const context = doc.context;
+  const outlinesRef = doc.catalog.get(PDFName.of("Outlines"));
+  if (!outlinesRef) return [];
+  const outlines = context.lookup(outlinesRef);
+  if (!outlines) return [];
+
+  const pageRefs = doc.getPages().map((p) => p.ref);
+  function resolvePage(dest) {
+    if (!dest || typeof dest.get !== "function") return -1;
+    try {
+      const pageRef = dest.get(0);
+      if (!pageRef) return -1;
+      return pageRefs.findIndex(
+        (r) => r.tag === pageRef.tag && r.objectNumber === pageRef.objectNumber
+      );
+    } catch (e) {
+      return -1;
+    }
+  }
+
+  const items = [];
+  let cur = outlines.get(PDFName.of("First"));
+  let guard = 0;
+  while (cur && guard++ < 10000) {
+    const item = context.lookup(cur);
+    if (!item) break;
+    const titleObj = item.get(PDFName.of("Title"));
+    const title = titleObj && titleObj.decodeText ? titleObj.decodeText() : "";
+    const dest = item.get(PDFName.of("Dest"));
+    const pageIndex = resolvePage(dest);
+    if (title && pageIndex >= 0) items.push({ title, page: pageIndex + 1 });
+    cur = item.get(PDFName.of("Next"));
+  }
+  return items;
+}
+
+/**
+ * Builds a flat PDF outline (bookmark) tree in the merged doc from a list of
+ * {title, page} entries (page numbers already relative to the merged doc) via
+ * pdf-lib's low-level context API. Mirrors bookmarks.js's writer.
+ */
+async function addOutline(doc, entries) {
+  const { PDFName, PDFString, PDFNumber } = await getPdfLib();
+  const context = doc.context;
+  const sorted = [...entries].sort((a, b) => a.page - b.page);
+
+  const outlineRef = context.nextRef();
+  const itemRefs = sorted.map(() => context.nextRef());
+
+  sorted.forEach((entry, i) => {
+    const page = doc.getPage(entry.page - 1);
+    const dict = {
+      Title: PDFString.of(entry.title),
+      Parent: outlineRef,
+      Dest: context.obj([page.ref, PDFName.of("Fit")]),
+    };
+    if (i > 0) dict.Prev = itemRefs[i - 1];
+    if (i < itemRefs.length - 1) dict.Next = itemRefs[i + 1];
+    context.assign(itemRefs[i], context.obj(dict));
+  });
+
+  context.assign(
+    outlineRef,
+    context.obj({
+      Type: PDFName.of("Outlines"),
+      First: itemRefs[0],
+      Last: itemRefs[itemRefs.length - 1],
+      Count: PDFNumber.of(itemRefs.length),
+    })
+  );
+
+  doc.catalog.set(PDFName.of("Outlines"), outlineRef);
+}
+
 const dropzone = document.getElementById("dropzone");
 const fileInput = document.getElementById("fileInput");
 const fileListEl = document.getElementById("fileList");
@@ -193,12 +277,21 @@ mergeBtn.addEventListener("click", async () => {
   try {
     const { PDFDocument } = await getPdfLib();
     const merged = await PDFDocument.create();
+    const allBookmarks = [];
+    let pageOffset = 0;
 
     for (const entry of files) {
       const bytes = await entry.file.arrayBuffer();
       const src = await PDFDocument.load(bytes, { ignoreEncryption: true });
+      const srcBookmarks = await readExistingBookmarks(src).catch(() => []);
+      srcBookmarks.forEach((b) => allBookmarks.push({ title: b.title, page: b.page + pageOffset }));
       const pages = await merged.copyPages(src, src.getPageIndices());
       pages.forEach((page) => merged.addPage(page));
+      pageOffset += src.getPageCount();
+    }
+
+    if (allBookmarks.length > 0) {
+      await addOutline(merged, allBookmarks);
     }
 
     const mergedBytes = await merged.save();
