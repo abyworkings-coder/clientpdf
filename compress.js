@@ -408,7 +408,8 @@ compressBtn.addEventListener("click", async () => {
 
     let sizeLine;
     if (reduced > 0) {
-      sizeLine = `<strong>${formatSize(originalSize)} → ${formatSize(newSize)}</strong> (${pct}% smaller)`;
+      const pctLabel = pct === 0 ? "<1" : pct;
+      sizeLine = `<strong>${formatSize(originalSize)} → ${formatSize(newSize)}</strong> (${pctLabel}% smaller)`;
     } else {
       sizeLine = `<strong>${formatSize(originalSize)} → ${formatSize(newSize)}</strong> — no meaningful size reduction found for this file`;
     }
