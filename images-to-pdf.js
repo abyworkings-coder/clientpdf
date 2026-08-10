@@ -187,16 +187,73 @@ clearBtn.addEventListener("click", () => {
   updateActions();
 });
 
-async function readImageDimensions(file) {
+// pdf-lib's embedJpg() has no EXIF awareness at all — it always sizes the
+// embedded image from the JPEG's raw, unrotated pixel dimensions, while
+// browsers report naturalWidth/naturalHeight (and render <img>) with EXIF
+// Orientation already applied. A phone photo shot in portrait (landscape
+// sensor data + an Orientation tag) would otherwise get stretched into the
+// wrong aspect ratio instead of rotated. Returns 1 (no correction needed)
+// for anything malformed, absent, or already upright — never throws.
+function readJpegOrientation(bytes) {
+  try {
+    const view = new DataView(bytes.buffer, bytes.byteOffset, bytes.byteLength);
+    if (view.getUint16(0) !== 0xffd8) return 1;
+    let offset = 2;
+    while (offset < view.byteLength - 4) {
+      const marker = view.getUint16(offset);
+      if (marker === 0xffda || (marker & 0xff00) !== 0xff00) break;
+      offset += 2;
+      const size = view.getUint16(offset);
+      if (marker === 0xffe1 && view.getUint32(offset + 2) === 0x45786966 /* "Exif" */) {
+        const tiffOffset = offset + 8;
+        const little = view.getUint16(tiffOffset) === 0x4949;
+        const dirOffset = tiffOffset + view.getUint32(tiffOffset + 4, little);
+        const entries = view.getUint16(dirOffset, little);
+        for (let i = 0; i < entries; i++) {
+          const entryOffset = dirOffset + 2 + i * 12;
+          if (view.getUint16(entryOffset, little) === 0x0112) {
+            const val = view.getUint16(entryOffset + 8, little);
+            return val >= 1 && val <= 8 ? val : 1;
+          }
+        }
+        return 1;
+      }
+      offset += size;
+    }
+  } catch (e) {
+    // malformed — treat as already upright
+  }
+  return 1;
+}
+
+/**
+ * Returns the bytes to embed plus the display (EXIF-corrected) dimensions.
+ * JPEGs with a non-identity Orientation tag are re-encoded via canvas (which
+ * paints the browser's already-corrected rendering) so the embedded pixels
+ * match the reported width/height; everything else is returned untouched.
+ */
+async function loadImageForEmbed(file, rawBytes, isPng) {
   const url = URL.createObjectURL(file);
   try {
     const img = new Image();
-    const dims = await new Promise((resolve, reject) => {
-      img.onload = () => resolve({ width: img.naturalWidth, height: img.naturalHeight });
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
       img.onerror = () => reject(new Error(`Couldn't read "${file.name}" as an image.`));
       img.src = url;
     });
-    return dims;
+    const width = img.naturalWidth;
+    const height = img.naturalHeight;
+    const orientation = isPng ? 1 : readJpegOrientation(rawBytes);
+    if (orientation === 1) return { bytes: rawBytes, width, height };
+
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(img, 0, 0, width, height);
+    const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/jpeg", 0.95));
+    const bytes = new Uint8Array(await blob.arrayBuffer());
+    return { bytes, width, height };
   } finally {
     URL.revokeObjectURL(url);
   }
@@ -216,10 +273,10 @@ convertBtn.addEventListener("click", async () => {
     const doc = await PDFDocument.create();
 
     for (const entry of images) {
-      const bytes = await entry.file.arrayBuffer();
+      const rawBytes = new Uint8Array(await entry.file.arrayBuffer());
       const isPng = entry.file.type === "image/png" || /\.png$/i.test(entry.file.name);
+      const { bytes, width, height } = await loadImageForEmbed(entry.file, rawBytes, isPng);
       const embedded = isPng ? await doc.embedPng(bytes) : await doc.embedJpg(bytes);
-      const { width, height } = await readImageDimensions(entry.file);
       const page = doc.addPage([width, height]);
       page.drawImage(embedded, { x: 0, y: 0, width, height });
     }
