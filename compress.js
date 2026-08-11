@@ -276,6 +276,16 @@ async function compressImages(doc, quality, maxDimension) {
           skippedCount++;
           continue;
         }
+        // Skip images with a stencil/color-key Mask (a separate masking
+        // mechanism from SMask, PDF32000-1 8.9.6.2) — pdf-lib's embedJpg()
+        // only writes {Type, Subtype, BitsPerComponent, Width, Height,
+        // ColorSpace, Filter, Decode} into the new image dict, so swapping
+        // the object in place would silently drop the Mask entry and turn
+        // a partially-masked-out image fully opaque.
+        if (dict.get(PDFName.of("Mask"))) {
+          skippedCount++;
+          continue;
+        }
         // Skip CMYK JPEGs — browser <img>/<canvas> decoding of CMYK JPEG
         // data is unreliable and can shift colors badly.
         const colorSpace = dict.get(PDFName.of("ColorSpace"));
