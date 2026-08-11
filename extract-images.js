@@ -59,11 +59,17 @@ function baseName(fileName) {
 
 /**
  * Walks each page's /Resources /XObject dict for Image subtype entries.
- * Only extracts images whose Filter resolves to /DCTDecode (JPEG) — the raw
- * compressed bytes are already a valid, byte-identical JPEG file. Images
- * encoded with other filters (FlateDecode raw pixels, JPXDecode, CCITTFax)
- * would need re-encoding to produce a usable file, so they're reported as
- * skipped rather than silently dropped or falsely claimed as extracted.
+ * Only extracts images whose Filter is a bare /DCTDecode (JPEG) — the raw
+ * stream bytes are already a valid, byte-identical JPEG file in that case.
+ * A /Filter *array* with DCTDecode as the last entry (e.g.
+ * [/ASCII85Decode /DCTDecode]) is deliberately NOT extracted: getContents()
+ * returns the raw, still-undecoded stream bytes, which would still be
+ * ASCII85/RunLength/etc-encoded text, not real JPEG bytes — checking only
+ * the last filter name would silently hand out a corrupted, mislabeled
+ * .jpg. Images encoded with other filters (FlateDecode raw pixels,
+ * JPXDecode, CCITTFax, or any multi-filter chain) would need re-encoding
+ * to produce a usable file, so they're reported as skipped rather than
+ * silently dropped or falsely claimed as extracted.
  * Images inside nested Form XObjects aren't walked — only images that are
  * direct page resources.
  */
@@ -87,13 +93,15 @@ async function extractImages(doc) {
       const filterObj = stream.dict.get(PDFName.of("Filter"));
       let filterName = null;
       if (filterObj) {
-        filterName =
-          typeof filterObj.asArray === "function"
-            ? (() => {
-                const arr = filterObj.asArray();
-                return arr.length ? arr[arr.length - 1].toString() : null;
-              })()
-            : filterObj.toString();
+        if (typeof filterObj.asArray === "function") {
+          const arr = filterObj.asArray();
+          // Only a single-entry array (equivalent to a bare filter) is
+          // safe — a longer chain means the raw stream bytes still need
+          // one or more earlier filters undone before they're a real JPEG.
+          filterName = arr.length === 1 ? arr[0].toString() : null;
+        } else {
+          filterName = filterObj.toString();
+        }
       }
 
       if (filterName !== "/DCTDecode") {
