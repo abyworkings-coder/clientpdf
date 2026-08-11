@@ -286,6 +286,16 @@ async function compressImages(doc, quality, maxDimension) {
           skippedCount++;
           continue;
         }
+        // Skip images tagged with Optional Content (a layer, PDF32000-1
+        // 8.11) — the same object-swap-in-place recompression above also
+        // drops any /OC entry (pdf-lib's embedJpg() never writes one into
+        // the new image dict), which would silently detach the image from
+        // its layer and make it render unconditionally regardless of the
+        // layer's visibility state.
+        if (dict.get(PDFName.of("OC"))) {
+          skippedCount++;
+          continue;
+        }
         // Skip CMYK JPEGs — browser <img>/<canvas> decoding of CMYK JPEG
         // data is unreliable and can shift colors badly.
         const colorSpace = dict.get(PDFName.of("ColorSpace"));
