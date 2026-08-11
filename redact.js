@@ -124,8 +124,14 @@ async function loadFile(file) {
     const bytes = await file.arrayBuffer();
     const doc = await PDFDocument.load(bytes, { ignoreEncryption: true });
     const pageSizes = doc.getPages().map((p) => {
-      const { width, height } = p.getSize();
-      return { w: width, h: height, rotation: ((p.getRotation().angle % 360) + 360) % 360 };
+      const box = p.getMediaBox();
+      return {
+        w: box.width,
+        h: box.height,
+        x: box.x,
+        y: box.y,
+        rotation: ((p.getRotation().angle % 360) + 360) % 360,
+      };
     });
     loaded = { file, pageCount: doc.getPageCount(), pageSizes };
     renderFile();
@@ -222,8 +228,14 @@ async function redactPdf() {
   const byPage = new Map();
   for (const r of rects) {
     const idx = r.page - 1;
+    // User-entered x/y are relative to the page's visible bottom-left corner (as shown
+    // in the page-size hint), but pdf-lib's drawing/content-stream coordinates are in
+    // absolute PDF user space. For a PDF whose MediaBox has a non-zero origin (common in
+    // scanned or print-production files), these differ — offset by the box's own x/y so
+    // the redacted rectangle (and the text it removes) lands where the user intended.
+    const { x: boxX, y: boxY } = loaded.pageSizes[idx];
     if (!byPage.has(idx)) byPage.set(idx, []);
-    byPage.get(idx).push([r.x, r.y, r.x + r.w, r.y + r.h]);
+    byPage.get(idx).push([r.x + boxX, r.y + boxY, r.x + r.w + boxX, r.y + r.h + boxY]);
   }
 
   let totalRemoved = 0;
